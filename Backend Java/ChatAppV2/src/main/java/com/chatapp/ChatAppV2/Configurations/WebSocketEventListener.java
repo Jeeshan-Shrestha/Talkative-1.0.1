@@ -22,10 +22,20 @@ public class WebSocketEventListener {
         this.messageTemplate = messageTemplate;
     }
 
-    @EventListener
-    public void handleConnectionEvent(SessionConnectEvent event) {
-        // to-do ---
-    }
+    // @EventListener
+    // public void handleConnectionEvent(SessionConnectEvent event) {
+    // SimpMessageHeaderAccessor accessor =
+    // SimpMessageHeaderAccessor.wrap(event.getMessage());
+    // String username = (String) accessor.getSessionAttributes().get("username");
+    // if (username != null) {
+    // log.info("User Connected: " + username);
+    // var message = ChatMessage.builder()
+    // .type(MessageType.JOIN)
+    // .sender(username)
+    // .build();
+    // messageTemplate.convertAndSend("/topic/public", message);
+    // }
+    // }
 
     @EventListener
     public void handleDisconnectionEvent(SessionDisconnectEvent event) {
