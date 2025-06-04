@@ -5,8 +5,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.talkative.Screens.HomeScreen
-import com.example.talkative.Screens.HomeScreenViewModel
+import com.example.talkative.Screens.homeScreen.HomeScreen
+import com.example.talkative.Screens.homeScreen.HomeScreenViewModel
 
 @Composable
 fun TalkativeNavigation(){
@@ -16,7 +16,7 @@ fun TalkativeNavigation(){
         startDestination = TalkativeScreen.HomeScreen.name) {
 
         composable(TalkativeScreen.HomeScreen.name){
-            val viewmodel:HomeScreenViewModel = hiltViewModel<HomeScreenViewModel>()
+            val viewmodel: HomeScreenViewModel = hiltViewModel<HomeScreenViewModel>()
             HomeScreen(viewmodel)
         }
 

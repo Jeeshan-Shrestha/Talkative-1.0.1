@@ -1,21 +1,16 @@
-package com.example.talkative.Screens
+package com.example.talkative.Screens.homeScreen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.talkative.model.Message
 import com.example.talkative.repository.ChatRepository
-import com.tinder.scarlet.WebSocket
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.log
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(private val repository: ChatRepository):ViewModel() {

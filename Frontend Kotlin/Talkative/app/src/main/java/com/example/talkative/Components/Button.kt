@@ -1,6 +1,10 @@
 package com.example.talkative.Components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
@@ -11,8 +15,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.talkative.R
 
 @Composable
 fun sansButton(
@@ -29,15 +35,20 @@ fun sansButton(
         },
         modifier = modifier
             .padding(10.dp),
+        shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = color),
-        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 10.dp)
+        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 10.dp),
+        contentPadding = PaddingValues(0.dp)
     ) {
 //        Text(text = text,
 //            modifier = Modifier.padding(end = 10.dp),
 //            style = MaterialTheme.typography.bodyMedium,
 //            fontWeight = FontWeight.Bold,
 //            color = textcolor)
-        if(icon)
-            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "button")
+        Icon(
+            modifier = Modifier
+                .size(25.dp),
+            painter = painterResource(R.drawable.send)
+            , contentDescription = "send")
     }
 }
