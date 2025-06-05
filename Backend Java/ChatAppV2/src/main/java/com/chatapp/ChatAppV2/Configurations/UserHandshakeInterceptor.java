@@ -13,20 +13,20 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
             Map<String, Object> attributes) throws Exception {
-        // String query = request.getURI().getQuery();
+        String query = request.getURI().getQuery();
 
-        // System.out.println("==== WebSocket Handshake Debug ====");
-        // System.out.println("Full URL: " + request.getURI());
-        // System.out.println("Raw Query: " + request.getURI().getQuery());
+        System.out.println("==== WebSocket Handshake Debug ====");
+        System.out.println("Full URL: " + request.getURI());
+        System.out.println("Raw Query: " + request.getURI().getQuery());
 
-        // if (query != null) {
-        // String username = query.substring(9);
+        if (query != null) {
+            String username = query.substring(9);
+            attributes.put("username", username);
+            System.out.println(username);
+        }
+
+        // List<String> username = request.getHeaders().get("username");
         // attributes.put("username", username);
-        // System.out.println(username);
-        // }
-
-        List<String> username = request.getHeaders().get("username");
-        attributes.put("username", username);
 
         return true;
     }
