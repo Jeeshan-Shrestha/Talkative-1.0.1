@@ -28,6 +28,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String username = (String) session.getAttributes().get("username");
         if (username != null) {
             broadcastSystemMessage(username + " joined the chat", MessageType.JOIN);
+            System.out.println(username + " joined the chat");
         }
     }
 
@@ -55,6 +56,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             for (WebSocketSession wsSession : sessions) {
                 if (wsSession.isOpen()) {
                     wsSession.sendMessage(new TextMessage(json));
+                    System.out.println(json);
                 }
             }
         }
@@ -67,6 +69,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             for (WebSocketSession wSession : sessions) {
                 if (wSession.isOpen()) {
                     wSession.sendMessage(new TextMessage(json));
+                    System.out.println(json);
                 }
             }
         }
