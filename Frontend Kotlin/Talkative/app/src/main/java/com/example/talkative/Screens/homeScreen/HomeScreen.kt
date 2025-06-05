@@ -70,7 +70,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel,
     //connecting the websocket when the Screen is opened
    LaunchedEffect(Unit){
        username?.let {
-           viewModel.ConnectAndObserve(username=it){
+           viewModel.ConnectAndObserve(username=username){
                username2=it
            }
        }
@@ -109,11 +109,20 @@ fun HomeScreen(viewModel: HomeScreenViewModel,
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.Start
                                     ) {
-                                        Text(text = "${username2}",
-                                            color = Color.White.copy(alpha = 0.7f)
-                                        )
-                                        MessageBox(text = smth.text,
-                                            color = Color(0xFF253453))
+                                        Column(modifier = Modifier.padding(7.dp),
+                                            horizontalAlignment = Alignment.Start,
+                                            verticalArrangement = Arrangement.Center
+                                        ) {
+                                            Text(
+                                                modifier = Modifier.padding(start =5.dp),
+                                                text = "${username2}",
+                                                color = Color.White.copy(alpha = 0.7f)
+                                            )
+                                            MessageBox(
+                                                text = smth.text,
+                                                color = Color(0xFF253453)
+                                            )
+                                        }
                                     }
                                 }
 
@@ -122,11 +131,12 @@ fun HomeScreen(viewModel: HomeScreenViewModel,
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.End
                                     ) {
-                                        Column(modifier = Modifier.padding(3.dp),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                        Column(modifier = Modifier.padding(7.dp),
+                                            horizontalAlignment = Alignment.End,
                                             verticalArrangement = Arrangement.Center
                                         ){
                                             Text(text = "${username}",
+                                                modifier = Modifier.padding(end = 5.dp),
                                                 color = Color.White.copy(alpha = 0.7f)
                                             )
                                             MessageBox(text = smth.text,

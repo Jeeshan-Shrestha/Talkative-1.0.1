@@ -26,7 +26,7 @@ fun MessageBox(text:String="hello",
                color: Color= MaterialTheme.colorScheme.primaryContainer,
 ){
     Card(modifier = Modifier
-        .padding(10.dp),
+        .padding(0.dp),
         shape = RoundedCornerShape(15.dp),
         colors = CardDefaults.cardColors(containerColor =color),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
@@ -38,7 +38,7 @@ fun MessageBox(text:String="hello",
                 color = Color.White,
                 style = TextStyle(
                     fontStyle = FontStyle.Normal,
-                    fontSize = 20.sp
+                    fontSize = 18.sp
                 )
             )
         }

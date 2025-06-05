@@ -37,7 +37,7 @@ class HomeScreenViewModel @Inject constructor(private val repository: ChatReposi
 //
 //    }
 
-  suspend  fun ConnectAndObserve(username:String,getUsername:() -> Unit){
+  suspend  fun ConnectAndObserve(username:String,getUsername:(String) -> Unit){
         repository.connectSocket(username=username)
 
         viewModelScope.launch{
@@ -50,18 +50,16 @@ class HomeScreenViewModel @Inject constructor(private val repository: ChatReposi
         viewModelScope.launch (Dispatchers.IO){
             repository.observeMessages().collect{msg->
                 try {
+                    Log.d("Sans", "ConnectAndObserve:${msg} ")
                     val incomming=json.decodeFromString<MessageResponse>(msg)
-                    getUsername.invoke()
                     if (incomming.sender!=username) {
-                        Log.d("April", "ConnectAndObserve:${msg} ")
+                        getUsername.invoke(incomming.sender)
                         _messages.update { currentList ->
-                            currentList + Message.Recieved(incomming.message)
+                            currentList + Message.Recieved(incomming.message.trim())
                         }
                     }
-
-
                 }catch (e:Exception){
-                    Log.d("WebSocket", "ConnectAndObserve: ${e.message}")
+                    Log.d("Sans", "ConnectAndObserve: ${e.message}")
                 }
                 lastSentMessage = null
             }
@@ -73,7 +71,7 @@ class HomeScreenViewModel @Inject constructor(private val repository: ChatReposi
         if(msg.isNotBlank()){
             lastSentMessage=msg
             _messages.update {currentList->
-                currentList + Message.Sent(msg)
+                currentList + Message.Sent(msg.trim())
             }
             repository.sendMessage(msg)
         }
