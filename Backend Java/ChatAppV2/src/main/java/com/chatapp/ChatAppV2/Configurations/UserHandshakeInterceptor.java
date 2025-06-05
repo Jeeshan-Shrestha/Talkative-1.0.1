@@ -1,5 +1,6 @@
 package com.chatapp.ChatAppV2.Configurations;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.server.ServerHttpRequest;
@@ -14,18 +15,18 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
             Map<String, Object> attributes) throws Exception {
         String query = request.getURI().getQuery();
 
+        System.out.println("==== WebSocket Handshake Debug ====");
+        System.out.println("Full URL: " + request.getURI());
+        System.out.println("Raw Query: " + request.getURI().getQuery());
+
         if (query != null) {
-            String[] params = query.split("&");
-            for (String param : params) {
-                String[] pair = param.split("=");
-                if (pair.length == 2 && pair[0].equals("username")) {
-                    String username = java.net.URLDecoder.decode(pair[1], "UTF-8");
-                    System.out.println("Connected username: " + username);
-                    attributes.put("username", username);
-                    break;
-                }
-            }
+            String username = query.substring(9);
+            attributes.put("username", username);
+            System.out.println(username);
         }
+
+        // List<String> username = request.getHeaders().get("username");
+        // attributes.put("username", username);
 
         return true;
     }
