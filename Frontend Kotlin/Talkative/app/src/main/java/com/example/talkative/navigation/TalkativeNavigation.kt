@@ -1,10 +1,15 @@
 package com.example.talkative.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.fragment.app.FragmentManager.BackStackEntry
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.talkative.Screens.addUsername.AddUserNameScreen
 import com.example.talkative.Screens.homeScreen.HomeScreen
 import com.example.talkative.Screens.homeScreen.HomeScreenViewModel
 
@@ -13,11 +18,25 @@ fun TalkativeNavigation(){
     val navController= rememberNavController()
 
     NavHost(navController = navController,
-        startDestination = TalkativeScreen.HomeScreen.name) {
+        startDestination = TalkativeScreen.AdduserName.name) {
 
-        composable(TalkativeScreen.HomeScreen.name){
+        //we are passing usersname from addusername screen to home screeen so we have to recieve it here
+        val route1= TalkativeScreen.HomeScreen.name
+        composable("$route1/{username}",
+            arguments = listOf(
+            navArgument(name = "username"){ type= NavType.StringType })){BackStackEntry-> //variable that contains information we want
             val viewmodel: HomeScreenViewModel = hiltViewModel<HomeScreenViewModel>()
-            HomeScreen(viewmodel)
+
+            val name = BackStackEntry.arguments?.getString("username")
+
+
+            HomeScreen(
+                viewModel = viewmodel,
+                username=name)
+        }
+
+        composable(TalkativeScreen.AdduserName.name) {
+            AddUserNameScreen(NavController=navController)
         }
 
     }

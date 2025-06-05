@@ -13,26 +13,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+@Preview
 @Composable
-fun MessageBox(text:String){
-    Card(modifier = Modifier.padding(10.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+fun MessageBox(text:String="hello",
+               color: Color= MaterialTheme.colorScheme.primaryContainer,
+){
+    Card(modifier = Modifier
+        .padding(10.dp),
+        shape = RoundedCornerShape(15.dp),
+        colors = CardDefaults.cardColors(containerColor =color),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
     ) {
         Column(modifier = Modifier
-            .padding(horizontal = 10.dp, vertical = 5.dp),
+            .padding(horizontal = 10.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.Start) {
             Text(text=text ,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = Color.White,
                 style = TextStyle(
                     fontStyle = FontStyle.Normal,
-                    fontSize = 15.sp
+                    fontSize = 20.sp
                 )
             )
         }

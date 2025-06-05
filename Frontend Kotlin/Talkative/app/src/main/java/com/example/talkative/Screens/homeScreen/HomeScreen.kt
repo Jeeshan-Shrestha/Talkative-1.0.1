@@ -22,6 +22,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -38,11 +40,16 @@ import com.example.talkative.model.Message
 
 
 @Composable
-fun HomeScreen(viewModel: HomeScreenViewModel) {
+fun HomeScreen(viewModel: HomeScreenViewModel,
+               username:String?) {
 
     val msg by viewModel.messages.collectAsState()
 
     val status by viewModel.status.collectAsState()
+
+    var username2 by remember {
+        mutableStateOf("")
+    }
 
     val message = remember {
         mutableStateOf("")
@@ -60,10 +67,18 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
         }
     }
 
+    //connecting the websocket when the Screen is opened
+   LaunchedEffect(Unit){
+       username?.let {
+           viewModel.ConnectAndObserve(username=it){
+               username2=it
+           }
+       }
+   }
+
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Scaffold { it ->
-
+    Scaffold {
         Box {
 
             Image(
@@ -94,7 +109,11 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.Start
                                     ) {
-                                        MessageBox(text = smth.text)
+                                        Text(text = "${username2}",
+                                            color = Color.White.copy(alpha = 0.7f)
+                                        )
+                                        MessageBox(text = smth.text,
+                                            color = Color(0xFF253453))
                                     }
                                 }
 
@@ -103,7 +122,18 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.End
                                     ) {
-                                        MessageBox(text = smth.text)
+                                        Column(modifier = Modifier.padding(3.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.Center
+                                        ){
+                                            Text(text = "${username}",
+                                                color = Color.White.copy(alpha = 0.7f)
+                                            )
+                                            MessageBox(text = smth.text,
+                                                color = Color(0xFF0B88D8)
+                                            )
+                                        }
+
                                     }
                                 }
                             }
@@ -113,12 +143,13 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
                     Text(
                         text = "Status: $status",
                         modifier = Modifier.padding(8.dp),
-                        color = MaterialTheme.colorScheme.primary
+                        color = Color.White.copy(alpha = 0.7f)
                     )
                     Row {
                         SendField(
                             modifier = Modifier.weight(1f)
                                 .padding(6.dp),
+                            placeHolder = "Type your message here",
                             valueState = message,
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Default,
