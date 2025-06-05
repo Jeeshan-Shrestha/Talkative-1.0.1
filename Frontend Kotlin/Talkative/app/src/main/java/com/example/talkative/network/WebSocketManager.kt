@@ -39,10 +39,11 @@ class  WebSocketManager{
         override fun onOpen(webSocket: WebSocket,response: Response){
             Log.d("WebSocket", "Connected")
             _status.tryEmit("Connected")
-            Log.d("WebSocket", "${_status} ")
+            Log.d("Boka", "${response.body} ")
         }
         override fun onMessage(webSocket: WebSocket,text:String){
             Log.d("WebSocket", "Received: $text")
+
             _messages.tryEmit(text)
             Log.d("WebSocket",_messages.toString())
         }

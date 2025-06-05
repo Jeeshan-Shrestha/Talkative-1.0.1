@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    kotlin("plugin.serialization") version "1.9.0"
 }
 
 android {
@@ -109,6 +110,10 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
 
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+
+    //for serialization i.e to pass class as object between screens
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
 
 }

@@ -1,24 +1,26 @@
-package com.example.talkative.Screens
+package com.example.talkative.Screens.homeScreen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.talkative.model.Message
+import com.example.talkative.model.MessageResponse
 import com.example.talkative.repository.ChatRepository
-import com.tinder.scarlet.WebSocket
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
-import kotlin.math.log
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(private val repository: ChatRepository):ViewModel() {
+
+    // parsing json , being safe
+    val json = Json { ignoreUnknownKeys=true }
 
     private val _messages= MutableStateFlow<List<Message>>(emptyList())
     val messages=_messages.asStateFlow()
@@ -30,13 +32,13 @@ class HomeScreenViewModel @Inject constructor(private val repository: ChatReposi
     private var lastSentMessage: String? = null
 
 
-    init {
-        ConnectAndObserve()
+//    init {
+//        ConnectAndObserve()
+//
+//    }
 
-    }
-
-    fun ConnectAndObserve(){
-        repository.connectSocket()
+  suspend  fun ConnectAndObserve(username:String,getUsername:() -> Unit){
+        repository.connectSocket(username=username)
 
         viewModelScope.launch{
             repository.observeStatus().collect{st->
@@ -45,13 +47,21 @@ class HomeScreenViewModel @Inject constructor(private val repository: ChatReposi
             }
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO){
             repository.observeMessages().collect{msg->
-                if (msg != lastSentMessage) {
-                    Log.d("April", "ConnectAndObserve:${msg} ")
-                    _messages.update { currentList ->
-                        currentList + Message.Recieved(msg)
+                try {
+                    val incomming=json.decodeFromString<MessageResponse>(msg)
+                    getUsername.invoke()
+                    if (incomming.sender!=username) {
+                        Log.d("April", "ConnectAndObserve:${msg} ")
+                        _messages.update { currentList ->
+                            currentList + Message.Recieved(incomming.message)
+                        }
                     }
+
+
+                }catch (e:Exception){
+                    Log.d("WebSocket", "ConnectAndObserve: ${e.message}")
                 }
                 lastSentMessage = null
             }
