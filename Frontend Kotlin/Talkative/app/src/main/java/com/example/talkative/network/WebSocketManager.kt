@@ -1,10 +1,12 @@
 package com.example.talkative.network
 
 import android.util.Log
+import com.example.talkative.model.MessageResponse
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -24,7 +26,9 @@ class  WebSocketManager{
     val status=_status.asStateFlow()
 
     fun connect(url:String){
-        val request = Request.Builder().url(url).build()
+        Log.d("boka", "connect: $url")
+        val request = Request.Builder().url(url)
+            .build()
         webSocket= client.newWebSocket(request, socketListner)
     }
     fun sendMessage(message:String){
@@ -39,13 +43,13 @@ class  WebSocketManager{
         override fun onOpen(webSocket: WebSocket,response: Response){
             Log.d("WebSocket", "Connected")
             _status.tryEmit("Connected")
-            Log.d("Boka", "${response.body} ")
+            Log.d("WebSocket", "${response.body} ")
         }
         override fun onMessage(webSocket: WebSocket,text:String){
             Log.d("WebSocket", "Received: $text")
-
             _messages.tryEmit(text)
             Log.d("WebSocket",_messages.toString())
+
         }
 
         override fun onClosing(webSocket: WebSocket,code:Int,reason:String){
@@ -64,3 +68,4 @@ class  WebSocketManager{
         }
     }
 }
+
