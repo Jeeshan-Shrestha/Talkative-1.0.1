@@ -1,14 +1,12 @@
 package com.example.talkative.repository
 
-
-import android.util.Log
 import com.example.talkative.network.WebSocketManager
 import com.example.talkative.utils.Constants
 import javax.inject.Inject
 
 class ChatRepository @Inject constructor(private val network:WebSocketManager){
-    fun connectSocket(){
-        network.connect(Constants.BaseUrl)
+    fun connectSocket(username:String){
+        network.connect("${Constants.BaseUrl}?username=${username}")
     }
     fun observeMessages()=network.messages
 
