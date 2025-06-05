@@ -49,7 +49,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String username = (String) session.getAttributes().get("username");
-        final ChatMessage chatMessage = new ChatMessage("boka", message.getPayload(), MessageType.CHAT);
+        final ChatMessage chatMessage = new ChatMessage(username, message.getPayload(), MessageType.CHAT);
         String json = objectMapper.writeValueAsString(chatMessage);
         synchronized (sessions) {
             for (WebSocketSession wsSession : sessions) {
