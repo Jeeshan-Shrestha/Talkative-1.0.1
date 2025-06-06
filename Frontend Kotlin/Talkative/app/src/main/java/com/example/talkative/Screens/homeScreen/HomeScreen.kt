@@ -47,9 +47,9 @@ fun HomeScreen(viewModel: HomeScreenViewModel,
 
     val status by viewModel.status.collectAsState()
 
-    var username2 by remember {
-        mutableStateOf("")
-    }
+//    var username2 by remember {
+//        mutableStateOf("")
+//    }
 
     val message = remember {
         mutableStateOf("")
@@ -70,9 +70,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel,
     //connecting the websocket when the Screen is opened
    LaunchedEffect(Unit){
        username?.let {
-           viewModel.ConnectAndObserve(username=username){
-               username2=it
-           }
+           viewModel.ConnectAndObserve(username=username)
        }
    }
 
@@ -115,7 +113,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel,
                                         ) {
                                             Text(
                                                 modifier = Modifier.padding(start =5.dp),
-                                                text = "${username2}",
+                                                text = "${smth.sender}",
                                                 color = Color.White.copy(alpha = 0.7f)
                                             )
                                             MessageBox(

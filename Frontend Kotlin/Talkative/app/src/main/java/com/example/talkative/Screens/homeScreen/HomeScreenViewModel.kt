@@ -37,7 +37,7 @@ class HomeScreenViewModel @Inject constructor(private val repository: ChatReposi
 //
 //    }
 
-  suspend  fun ConnectAndObserve(username:String,getUsername:(String) -> Unit){
+  suspend  fun ConnectAndObserve(username:String){
         repository.connectSocket(username=username)
 
         viewModelScope.launch{
@@ -53,9 +53,9 @@ class HomeScreenViewModel @Inject constructor(private val repository: ChatReposi
                     Log.d("Sans", "ConnectAndObserve:${msg} ")
                     val incomming=json.decodeFromString<MessageResponse>(msg)
                     if (incomming.sender!=username) {
-                        getUsername.invoke(incomming.sender)
+                     //   getUsername.invoke(incomming.sender)
                         _messages.update { currentList ->
-                            currentList + Message.Recieved(incomming.message.trim())
+                            currentList + Message.Recieved(sender =incomming.sender.trim() , text =  incomming.message.trim())
                         }
                     }
                 }catch (e:Exception){
