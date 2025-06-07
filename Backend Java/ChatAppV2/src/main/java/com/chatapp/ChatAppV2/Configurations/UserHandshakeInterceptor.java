@@ -15,9 +15,9 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
             Map<String, Object> attributes) throws Exception {
         String query = request.getURI().getQuery();
 
-        System.out.println("==== WebSocket Handshake Debug ====");
-        System.out.println("Full URL: " + request.getURI());
-        System.out.println("Raw Query: " + request.getURI().getQuery());
+        // System.out.println("==== WebSocket Handshake Debug ====");
+        // System.out.println("Full URL: " + request.getURI());
+        // System.out.println("Raw Query: " + request.getURI().getQuery());
 
         if (query != null) {
             String username = query.substring(9);
