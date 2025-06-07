@@ -12,6 +12,7 @@ import androidx.navigation.navArgument
 import com.example.talkative.Screens.addUsername.AddUserNameScreen
 import com.example.talkative.Screens.homeScreen.HomeScreen
 import com.example.talkative.Screens.homeScreen.HomeScreenViewModel
+import com.example.talkative.Screens.signupScreen.SignUpScreen
 
 @Composable
 fun TalkativeNavigation(){
@@ -35,8 +36,14 @@ fun TalkativeNavigation(){
                 username=name)
         }
 
+        //Login Screen
         composable(TalkativeScreen.AdduserName.name) {
             AddUserNameScreen(NavController=navController)
+        }
+
+        //SignUp Screen
+        composable(TalkativeScreen.signUpUser.name){
+            SignUpScreen(NavController =navController)
         }
 
     }

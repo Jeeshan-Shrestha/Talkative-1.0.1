@@ -1,4 +1,4 @@
-package com.example.talkative.Screens.addUsername
+package com.example.talkative.Screens.signupScreen
 
 import android.util.Log
 import android.widget.Toast
@@ -42,18 +42,29 @@ import com.example.talkative.navigation.TalkativeScreen
 
 @Preview
 @Composable
-fun AddUserNameScreen(NavController:NavController= NavController(LocalContext.current)){
+fun SignUpScreen(NavController: NavController = NavController(LocalContext.current)){
     val name = remember {
         mutableStateOf("")
     }
 
-    val password = remember {
+    val password1 = remember {
+        mutableStateOf("")
+    }
+    
+    val password2 = remember {
         mutableStateOf("")
     }
 
-    val valid = remember(name.value,password.value){
-        name.value.trim().isNotEmpty() && password.value.trim().isNotEmpty()
+
+    val valid = remember(name.value,password1.value,password2.value){
+        name.value.trim().isNotEmpty() && password1.value.trim().isNotEmpty() && password2.value.trim().isNotEmpty()
     }
+
+    val CheckPassword = remember(password1.value , password2.value){
+        password1.value == password2.value
+    }
+
+
 
     val context = LocalContext.current
 
@@ -74,16 +85,17 @@ fun AddUserNameScreen(NavController:NavController= NavController(LocalContext.cu
                 Column(modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .padding(10.dp),
-                    verticalArrangement =Arrangement.Center,
+                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
 
-                ) {
-                    Text(text = "Login To Talkative",
+                    ) {
+                    Text(text = "SignUp To Use Talkative",
                         fontWeight = FontWeight.ExtraBold,
                         modifier = Modifier.padding(15.dp),
                         color = Color.White,
                         style = TextStyle(
-                            fontSize = 30.sp))
+                            fontSize = 30.sp)
+                    )
 
                     Spacer(modifier = Modifier.height(20.dp))
 
@@ -103,8 +115,21 @@ fun AddUserNameScreen(NavController:NavController= NavController(LocalContext.cu
                     SendField(
                         modifier = Modifier,
                         maxLines = 1,
-                        placeHolder="Password",
-                        valueState = password,
+                        placeHolder = "New Password",
+                        valueState = password1,
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next,
+                        enableButton = false){
+                        //nothing
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    SendField(
+                        modifier = Modifier,
+                        maxLines = 1,
+                        placeHolder="Confirm Password",
+                        valueState = password2,
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Done,
                         onAction = KeyboardActions {
@@ -114,6 +139,9 @@ fun AddUserNameScreen(NavController:NavController= NavController(LocalContext.cu
                         if(!valid){
                             Toast.makeText(context, "Enter The Missing Fields", Toast.LENGTH_SHORT).show()
                         }
+                        else if (!CheckPassword){
+                            Toast.makeText(context,"New Password and Confirm Password should be same",Toast.LENGTH_SHORT).show()
+                        }
                         else{
                             Log.d("pussy", "AddUserNameScreen: ${name.value}")
                             NavController.navigate(TalkativeScreen.HomeScreen.name+"/${name.value}")
@@ -122,23 +150,23 @@ fun AddUserNameScreen(NavController:NavController= NavController(LocalContext.cu
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                  Row(modifier = Modifier.padding(10.dp)) {
-                      Text(
-                          modifier = Modifier.padding(start =5.dp),
-                          text = "Don't Have an Account?",
-                          color = Color.White.copy(alpha = 0.8f)
-                      )
-                      Text(
-                          modifier = Modifier
-                              .padding(start =5.dp)
-                              .clickable {
-                                  NavController.navigate(TalkativeScreen.signUpUser.name)
-                              },
-                          text = "Sign Up",
-                          fontWeight = FontWeight.Bold,
-                          color = Color.White.copy(alpha = 0.8f)
-                      )
-                  }
+                    Row(modifier = Modifier.padding(10.dp)) {
+                        Text(
+                            modifier = Modifier.padding(start =5.dp),
+                            text = "Already Have an Account?",
+                            color = Color.White.copy(alpha = 0.8f)
+                        )
+                        Text(
+                            modifier = Modifier
+                                .padding(start =5.dp)
+                                .clickable {
+                                    NavController.navigate(TalkativeScreen.AdduserName.name)
+                                },
+                            text = "Sign In",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White.copy(alpha = 0.8f)
+                        )
+                    }
 
                 }
 

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.talkative.R
 
+
 @Composable
 fun SendField(
     modifier: Modifier,
@@ -33,6 +34,7 @@ fun SendField(
     imeAction: ImeAction = ImeAction.Default,
     onAction: KeyboardActions = KeyboardActions.Default,
     maxLines:Int=5,
+    enableButton:Boolean = true,
     onClick : () -> Unit
 ){
 
@@ -52,14 +54,14 @@ fun SendField(
         placeholder = {
             Text(
                 text = placeHolder,
-                style = TextStyle(fontSize = 19.sp, color = Color(0xFFB0B0B0))
+                style = TextStyle(fontSize = 17.sp, color = Color(0xFFB0B0B0))
             )
         },
         value=valueState.value,
         onValueChange = {valueState.value=it},
         maxLines = maxLines,
         singleLine = false,
-        textStyle = TextStyle(fontSize = 19.sp,
+        textStyle = TextStyle(fontSize = 15.sp,
             color =Color.White),
         enabled = true,
         shape = RoundedCornerShape(15.dp),
@@ -69,9 +71,11 @@ fun SendField(
         ),
         keyboardActions = onAction,
         trailingIcon = {
-           sansButton(text = "hehe") {
-               onClick.invoke()
-           }
+            if(enableButton) {
+                sansButton(text = "hehe") {
+                    onClick.invoke()
+                }
+            }
         }
     )
 }
