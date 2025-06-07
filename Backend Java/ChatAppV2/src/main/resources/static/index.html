@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <script>
+        const socket = new WebSocket("ws://localhost:8080/ws?username=Nara");
+
+        socket.onopen = () => console.log("CONNECTED! Check server logs.");
+        socket.onerror = (error) => console.error("ERROR:", error);
+        socket.onclose = () => console.log("DISCONNECTED");
+    </script>
+</body>
+
+</html>
