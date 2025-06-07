@@ -1,10 +1,14 @@
 package com.example.talkative.di
+import com.example.talkative.network.Net
 import com.example.talkative.network.WebSocketManager
+import com.example.talkative.utils.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -15,6 +19,17 @@ object AppModule {
     @Provides
     fun provideWebSocketManager():WebSocketManager{
         return WebSocketManager()
+    }
+
+    @Singleton
+    @Provides
+    fun provideRetrofit(client: OkHttpClient):Net{
+        return  Retrofit.Builder()
+            .baseUrl(Constants.MainUrl)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(Net::class.java) //hello world
     }
 
 }
