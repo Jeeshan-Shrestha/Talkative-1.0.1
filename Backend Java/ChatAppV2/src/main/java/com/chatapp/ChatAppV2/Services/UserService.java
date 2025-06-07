@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.chatapp.ChatAppV2.Jwt.JwtUtils;
 import com.chatapp.ChatAppV2.Models.Users;
 import com.chatapp.ChatAppV2.Repository.UserRepostory;
 
@@ -19,9 +18,6 @@ public class UserService {
     private AuthenticationManager authManager;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-
-    @Autowired
-    private JwtUtils jwtFilter;
 
     @Autowired
     UserRepostory userRepo;
@@ -40,7 +36,7 @@ public class UserService {
         Authentication authentication = authManager
                 .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         if (authentication.isAuthenticated()) {
-            return jwtFilter.generateKey(user.getUsername());
+            return "Logged in";
         }
         return "bad";
     }
