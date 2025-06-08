@@ -1,5 +1,7 @@
 package com.chatapp.ChatAppV2.Models;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -25,5 +27,7 @@ public class Users {
     private String username;
 
     private String password;
+
+    private List<String> roles;
 
 }
