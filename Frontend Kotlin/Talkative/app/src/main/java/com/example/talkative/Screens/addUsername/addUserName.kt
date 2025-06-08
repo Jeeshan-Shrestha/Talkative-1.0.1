@@ -33,7 +33,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -44,10 +43,10 @@ import com.example.talkative.navigation.TalkativeScreen
 
 
 @Composable
-fun AddUserNameScreen(NavController:NavController= NavController(LocalContext.current),
-                      LoginViewmodel:LoginViewModel){
+fun AddUserNameScreen(navController:NavController,
+                      loginViewModel:LoginViewModel){
 
-    val uiState = LoginViewmodel.state.collectAsState() //we can use This For Loading Animation
+    val uiState = loginViewModel.state.collectAsState() //we can use This For Loading Animation
 
     val name = remember {
         mutableStateOf("")
@@ -121,10 +120,11 @@ fun AddUserNameScreen(NavController:NavController= NavController(LocalContext.cu
                             Toast.makeText(context, "Enter The Missing Fields", Toast.LENGTH_SHORT).show()
                         }
                         else{
-                            LoginViewmodel.loginUser(
+                            loginViewModel.loginUser(
                                 Username = name.value,
                                 Password = password.value){
-                                NavController.navigate(TalkativeScreen.HomeScreen.name+"/${name.value}")
+                                Log.d("April", "AddUserNameScreen:ktnu prny")
+                                navController.navigate(TalkativeScreen.HomeScreen.name+"/${name.value}")
                             }
 
                         }
@@ -142,7 +142,7 @@ fun AddUserNameScreen(NavController:NavController= NavController(LocalContext.cu
                           modifier = Modifier
                               .padding(start =5.dp)
                               .clickable {
-                                  NavController.navigate(TalkativeScreen.signUpUser.name)
+                                  navController.navigate(TalkativeScreen.signUpUser.name)
                               },
                           text = "Sign Up",
                           fontWeight = FontWeight.Bold,
