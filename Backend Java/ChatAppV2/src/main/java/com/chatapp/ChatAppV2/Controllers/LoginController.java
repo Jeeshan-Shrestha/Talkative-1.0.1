@@ -2,6 +2,7 @@ package com.chatapp.ChatAppV2.Controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.chatapp.ChatAppV2.Models.BackendResponse;
 import com.chatapp.ChatAppV2.Models.Users;
 import com.chatapp.ChatAppV2.Services.UserService;
 
@@ -27,10 +28,10 @@ public class LoginController {
             // .body("A person with that username already exists in the database try logging
             // in ");
             // }
-            return ResponseEntity.ok().body(user);
+            return ResponseEntity.ok().body(new BackendResponse(true, "User Registered"));
         } catch (Exception e) {
             System.out.println("some error occured");
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return ResponseEntity.internalServerError().body(new BackendResponse(false, "Something went wrong"));
         }
     }
 
@@ -42,7 +43,7 @@ public class LoginController {
             return ResponseEntity.badRequest().body("bad Credentials");
         }
 
-        return ResponseEntity.ok().body(auth);
+        return ResponseEntity.ok().body(new BackendResponse(true, auth));
     }
 
 }
