@@ -1,8 +1,6 @@
 package com.example.talkative.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.fragment.app.FragmentManager.BackStackEntry
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -31,17 +29,14 @@ fun TalkativeNavigation(){
 
             val name = BackStackEntry.arguments?.getString("username")
 
-
-            HomeScreen(
-                viewModel = viewmodel,
-                username=name)
+            HomeScreen(viewModel = viewmodel, username=name)
         }
 
         //Login Screen
         composable(TalkativeScreen.AdduserName.name) {
             val loginViewModel:LoginViewModel = hiltViewModel<LoginViewModel>()
-            AddUserNameScreen(NavController=navController,
-                LoginViewmodel = loginViewModel)
+            AddUserNameScreen(navController=navController,
+                loginViewModel = loginViewModel)
         }
 
         //SignUp Screen

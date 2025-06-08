@@ -1,5 +1,6 @@
 package com.example.talkative.Screens.homeScreen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +43,8 @@ import com.example.talkative.model.Message
 @Composable
 fun HomeScreen(viewModel: HomeScreenViewModel,
                username:String?) {
+
+    Log.d("April", "HomeScreen: we are inside home screen ")
 
     val msg by viewModel.messages.collectAsState()
 
@@ -155,7 +158,8 @@ fun HomeScreen(viewModel: HomeScreenViewModel,
                     )
                     Row {
                         SendField(
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier
+                                .weight(1f)
                                 .padding(6.dp),
                             placeHolder = "Type your message here",
                             valueState = message,
