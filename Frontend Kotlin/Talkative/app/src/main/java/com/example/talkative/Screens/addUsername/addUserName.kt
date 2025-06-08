@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,11 +39,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.talkative.Components.SendField
 import com.example.talkative.R
+import com.example.talkative.loadingState.LoadingState
 import com.example.talkative.navigation.TalkativeScreen
 
-@Preview
+
 @Composable
-fun AddUserNameScreen(NavController:NavController= NavController(LocalContext.current)){
+fun AddUserNameScreen(NavController:NavController= NavController(LocalContext.current),
+                      LoginViewmodel:LoginViewModel){
+
+    val uiState = LoginViewmodel.state.collectAsState() //we can use This For Loading Animation
+
     val name = remember {
         mutableStateOf("")
     }
@@ -115,8 +121,12 @@ fun AddUserNameScreen(NavController:NavController= NavController(LocalContext.cu
                             Toast.makeText(context, "Enter The Missing Fields", Toast.LENGTH_SHORT).show()
                         }
                         else{
-                            Log.d("pussy", "AddUserNameScreen: ${name.value}")
-                            NavController.navigate(TalkativeScreen.HomeScreen.name+"/${name.value}")
+                            LoginViewmodel.loginUser(
+                                Username = name.value,
+                                Password = password.value){
+                                NavController.navigate(TalkativeScreen.HomeScreen.name+"/${name.value}")
+                            }
+
                         }
                     }
 
@@ -139,6 +149,9 @@ fun AddUserNameScreen(NavController:NavController= NavController(LocalContext.cu
                           color = Color.White.copy(alpha = 0.8f)
                       )
                   }
+                    if(uiState.value == LoadingState.FAILED){
+                        Toast.makeText(context,uiState.value.message,Toast.LENGTH_SHORT).show()
+                    }
 
                 }
 

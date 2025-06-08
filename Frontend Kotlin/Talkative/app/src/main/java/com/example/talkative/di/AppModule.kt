@@ -15,18 +15,17 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideWebSocketManager():WebSocketManager{
         return WebSocketManager()
     }
 
-    @Singleton
     @Provides
-    fun provideRetrofit(client: OkHttpClient):Net{
+    @Singleton
+    fun provideRetrofit():Net{
         return  Retrofit.Builder()
             .baseUrl(Constants.MainUrl)
-            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(Net::class.java) //hello world

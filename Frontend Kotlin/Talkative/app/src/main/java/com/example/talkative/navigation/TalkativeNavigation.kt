@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.talkative.Screens.addUsername.AddUserNameScreen
+import com.example.talkative.Screens.addUsername.LoginViewModel
 import com.example.talkative.Screens.homeScreen.HomeScreen
 import com.example.talkative.Screens.homeScreen.HomeScreenViewModel
 import com.example.talkative.Screens.signupScreen.SignUpScreen
@@ -38,7 +39,9 @@ fun TalkativeNavigation(){
 
         //Login Screen
         composable(TalkativeScreen.AdduserName.name) {
-            AddUserNameScreen(NavController=navController)
+            val loginViewModel:LoginViewModel = hiltViewModel<LoginViewModel>()
+            AddUserNameScreen(NavController=navController,
+                LoginViewmodel = loginViewModel)
         }
 
         //SignUp Screen
