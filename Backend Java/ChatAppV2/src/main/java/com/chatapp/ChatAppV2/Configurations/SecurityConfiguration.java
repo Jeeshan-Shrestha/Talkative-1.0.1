@@ -32,7 +32,6 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/register").permitAll()
                 .anyRequest().authenticated());
         http.csrf(c -> c.disable());
-        http.oauth2Login(withDefaults());
         http.formLogin(withDefaults());
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.httpBasic(withDefaults());
