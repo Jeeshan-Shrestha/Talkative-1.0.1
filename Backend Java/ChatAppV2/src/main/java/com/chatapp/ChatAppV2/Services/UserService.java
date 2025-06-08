@@ -23,11 +23,6 @@ public class UserService {
     UserRepostory userRepo;
 
     public Users registerUser(Users user) {
-        Users userOnDatabase = userRepo.findByUsername(user.getUsername());
-        // if (userOnDatabase != null) {
-        // System.out.println("Same user");
-        // return null;
-        // }
         user.setPassword(encoder.encode(user.getPassword()));
         return userRepo.save(user);
     }

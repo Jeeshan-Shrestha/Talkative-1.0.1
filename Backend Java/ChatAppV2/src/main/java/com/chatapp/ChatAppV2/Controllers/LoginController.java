@@ -21,18 +21,8 @@ public class LoginController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody Users entity) {
-        try {
-            Users user = userService.registerUser(entity);
-            // if (user == null) {
-            // return ResponseEntity.badRequest()
-            // .body("A person with that username already exists in the database try logging
-            // in ");
-            // }
-            return ResponseEntity.ok().body(new BackendResponse(true, "User Registered"));
-        } catch (Exception e) {
-            System.out.println("some error occured");
-            return ResponseEntity.internalServerError().body(new BackendResponse(false, "Something went wrong"));
-        }
+        userService.registerUser(entity);
+        return ResponseEntity.ok().body(new BackendResponse(true, "User Registered"));
     }
 
     @PostMapping("/login")

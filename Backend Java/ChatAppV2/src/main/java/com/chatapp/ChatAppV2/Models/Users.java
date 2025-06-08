@@ -28,6 +28,4 @@ public class Users {
 
     private String password;
 
-    private List<String> roles;
-
 }
