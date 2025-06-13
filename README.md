@@ -27,7 +27,7 @@
 * **Java Spring Boot**
 * **MVC Architecture**
 * **WebSocket API**
-* **MongoDb** (or your choice of relational DB)
+* **MongoDb**
 
 ## Getting Started
 
@@ -41,7 +41,7 @@
 ### Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/talkative.git
+git clone https://github.com/Nara476/talkative.git
 cd talkative
 ```
 
