@@ -1,8 +1,10 @@
 package com.example.talkative.Components
 
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -24,23 +26,32 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun MessageBox(text:String="hello",
                color: Color= MaterialTheme.colorScheme.primaryContainer,
-){
-    Card(modifier = Modifier
-        .padding(0.dp),
-        shape = RoundedCornerShape(15.dp),
-        colors = CardDefaults.cardColors(containerColor =color),
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
-    ) {
-        Column(modifier = Modifier
-            .padding(horizontal = 10.dp, vertical = 10.dp),
-            horizontalAlignment = Alignment.Start) {
-            Text(text=text ,
-                color = Color.White,
-                style = TextStyle(
-                    fontStyle = FontStyle.Normal,
-                    fontSize = 18.sp
+) {
+    BoxWithConstraints {
+        val maxwidth = maxWidth *0.6f
+
+        Card(
+            modifier = Modifier
+                .widthIn(max =maxwidth)
+                .padding(2.dp),
+            shape = RoundedCornerShape(15.dp),
+            colors = CardDefaults.cardColors(containerColor = color),
+            elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 10.dp, vertical = 10.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = text,
+                    color = Color.White,
+                    style = TextStyle(
+                        fontStyle = FontStyle.Normal,
+                        fontSize = 18.sp
+                    )
                 )
-            )
+            }
         }
     }
 }
