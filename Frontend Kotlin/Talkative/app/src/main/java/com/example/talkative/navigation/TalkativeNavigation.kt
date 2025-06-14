@@ -12,6 +12,7 @@ import com.example.talkative.Screens.addUsername.LoginViewModel
 import com.example.talkative.Screens.homeScreen.HomeScreen
 import com.example.talkative.Screens.homeScreen.HomeScreenViewModel
 import com.example.talkative.Screens.signupScreen.SignUpScreen
+import com.example.talkative.Screens.signupScreen.SignUpViewModel
 
 @Composable
 fun TalkativeNavigation(){
@@ -41,7 +42,8 @@ fun TalkativeNavigation(){
 
         //SignUp Screen
         composable(TalkativeScreen.signUpUser.name){
-            SignUpScreen(NavController =navController)
+            val signUpViewModel = hiltViewModel<SignUpViewModel>()
+            SignUpScreen(NavController =navController, signUpViewModel = signUpViewModel)
         }
 
     }

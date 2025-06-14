@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,11 +39,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.talkative.Components.SendField
 import com.example.talkative.R
+import com.example.talkative.loadingState.LoadingState
 import com.example.talkative.navigation.TalkativeScreen
+import kotlin.math.sign
 
-@Preview
+
 @Composable
-fun SignUpScreen(NavController: NavController = NavController(LocalContext.current)){
+fun SignUpScreen(NavController: NavController = NavController(LocalContext.current),
+                 signUpViewModel: SignUpViewModel){
+    //for loading animation  to be implemented in future
+    val uiState =  signUpViewModel.state.collectAsState()
+
     val name = remember {
         mutableStateOf("")
     }
@@ -135,7 +142,8 @@ fun SignUpScreen(NavController: NavController = NavController(LocalContext.curre
                         onAction = KeyboardActions {
                             if(!valid)
                                 return@KeyboardActions
-                            keyboardController?.hide() }) {
+                            keyboardController?.hide()
+                        }) {
                         if(!valid){
                             Toast.makeText(context, "Enter The Missing Fields", Toast.LENGTH_SHORT).show()
                         }
@@ -143,8 +151,13 @@ fun SignUpScreen(NavController: NavController = NavController(LocalContext.curre
                             Toast.makeText(context,"New Password and Confirm Password should be same",Toast.LENGTH_SHORT).show()
                         }
                         else{
-                            Log.d("pussy", "AddUserNameScreen: ${name.value}")
-                            NavController.navigate(TalkativeScreen.HomeScreen.name+"/${name.value}")
+                            Log.d("hehe", "AddUserNameScreen: ${name.value}")
+                            signUpViewModel.registerUser(
+                                Username =name.value.trim(),
+                                Password = password2.value.trim()){
+                                NavController.navigate(TalkativeScreen.AdduserName.name)
+                            }
+
                         }
                     }
 
@@ -166,6 +179,10 @@ fun SignUpScreen(NavController: NavController = NavController(LocalContext.curre
                             fontWeight = FontWeight.Bold,
                             color = Color.White.copy(alpha = 0.8f)
                         )
+                    }
+
+                    if(uiState.value == LoadingState.FAILED){
+                        Toast.makeText(context,uiState.value.message,Toast.LENGTH_SHORT).show()
                     }
 
                 }
