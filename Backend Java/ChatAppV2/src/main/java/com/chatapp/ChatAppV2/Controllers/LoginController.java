@@ -32,13 +32,11 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody Users entity) {
-
-        String auth = userService.loginUser(entity);
-        if (auth.equalsIgnoreCase("bad")) {
-            return ResponseEntity.badRequest().body(new BackendResponse(false, "bad credentials"));
+        try {
+            String auth = userService.loginUser(entity);
+            return ResponseEntity.ok().body(new BackendResponse(true, auth));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
         }
-
-        return ResponseEntity.ok().body(new BackendResponse(true, auth));
     }
-
 }
