@@ -35,7 +35,7 @@ public class LoginController {
 
         String auth = userService.loginUser(entity);
         if (auth.equalsIgnoreCase("bad")) {
-            return ResponseEntity.badRequest().body("bad Credentials");
+            return ResponseEntity.badRequest().body(new BackendResponse(false,"bad credentials"));
         }
 
         return ResponseEntity.ok().body(new BackendResponse(true, auth));
