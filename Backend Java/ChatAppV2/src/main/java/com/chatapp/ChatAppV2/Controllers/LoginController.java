@@ -21,8 +21,13 @@ public class LoginController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody Users entity) {
-        userService.registerUser(entity);
-        return ResponseEntity.ok().body(new BackendResponse(true, "User Registered"));
+        try {
+            userService.registerUser(entity);
+            return ResponseEntity.ok().body(new BackendResponse(true, "User Registered"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
+        }
+
     }
 
     @PostMapping("/login")
