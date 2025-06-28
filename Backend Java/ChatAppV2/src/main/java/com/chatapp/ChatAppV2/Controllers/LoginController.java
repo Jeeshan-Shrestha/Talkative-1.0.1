@@ -25,7 +25,7 @@ public class LoginController {
             userService.registerUser(entity);
             return ResponseEntity.ok().body(new BackendResponse(true, "User Registered"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
+            return ResponseEntity.badRequest().body(new BackendResponse(false, "Username Already exists"));
         }
 
     }
@@ -35,7 +35,7 @@ public class LoginController {
 
         String auth = userService.loginUser(entity);
         if (auth.equalsIgnoreCase("bad")) {
-            return ResponseEntity.badRequest().body(new BackendResponse(false,"bad credentials"));
+            return ResponseEntity.badRequest().body(new BackendResponse(false, "bad credentials"));
         }
 
         return ResponseEntity.ok().body(new BackendResponse(true, auth));
