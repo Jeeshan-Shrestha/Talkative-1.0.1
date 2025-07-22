@@ -58,7 +58,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String content = node.get("content").asText();
         String receiver = node.has("receiver") ? node.get("receiver").asText() : null;
 
-        final ChatMessage chatMessage = new ChatMessage(username, content, MessageType.CHAT);
+        final ChatMessage chatMessage = new ChatMessage(username, content, MessageType.CHAT, receiver);
         String json = objectMapper.writeValueAsString(chatMessage);
 
         if (receiver != null){
@@ -79,7 +79,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
 
     private void broadcastSystemMessage(String content, MessageType type) throws IOException {
-        ChatMessage systemMessage = new ChatMessage("Server", content, type);
+        ChatMessage systemMessage = new ChatMessage("Server", content, type,null);
         String json = objectMapper.writeValueAsString(systemMessage);
             for (WebSocketSession wSession : sessions.values()) {
                 if (wSession.isOpen()) {
