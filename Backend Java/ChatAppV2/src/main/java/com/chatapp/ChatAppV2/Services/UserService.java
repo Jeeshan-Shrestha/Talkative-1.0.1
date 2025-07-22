@@ -27,13 +27,13 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public String loginUser(Users user) {
+    public String loginUser(Users user) throws Exception{
         Authentication authentication = authManager
                 .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         if (authentication.isAuthenticated()) {
             return "logged in";
         }
-        return "bad";
+        throw new Exception("Bad Credentials");
     }
 
 }
