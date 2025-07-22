@@ -90,7 +90,7 @@
             }
 
             // Connect to WebSocket with username as query param
-            const wsUrl = `ws://localhost:8081/ws?username=${encodeURIComponent(username)}`;
+            const wsUrl = `https://talkative-1-0-1-2.onrender.com/ws?username=${encodeURIComponent(username)}`;
 
             socket = new WebSocket(wsUrl);
 

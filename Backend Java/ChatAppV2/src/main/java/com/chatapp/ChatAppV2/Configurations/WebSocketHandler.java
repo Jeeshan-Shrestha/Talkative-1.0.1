@@ -1,6 +1,5 @@
 package com.chatapp.ChatAppV2.Configurations;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,19 +25,19 @@ public class WebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String username = (String) session.getAttributes().get("username");
         sessions.put(username, session);
-        if (username != null) {
-            broadcastSystemMessage(username + " joined the chat", MessageType.JOIN);
-            // System.out.println(username + " joined the chat");
-        }
+        // if (username != null) {
+        //     broadcastSystemMessage(username + " joined the chat", MessageType.JOIN);
+        //     // System.out.println(username + " joined the chat");
+        // }
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         String username = (String) session.getAttributes().get("username");
         sessions.remove(username);
-        if (username != null) {
-            broadcastSystemMessage(username + " has left the chat", MessageType.LEAVE);
-        }
+        // if (username != null) {
+        //     broadcastSystemMessage(username + " has left the chat", MessageType.LEAVE);
+        // }
     }
 
     // @Override
@@ -78,15 +77,15 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
     }
 
-    private void broadcastSystemMessage(String content, MessageType type) throws IOException {
-        ChatMessage systemMessage = new ChatMessage("Server", content, type,null);
-        String json = objectMapper.writeValueAsString(systemMessage);
-            for (WebSocketSession wSession : sessions.values()) {
-                if (wSession.isOpen()) {
-                    wSession.sendMessage(new TextMessage(json));
-                    // System.out.println(json);
-                }
-            }
-    }
+    // private void broadcastSystemMessage(String content, MessageType type) throws IOException {
+    //     ChatMessage systemMessage = new ChatMessage("Server", content, type,null);
+    //     String json = objectMapper.writeValueAsString(systemMessage);
+    //         for (WebSocketSession wSession : sessions.values()) {
+    //             if (wSession.isOpen()) {
+    //                 wSession.sendMessage(new TextMessage(json));
+    //                 // System.out.println(json);
+    //             }
+    //         }
+    // }
 
 }
