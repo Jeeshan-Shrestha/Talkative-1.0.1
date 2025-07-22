@@ -84,7 +84,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             for (WebSocketSession wSession : sessions.values()) {
                 if (wSession.isOpen()) {
                     wSession.sendMessage(new TextMessage(json));
-                    System.out.println(json);
+                    // System.out.println(json);
                 }
             }
     }

@@ -8,6 +8,6 @@ import lombok.Data;
 public class BackendResponse {
 
     private boolean success;
-    private String message;
+    private Object message;
 
 }

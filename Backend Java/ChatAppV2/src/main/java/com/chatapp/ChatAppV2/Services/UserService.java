@@ -1,13 +1,16 @@
 package com.chatapp.ChatAppV2.Services;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
+import com.chatapp.ChatAppV2.Models.UserDTO;
 import com.chatapp.ChatAppV2.Models.Users;
 import com.chatapp.ChatAppV2.Repository.UserRepostory;
 
@@ -34,6 +37,13 @@ public class UserService {
             return "logged in";
         }
         throw new Exception("Bad Credentials");
+    }
+
+    public List<UserDTO> getAllUsers(){
+        return userRepo.findAll()
+            .stream()
+            .map(user -> new UserDTO(user.getUsername()))
+            .collect(Collectors.toList());
     }
 
 }
