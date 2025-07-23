@@ -26,7 +26,6 @@ class  WebSocketManager{
     val status=_status.asStateFlow()
 
     fun connect(url:String){
-        Log.d("boka", "connect: $url")
         val request = Request.Builder().url(url)
             .build()
         webSocket= client.newWebSocket(request, socketListner)

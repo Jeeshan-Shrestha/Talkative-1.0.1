@@ -4,8 +4,10 @@ import com.example.talkative.model.loginRequest.LoginRequest
 import com.example.talkative.model.loginRequest.LoginResponse
 import com.example.talkative.model.registerRequest.RegisterRequest
 import com.example.talkative.model.registerRequest.RegisterResponse
+import com.example.talkative.model.selectuserResponse.SelectUserResponse
 import com.example.talkative.utils.Constants
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 import javax.inject.Singleton
 
@@ -21,5 +23,9 @@ interface Net {
     @POST(value=Constants.SignUp_EndPoint)
     suspend fun RegisterUser(
         @Body RegisterRequest:RegisterRequest):RegisterResponse
+
+    //SelectuserScreen
+    @GET(value = Constants.select_user)
+    suspend fun SelectUser():SelectUserResponse
 
 }
