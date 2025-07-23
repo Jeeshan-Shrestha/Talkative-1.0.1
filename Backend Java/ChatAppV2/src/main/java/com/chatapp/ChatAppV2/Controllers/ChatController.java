@@ -1,7 +1,6 @@
 package com.chatapp.ChatAppV2.Controllers;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +24,11 @@ public class ChatController {
     
     @GetMapping("/{sender}/{receiver}")
     public ResponseEntity<?> getMessage(@PathVariable String sender,@PathVariable String receiver) {
-        Map<String,List<ChatMessage>> chats = chatService.getMessageByUsername(sender,receiver);
+        try{
+        List<ChatMessage> chats = chatService.getMessageByUsername(sender,receiver);
         return ResponseEntity.ok().body(new BackendResponse(true, chats));
+        }catch (NullPointerException e){
+            return ResponseEntity.badRequest().body(new BackendResponse(false, "no messages found"));
+        }
     }
 }
