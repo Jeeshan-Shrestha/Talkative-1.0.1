@@ -1,6 +1,7 @@
 package com.chatapp.ChatAppV2.Models;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -27,5 +28,7 @@ public class Users {
     private String username;
 
     private String password;
+
+    private Map<String,List<ChatMessage>> chats;
 
 }
