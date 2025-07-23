@@ -1,6 +1,7 @@
 package com.example.talkative.repository
 
 import android.provider.ContactsContract.Data
+import android.util.Log
 import com.example.talkative.dataexception.DataOrException
 import com.example.talkative.model.registerRequest.RegisterRequest
 import com.example.talkative.model.registerRequest.RegisterResponse
@@ -23,6 +24,7 @@ class RegisterRepository @Inject constructor(private val network:Net) {
             }catch (parseException:Exception){
                 null
             }
+            Log.d("brawl1", "repository catch block ${e.message()} | parsedError: $parsedError")
 
             if(parsedError !=null){
                 DataOrException.Error(
@@ -33,6 +35,7 @@ class RegisterRepository @Inject constructor(private val network:Net) {
                 DataOrException.Error(message = e.message?: "Http error ${e.code()}")
             }
         }catch (e:Exception){
+            Log.d("brawl", "repository catch block ${e.message} ")
             DataOrException.Error(message = e.message.toString())
         }
     }

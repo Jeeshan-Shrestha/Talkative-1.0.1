@@ -16,6 +16,7 @@ class LoginRepository @Inject constructor(
 
             val response = network.LoginUser(LoginRequest(username=username, password = Password))
 
+
             Log.d("April", "loginUser:  $response")
 
             DataOrException.Success(data = response)
@@ -33,7 +34,7 @@ class LoginRepository @Inject constructor(
             catch (parseException: Exception) {
                 null
             }
-            Log.d("April", "repository catch block ${e.message()} | parsedError: $parsedError")
+            Log.d("boka", "repository catch block ${e.message()} | parsedError: $parsedError")
 
             // Return parsed error or fallback to the generic exception message
             if (parsedError != null) {
@@ -47,7 +48,7 @@ class LoginRepository @Inject constructor(
 
         } catch (e: Exception) {
             // Handle other exceptions
-            Log.d("april", "repository catch block ${e.message} ")
+            Log.d("boka", "repository catch block ${e.message} ")
             DataOrException.Error(message = e.message.toString())
         }
     }

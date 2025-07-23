@@ -124,7 +124,7 @@ fun AddUserNameScreen(navController:NavController,
                                 Username = name.value,
                                 Password = password.value){
                                 Log.d("April", "AddUserNameScreen:ktnu prny")
-                                navController.navigate(TalkativeScreen.HomeScreen.name+"/${name.value}")
+                                navController.navigate(TalkativeScreen.SelectuserScreen.name+"/${name.value}")
                             }
 
                         }
@@ -151,6 +151,7 @@ fun AddUserNameScreen(navController:NavController,
                   }
                     if(uiState.value == LoadingState.FAILED){
                         Toast.makeText(context,uiState.value.message,Toast.LENGTH_SHORT).show()
+                       // Toast.makeText(context,"Incorrect credential",Toast.LENGTH_SHORT).show()
                     }
 
                 }

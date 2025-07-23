@@ -1,6 +1,7 @@
 package com.example.talkative.Screens.homeScreen
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.talkative.Components.MessageBox
 import com.example.talkative.Components.SendField
 import com.example.talkative.Components.sansButton
@@ -42,13 +44,16 @@ import com.example.talkative.model.Message
 
 @Composable
 fun HomeScreen(viewModel: HomeScreenViewModel,
-               username:String?) {
+               myname:String?,
+               recipientUsername:String?,
+               navController: NavController) {
 
     Log.d("April", "HomeScreen: we are inside home screen ")
 
     val msg by viewModel.messages.collectAsState()
 
     val status by viewModel.status.collectAsState()
+
 
 //    var username2 by remember {
 //        mutableStateOf("")
@@ -70,12 +75,24 @@ fun HomeScreen(viewModel: HomeScreenViewModel,
         }
     }
 
-    //connecting the websocket when the Screen is opened
-   LaunchedEffect(Unit){
-       username?.let {
-           viewModel.ConnectAndObserve(username=username)
-       }
-   }
+    //    //connecting the websocket when the Screen is opened
+    LaunchedEffect(recipientUsername) {
+        myname?.let {
+            viewModel.ConnectAndObserve(it)
+            recipientUsername?.let { recipient ->
+                viewModel.switchRecipient(recipient)
+            }
+        }
+    }
+
+    //while navigating back
+    BackHandler {
+        viewModel.disconnect()
+        navController.popBackStack()
+    }
+
+
+
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -136,7 +153,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel,
                                             horizontalAlignment = Alignment.End,
                                             verticalArrangement = Arrangement.Center
                                         ){
-                                            Text(text = "${username}",
+                                            Text(text = "${myname}",
                                                 modifier = Modifier.padding(end = 5.dp),
                                                 color = Color.White.copy(alpha = 0.7f)
                                             )
@@ -172,7 +189,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel,
                                 keyboardController?.hide()
                             }
                         ){
-                            viewModel.SendMessages(message.value)
+                            viewModel.SendMessages(msg=message.value,recipientUsername=recipientUsername!!)
                             message.value=""
                         }
 //                        sansButton(text = "Send") {
