@@ -18,10 +18,10 @@ public class ChatService {
     @Autowired
     UserRepostory userRepo;
 
-    public Map<String,List<ChatMessage>> getMessageByUsername(String username){
-        Users userOnDb = userRepo.findByUsername(username);
+    public List<ChatMessage> getMessageByUsername(String sender,String receiver){
+        Users userOnDb = userRepo.findByUsername(sender);
         Map<String,List<ChatMessage>> userChats = userOnDb.getChats();
-        return userChats;
+        return userChats.get(receiver);
     }
 
     public ChatMessage saveMessage(String username, ChatMessage chat, String receiver) {

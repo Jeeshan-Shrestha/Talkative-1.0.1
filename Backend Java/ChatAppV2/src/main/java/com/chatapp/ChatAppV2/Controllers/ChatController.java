@@ -23,9 +23,9 @@ public class ChatController {
     @Autowired
     ChatService chatService;
     
-    @GetMapping("/{username}")
-    public ResponseEntity<?> getMessage(@PathVariable String username) {
-        Map<String,List<ChatMessage>> chats = chatService.getMessageByUsername(username);
+    @GetMapping("/{sender}/{receiver}")
+    public ResponseEntity<?> getMessage(@PathVariable String sender,@PathVariable String receiver) {
+        Map<String,List<ChatMessage>> chats = chatService.getMessageByUsername(sender,receiver);
         return ResponseEntity.ok().body(new BackendResponse(true, chats));
     }
 }
