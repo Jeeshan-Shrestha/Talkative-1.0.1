@@ -2,12 +2,13 @@ package com.chatapp.ChatAppV2.Models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-public class BackendResponse {
-
-    private boolean success;
-    private Object message;
+@NoArgsConstructor
+public class UserDTO {
+    
+    private String username;
 
 }

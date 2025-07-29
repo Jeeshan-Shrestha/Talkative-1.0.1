@@ -11,8 +11,10 @@ public class ChatMessage {
 
     private String sender;
 
-    private String message;
+    private String content;
 
     private MessageType type;
+
+    private String receiver;
 
 }
