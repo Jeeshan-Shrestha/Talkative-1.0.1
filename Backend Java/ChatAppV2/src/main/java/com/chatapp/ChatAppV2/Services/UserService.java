@@ -3,6 +3,7 @@ package com.chatapp.ChatAppV2.Services;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.chatapp.ChatAppV2.Jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,9 @@ public class UserService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     @Autowired
+    JwtUtils jwtUtils;
+
+    @Autowired
     UserRepostory userRepo;
 
     public Users registerUser(Users user) {
@@ -34,7 +38,7 @@ public class UserService {
         Authentication authentication = authManager
                 .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         if (authentication.isAuthenticated()) {
-            return "logged in";
+            return jwtUtils.generateToken(user.getUsername());
         }
         throw new Exception("Bad Credentials");
     }
