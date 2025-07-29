@@ -1,5 +1,7 @@
 package com.chatapp.ChatAppV2.Controllers;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chatapp.ChatAppV2.Models.BackendResponse;
@@ -31,10 +33,14 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody Users entity) {
+    public ResponseEntity<?> loginUser(@RequestBody Users entity, HttpServletResponse response) {
         try {
-            String auth = userService.loginUser(entity);
-            return ResponseEntity.ok().body(new BackendResponse(true, auth));
+            String token = userService.loginUser(entity);
+            response.setHeader("Set-Cookie",
+                    "token=" + token +
+                            "; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=" + (7 * 24 * 60 * 60));
+
+            return ResponseEntity.ok().body(new BackendResponse(true, "login successfull"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
         }
