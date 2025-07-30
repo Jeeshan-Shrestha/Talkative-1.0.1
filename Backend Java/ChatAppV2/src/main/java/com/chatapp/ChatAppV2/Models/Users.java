@@ -31,4 +31,10 @@ public class Users {
 
     private Map<String,List<ChatMessage>> chats;
 
+    private List<String> followers;
+
+    private List<String> following;
+
+    private List<Post> posts;
+
 }
