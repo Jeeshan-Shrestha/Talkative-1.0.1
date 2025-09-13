@@ -22,7 +22,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Autowired
     ChatService chatService;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    final private ObjectMapper objectMapper = new ObjectMapper();
 
     private Map<String, WebSocketSession> sessions = new ConcurrentHashMap();
 
