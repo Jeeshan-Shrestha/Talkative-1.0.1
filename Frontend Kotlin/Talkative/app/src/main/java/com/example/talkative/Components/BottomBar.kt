@@ -16,6 +16,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,7 +29,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.talkative.navigation.TalkativeScreen
 
 @Composable
-fun BottomBar(navController: NavController) {
+fun BottomBar(navController: NavController,
+              onPost: ()-> Unit={}) {
     val navigationItems = listOf(
         TalkativeScreen.HomeScreen,
         TalkativeScreen.SearchScreen,
@@ -39,6 +42,7 @@ fun BottomBar(navController: NavController) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry.value?.destination?.route
 
+
     NavigationBar(
         modifier = Modifier.height(60.dp),
         tonalElevation = 10.dp
@@ -46,14 +50,18 @@ fun BottomBar(navController: NavController) {
         navigationItems.forEach { screen ->
             NavigationBarItem(
                 selected = currentDestination == screen.name,
-                onClick = {
+                onClick = { if(screen == TalkativeScreen.PostScreen){
+                            onPost.invoke()
+                        }else {
+                            //now we navigate so that app don't crash , we created PostScreen enum only for icon
                     navController.navigate(screen.name) {
-                        // Prevent building up back stack with multiple copies
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
+                            // Prevent building up back stack with multiple copies
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
                 },
                 icon = {

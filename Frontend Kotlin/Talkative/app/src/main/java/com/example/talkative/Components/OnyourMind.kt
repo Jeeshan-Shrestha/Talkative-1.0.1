@@ -1,19 +1,27 @@
 package com.example.talkative.components
 
+import android.Manifest
+import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.EmojiEmotions
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material3.Card
@@ -50,6 +58,44 @@ fun OnyourMind(){
 
     val pathEffect =androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(10f,10f),0f)
 
+    //handling images selected From gallery
+    var selectedImage = rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+
+    //context for toast
+    val context = LocalContext.current
+
+
+    // Permission to request based on Android version
+    val requiredPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        Manifest.permission.READ_MEDIA_IMAGES
+    } else {
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    }
+
+    // Gallery launcher
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            selectedImage.value = it.toString()
+        }
+    }
+
+    // Permission launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            // If granted, launch gallery
+            galleryLauncher.launch("image/*")
+        } else {
+            Toast.makeText(context, "Please enable permission first", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
     Card(modifier = Modifier
         .padding(start = 16.dp, end =8.dp)
         .fillMaxWidth()) {
@@ -85,6 +131,42 @@ fun OnyourMind(){
                         shape = RoundedCornerShape(12.dp)
                     )
 
+                    //selected Image to Preview
+                    selectedImage.value?.let { imageUrl->
+                        Card(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Box {
+
+                                AsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(imageUrl)
+                                        .crossfade(true)
+                                        .build(),
+                                    placeholder = painterResource(R.drawable.placeholder),
+                                    contentDescription = "userimage",
+                                    contentScale = ContentScale.FillBounds,
+                                    modifier = Modifier
+                                        .heightIn(max=400.dp)
+                                        .fillMaxWidth()
+                                )
+
+                                IconButton(
+                                    onClick = { selectedImage.value = null },
+                                    modifier = Modifier.align(Alignment.TopEnd)
+                                ) {
+                                    Icon(
+                                        painter =painterResource(R.drawable.closeicon),
+                                        tint = Color.Unspecified,
+                                        contentDescription = "Remove image",
+                                        modifier = Modifier.size(25.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    //Dotted Line
                     DrawComposable(pathEffect)
 
 
@@ -95,7 +177,8 @@ fun OnyourMind(){
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            modifier = Modifier.clickable { /* Handle photo click */ }
+                            modifier = Modifier.clickable { /* Handle photo click */
+                            permissionLauncher.launch(requiredPermission)}
                         ) {
                             Icon(
                                 modifier = Modifier.size(30.dp),
