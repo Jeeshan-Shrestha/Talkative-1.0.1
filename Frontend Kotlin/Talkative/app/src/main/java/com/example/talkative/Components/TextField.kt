@@ -1,81 +1,102 @@
-package com.example.talkative.Components
-
+package com.example.talkative.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EnhancedEncryption
+import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.talkative.R
+
+@Composable
+fun EmailField(
+    email: MutableState<String>,
+    labelid:String,
+    imeAction: ImeAction = ImeAction.Default,
+    onAction: KeyboardActions =KeyboardActions.Default,
+    maxlines:Int=1,
+    keyboardtype: KeyboardType = KeyboardType.Unspecified,
+    isSingleLine:Boolean
+){
+    TextField(
+        value = email.value,
+        onValueChange = { email.value = it },
+        label = { Text(text = labelid) },
+        modifier = Modifier.fillMaxWidth(),
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = Color(0xFFF5F4F4),
+            focusedContainerColor = Color(0xFFF5F4F4)
+        ),
+        singleLine = isSingleLine,
+        keyboardActions =onAction,
+        maxLines = maxlines,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardtype, imeAction = imeAction)
+    )
+}
 
 
 @Composable
-fun SendField(
-    modifier: Modifier,
-    placeHolder:String,
-    valueState: MutableState<String>,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    imeAction: ImeAction = ImeAction.Default,
-    onAction: KeyboardActions = KeyboardActions.Default,
-    maxLines:Int=5,
-    enableButton:Boolean = true,
-    onClick : () -> Unit
+fun PasswordField(
+    passwordState:MutableState<String>,
+    labelid:String,
+    imeAction: ImeAction= ImeAction.Done,
+    onAction:KeyboardActions=KeyboardActions.Default,
+    passwordvisibility:MutableState<Boolean>,
+    maxlines:Int=1,
+    keyboardtype: KeyboardType = KeyboardType.Unspecified
+
 ){
 
-    val backgroundColor= Color(0xFF304050)
-    OutlinedTextField(
+    val visualTransformation = if(passwordvisibility.value) VisualTransformation.None
+    else
+        PasswordVisualTransformation()
+
+    TextField(
+        value = passwordState.value,
+        onValueChange = { passwordState.value = it },
+        label = { Text(text = labelid) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White), // Set the background color to white
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
-            disabledContainerColor = Color.Transparent,
-            cursorColor = Color.White,  // Cursor color
-            focusedIndicatorColor = Color.Transparent,  // No border when focused
-            unfocusedIndicatorColor = Color.Transparent,  // No border when not focused
-            disabledIndicatorColor = Color.Transparent
+            unfocusedContainerColor = Color(0xFFF5F4F4),
+            focusedContainerColor = Color(0xFFF5F4F4)
         ),
-        modifier = modifier
-            .background(backgroundColor, RoundedCornerShape(15.dp)),
-        placeholder = {
-            Text(
-                text = placeHolder,
-                style = TextStyle(fontSize = 17.sp, color = Color(0xFFB0B0B0))
-            )
-        },
-        value=valueState.value,
-        onValueChange = {valueState.value=it},
-        maxLines = maxLines,
-        singleLine = false,
-        textStyle = TextStyle(fontSize = 15.sp,
-            color =Color.White),
-        enabled = true,
-        shape = RoundedCornerShape(15.dp),
-        keyboardOptions = KeyboardOptions(
-            keyboardType=keyboardType,
-            imeAction = imeAction
-        ),
-        keyboardActions = onAction,
         trailingIcon = {
-            if(enableButton) {
-                sansButton(text = "hehe") {
-                    onClick.invoke()
+
+            if(passwordvisibility.value){
+                IconButton(onClick ={passwordvisibility.value= !passwordvisibility.value} ) {
+                    Icon(imageVector = Icons.Default.RemoveRedEye, contentDescription = "icon")
                 }
             }
-        }
+            else{
+                IconButton(onClick = {passwordvisibility.value =!passwordvisibility.value}) {
+                    Icon(imageVector = Icons.Default.EnhancedEncryption, contentDescription = "icon")
+                }
+            }
+        },
+        maxLines = maxlines,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardtype, imeAction = imeAction),
+        visualTransformation = visualTransformation,
+        keyboardActions = onAction,
+        singleLine = true
     )
 }
+
