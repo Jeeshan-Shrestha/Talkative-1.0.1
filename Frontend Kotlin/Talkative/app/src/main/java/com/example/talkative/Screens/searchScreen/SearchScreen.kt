@@ -20,6 +20,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.talkative.components.BottomBar
+import com.example.talkative.components.CreatePostDialouge
 import com.example.talkative.components.TopBar
 import com.example.talkative.components.UserCard
 import com.example.talkative.model.MockData
@@ -39,6 +41,8 @@ import com.example.talkative.model.MockData
 
 @Composable
 fun SearchScreen(navController: NavController= NavController(LocalContext.current)){
+
+    val showPostDialouge = remember { mutableStateOf(false) }
 
     val searchQuery = rememberSaveable {
         mutableStateOf("")
@@ -49,7 +53,9 @@ fun SearchScreen(navController: NavController= NavController(LocalContext.curren
             TopBar()
         },
         bottomBar = {
-            BottomBar(navController=navController)
+            BottomBar(navController=navController){
+                showPostDialouge.value=true
+            }
         }
     ) {it->
         Surface(modifier = Modifier
@@ -74,6 +80,16 @@ fun SearchScreen(navController: NavController= NavController(LocalContext.curren
                 //Suggested People
                 PeopleContent()
 
+            }
+
+            if(showPostDialouge.value){
+                CreatePostDialouge(onDismiss = {
+                    showPostDialouge.value=false
+                },
+                    onPost = {
+                        //we will handle post logic here
+                        showPostDialouge.value=false
+                    })
             }
 
         }
