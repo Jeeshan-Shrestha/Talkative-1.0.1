@@ -1,8 +1,12 @@
 package com.example.talkative.navigation
 
 enum class TalkativeScreen {
-    AdduserName,
-    signUpUser,
+    LoginScreen,
+    SignUpScreen,
     HomeScreen,
-    SelectuserScreen
+    SearchScreen,
+    PostScreen,
+    ProfileScreen,
+    ChatPeopleScreen,
+    ChatScreen
 }
