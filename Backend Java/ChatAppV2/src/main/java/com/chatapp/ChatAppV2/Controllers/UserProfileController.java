@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chatapp.ChatAppV2.Exceptions.AlreadyFollowedException;
@@ -42,14 +43,12 @@ public class UserProfileController {
         }
     }
 
-    @GetMapping("/follow/{followedBy}/{followedTo}")
-    public ResponseEntity<?> followSomeone(@PathVariable String followedBy, @PathVariable String followedTo){
+    @GetMapping("/follow")
+    public ResponseEntity<?> followSomeone(@RequestParam String followedBy, @RequestParam String followedTo){
         try{
             String followedMsg = userProfileService.follow(followedBy, followedTo);
             return ResponseEntity.ok().body(new BackendResponse(true,followedMsg));
-        }catch(AlreadyFollowedException e){
-            return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
-        }catch(SelfFollowException e){
+        } catch(AlreadyFollowedException | SelfFollowException e){
             return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
         } 
         catch (Exception e) {

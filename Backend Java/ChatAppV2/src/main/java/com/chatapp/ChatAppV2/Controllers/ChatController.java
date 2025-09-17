@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chatapp.ChatAppV2.Models.BackendResponse;
@@ -22,11 +22,11 @@ public class ChatController {
     @Autowired
     ChatService chatService;
     
-    @GetMapping("/{sender}/{receiver}")
-    public ResponseEntity<?> getMessage(@PathVariable String sender,@PathVariable String receiver) {
+    @GetMapping
+    public ResponseEntity<?> getMessage(@RequestParam String receiver) {
         try{
-        List<ChatMessage> chats = chatService.getMessageByUsername(sender,receiver);
-        return ResponseEntity.ok().body(new BackendResponse(true, chats));
+            List<ChatMessage> chats = chatService.getMessageByUsername(receiver);
+            return ResponseEntity.ok().body(new BackendResponse(true, chats));
         }catch (NullPointerException e){
             return ResponseEntity.badRequest().body(new BackendResponse(false, "no messages found"));
         }
