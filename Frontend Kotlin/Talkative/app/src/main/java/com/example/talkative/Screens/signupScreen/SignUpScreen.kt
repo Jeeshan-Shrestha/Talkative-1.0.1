@@ -1,31 +1,28 @@
-package com.example.talkative.Screens.signupScreen
-
-import android.util.Log
+package com.example.talkative.screens.SignupScreen
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -33,157 +30,186 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.talkative.Components.SendField
 import com.example.talkative.R
-import com.example.talkative.loadingState.LoadingState
+import com.example.talkative.components.EmailField
+import com.example.talkative.components.PasswordField
+import com.example.talkative.components.sansButton
 import com.example.talkative.navigation.TalkativeScreen
-import kotlin.math.sign
 
 
 @Composable
-fun SignUpScreen(NavController: NavController = NavController(LocalContext.current),
-                 signUpViewModel: SignUpViewModel){
-    //for loading animation  to be implemented in future
-    val uiState =  signUpViewModel.state.collectAsState()
+fun SignupScreen(navController: NavController= NavController(LocalContext.current)){
 
-    val name = remember {
+    //state for managing text in the field
+    val email = rememberSaveable {
         mutableStateOf("")
     }
 
-    val password1 = remember {
-        mutableStateOf("")
-    }
-    
-    val password2 = remember {
+    val password = rememberSaveable{
         mutableStateOf("")
     }
 
-
-    val valid = remember(name.value,password1.value,password2.value){
-        name.value.trim().isNotEmpty() && password1.value.trim().isNotEmpty() && password2.value.trim().isNotEmpty()
+    //to show password
+    val passwordVisibility = rememberSaveable {
+        mutableStateOf(false)
     }
 
-    val CheckPassword = remember(password1.value , password2.value){
-        password1.value == password2.value
+    //state for username
+    val username = rememberSaveable {
+        mutableStateOf("")
     }
 
+    val valid = remember (email.value,password.value,username.value) {
+        email.value.trim().isNotEmpty() && password.value.trim().isNotEmpty() && username.value.trim().isNotEmpty() //if its empty it will written false
+    }
 
+    val keyboardController = LocalSoftwareKeyboardController.current //we can hide keyboard
 
+    //to Display toast message
     val context = LocalContext.current
 
-    val keyboardController = LocalSoftwareKeyboardController.current
-    Scaffold {
-        Box{
-            Image(
-                painter = painterResource(R.drawable.katnuprny),
-                modifier = Modifier.fillMaxSize(),
-                contentDescription = "Background Image",
-                contentScale = ContentScale.FillBounds
-            )
-            Surface(
-                modifier = Modifier
-                    .padding(it)
-                    .fillMaxSize(),
-                color = Color.Transparent){
-                Column(modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(10.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
 
-                    ) {
-                    Text(text = "SignUp To Use Talkative",
-                        fontWeight = FontWeight.ExtraBold,
-                        modifier = Modifier.padding(15.dp),
-                        color = Color.White,
-                        style = TextStyle(
-                            fontSize = 30.sp)
+    Scaffold {it->
+        Surface(modifier = Modifier
+            .padding(it)
+            .fillMaxSize()) {
+            Column(modifier = Modifier
+                .padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center) {
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(bottom = 30.dp)) {
+
+//                    Text("Talkative",
+//                        style = TextStyle(fontSize = 50.sp),
+//                        fontWeight = FontWeight.Bold,
+//                        color = Color.Black)
+                    Icon(painter = painterResource(R.drawable.talk),
+                        contentDescription = "Talkative")
+
+                    Text(
+                        text = "Connect with friends and share your moments",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(10.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(30.dp))
 
-                    SendField(
-                        modifier = Modifier,
-                        maxLines = 1,
-                        placeHolder = "Username",
-                        valueState = name,
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next,
-                        enableButton = false){
-                        //nothing
-                    }
+                    //making Card View
+                    Card(modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)) {
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                        Column(modifier = Modifier.padding(24.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-                    SendField(
-                        modifier = Modifier,
-                        maxLines = 1,
-                        placeHolder = "New Password",
-                        valueState = password1,
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next,
-                        enableButton = false){
-                        //nothing
-                    }
+                            Text(
+                                text ="Create an Account",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.headlineSmall
+                            )
+                            Text(
+                                text = "Sign up to join our community",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(bottom = 10.dp)
+                            )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                            Text(
+                                text = "UserName",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Black
+                            )
+                            //TextField
+                            EmailField(
+                                email = username,
+                                labelid = "Enter your username",
+                                imeAction = ImeAction.Next,
+                                keyboardtype = KeyboardType.Email,
+                                isSingleLine = true
+                            )
 
-                    SendField(
-                        modifier = Modifier,
-                        maxLines = 1,
-                        placeHolder="Confirm Password",
-                        valueState = password2,
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done,
-                        onAction = KeyboardActions {
-                            if(!valid)
-                                return@KeyboardActions
-                            keyboardController?.hide()
-                        }) {
-                        if(!valid){
-                            Toast.makeText(context, "Enter The Missing Fields", Toast.LENGTH_SHORT).show()
-                        }
-                        else if (!CheckPassword){
-                            Toast.makeText(context,"New Password and Confirm Password should be same",Toast.LENGTH_SHORT).show()
-                        }
-                        else{
-                            Log.d("hehe", "AddUserNameScreen: ${name.value}")
-                            signUpViewModel.registerUser(
-                                Username =name.value.trim(),
-                                Password = password2.value.trim()){
-                                NavController.navigate(TalkativeScreen.AdduserName.name)
+                            Text(
+                                text = "Email",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Black
+                            )
+                            //TextField
+                            EmailField(
+                                email = email,
+                                labelid = "Enter your email",
+                                imeAction = ImeAction.Next,
+                                keyboardtype = KeyboardType.Email,
+                                isSingleLine = true
+                            )
+
+
+
+                            Text(
+                                text = "Password",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Black
+                            )
+                            PasswordField(
+                                passwordState = password,
+                                labelid = "Enter your Password",
+                                imeAction = ImeAction.Done,
+                                onAction = KeyboardActions {
+                                    if(!valid) { //checking whether the inputs are not empty
+                                        return@KeyboardActions
+                                    }
+                                    //use lamda to send data
+                                    keyboardController?.hide()
+                                },
+                                passwordvisibility = passwordVisibility,
+                                maxlines = 1,
+                                keyboardtype = KeyboardType.Password
+                            )
+
+                            sansButton(text = "Create Account",
+                                color = Color.Black,
+                                icon = false,
+                                modifier = Modifier.fillMaxWidth()) {
+                                //on click we move to next screen
+                                if(!valid){
+                                    Toast.makeText(context, "Enter all the Fields", Toast.LENGTH_SHORT).show()
+                                }else{
+                                    //account is created move to login screen
+                                }
+
+                            }
+                            TextButton (
+                                onClick = {
+                                    //lets navigate to loginScreen
+                                    navController.navigate(TalkativeScreen.LoginScreen.name)
+                                },
+                                modifier = Modifier.fillMaxWidth()) {
+                                Text(text = "Already Have an Account? Signin",
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
 
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Row(modifier = Modifier.padding(10.dp)) {
-                        Text(
-                            modifier = Modifier.padding(start =5.dp),
-                            text = "Already Have an Account?",
-                            color = Color.White.copy(alpha = 0.8f)
-                        )
-                        Text(
-                            modifier = Modifier
-                                .padding(start =5.dp)
-                                .clickable {
-                                    NavController.navigate(TalkativeScreen.AdduserName.name)
-                                },
-                            text = "Sign In",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White.copy(alpha = 0.8f)
-                        )
-                    }
-
-                    if(uiState.value == LoadingState.FAILED){
-                        Toast.makeText(context,uiState.value.message,Toast.LENGTH_SHORT).show()
-                    }
+                    Text(
+                        text = "By continuing, you agree to our Terms of Service and Privacy Policy",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 32.dp)
+                    )
 
                 }
 

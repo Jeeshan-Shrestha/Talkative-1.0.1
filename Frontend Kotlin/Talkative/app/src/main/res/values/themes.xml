@@ -2,4 +2,5 @@
 <resources>
 
     <style name="Theme.Talkative" parent="android:Theme.Material.Light.NoActionBar" />
+
 </resources>

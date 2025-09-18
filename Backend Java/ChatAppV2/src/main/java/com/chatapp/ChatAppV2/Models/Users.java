@@ -1,5 +1,6 @@
 package com.chatapp.ChatAppV2.Models;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +31,9 @@ public class Users {
 
     private String password;
 
+    @Indexed(unique=true)
+    private String email;
+
     private Map<String,List<ChatMessage>> chats;
 
     private Set<String> followers;
@@ -41,5 +45,7 @@ public class Users {
     private Integer followingCount;
 
     private List<Post> posts;
+
+    private LocalDate date;
 
 }

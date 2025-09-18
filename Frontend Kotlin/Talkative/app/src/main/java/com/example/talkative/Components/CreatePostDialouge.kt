@@ -1,0 +1,287 @@
+package com.example.talkative.components
+
+import android.Manifest
+import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Photo
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
+import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.example.talkative.R
+import com.example.talkative.model.MockData
+
+
+@Composable
+fun CreatePostDialouge(
+    onDismiss: () -> Unit ={},
+    onPost : () -> Unit ={}){
+
+    //context for toast
+    val context = LocalContext.current
+
+    val content = rememberSaveable {
+        mutableStateOf("")
+    }
+
+    val characterlimit= 260
+    val charactersRemaining = characterlimit - content.value.length
+
+    //handle Post
+    val handlePost = {
+        if(content.value.isNotBlank()){
+            onPost.invoke()
+        }
+    }
+
+    //handling images selected From gallery
+    var selectedImage = rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+
+    //for drawing dotted line
+    val pathEffect =androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(10f,10f),0f)
+
+
+    // Permission to request based on Android version
+    val requiredPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        Manifest.permission.READ_MEDIA_IMAGES
+    } else {
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    }
+
+    // Gallery launcher
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            selectedImage.value = it.toString()
+        }
+    }
+
+    // Permission launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            // If granted, launch gallery
+            galleryLauncher.launch("image/*")
+        } else {
+            Toast.makeText(context, "Please enable permission first", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
+    Dialog(onDismissRequest = {onDismiss()}) {
+
+        Card(modifier = Modifier
+            .heightIn(max=600.dp, min = 300.dp)
+            .verticalScroll(rememberScrollState())
+            .fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 9.dp)) {
+
+            Column(modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)){
+
+
+                //Header
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Absolute.SpaceBetween){
+
+                    Text(text = "Create Post",
+                        fontWeight = FontWeight.Medium,
+                        style = MaterialTheme.typography.headlineSmall)
+
+                    IconButton(onClick = {onDismiss() }) {
+                        Icon(imageVector = Icons.Default.Close,
+                            contentDescription = "Close Dialouge")
+                    }
+                }
+
+                //user Info
+                Row(modifier = Modifier
+                    .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(13.dp),
+                    verticalAlignment = Alignment.CenterVertically){
+
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data("https://i.imgur.com/WTFTkMh.jpeg")
+                            .crossfade(true)
+                            .build(),
+                        placeholder = painterResource(R.drawable.placeholder),
+                        contentDescription = "userimage",
+                        contentScale = ContentScale.FillBounds,
+                        modifier = Modifier
+                            .size(45.dp)
+                            .clip(CircleShape)
+                    )
+
+                    Column{
+                        Text(
+                            text = MockData.mockUser.name,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            text = "@${MockData.mockUser.username}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                    }
+                }
+
+                //Post content
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+
+                    OutlinedTextField(
+                        value = content.value,
+                        onValueChange = { if(it.length <= characterlimit) content.value=it  },
+                        placeholder = {Text("What's Happening dear?")},
+                        modifier = Modifier
+                            .heightIn(min = 120.dp)
+                            .fillMaxWidth(),
+                        maxLines = 5,
+                        shape = RoundedCornerShape(12.dp))
+
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End){
+
+                        //Chip box
+                        AssistChip(
+                            onClick = {},
+                            label = {
+                                Text(text =charactersRemaining.toString())
+                            },
+                                    colors = AssistChipDefaults.assistChipColors(
+                                        containerColor = if (charactersRemaining <20) MaterialTheme.colorScheme.errorContainer
+                                        else MaterialTheme.colorScheme.secondaryContainer))
+
+                    }
+                    //selected Image to Preview
+                    selectedImage.value?.let { imageUrl->
+                        Card(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Box {
+
+                                AsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(imageUrl)
+                                        .crossfade(true)
+                                        .build(),
+                                    placeholder = painterResource(R.drawable.placeholder),
+                                    contentDescription = "userimage",
+                                    contentScale = ContentScale.FillBounds,
+                                    modifier = Modifier
+                                        .heightIn(max=400.dp)
+                                        .fillMaxWidth()
+                                )
+
+                                IconButton(
+                                    onClick = { selectedImage.value = null },
+                                    modifier = Modifier.align(Alignment.TopEnd)
+                                ) {
+                                    Icon(
+                                      painter = painterResource(R.drawable.closeicon),
+                                        contentDescription = "Remove image",
+                                        modifier = Modifier.size(25.dp),
+                                        tint = Color.Unspecified
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    DrawComposable(pathEffect)
+                }
+
+
+                //for adding and posting photo
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically) {
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.clickable { /* Handle photo click */
+                            permissionLauncher.launch(requiredPermission)
+                        }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(35.dp),
+                            imageVector = Icons.Default.Photo,
+                            contentDescription = "Add Photo"
+                        )
+                        Text(
+                            text = "Add Photo",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    sansButton(text = "Post",
+                        color = Color.Black,
+                        icon = false
+                    ) {
+                        //Handle Post
+                        handlePost.invoke()
+                    }
+                }
+
+
+
+
+            }
+
+
+        }
+
+    }
+
+}
