@@ -129,7 +129,7 @@ fun LoginScreen(navController: NavController= NavController(LocalContext.current
                             //TextField
                             EmailField(
                                 email = email,
-                                labelid = "Enter your email",
+                                labelid = "Enter your email or Username",
                                 imeAction = ImeAction.Next,
                                 keyboardtype = KeyboardType.Email,
                                 isSingleLine = true

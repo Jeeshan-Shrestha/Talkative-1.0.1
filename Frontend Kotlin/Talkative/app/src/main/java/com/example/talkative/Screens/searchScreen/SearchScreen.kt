@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -25,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -47,6 +49,14 @@ fun SearchScreen(navController: NavController= NavController(LocalContext.curren
     val searchQuery = rememberSaveable {
         mutableStateOf("")
     }
+
+    //making sure something is written before user hits search
+    val valid = remember(searchQuery.value) {
+        searchQuery.value.trim().isNotEmpty()  //kei na kei lekhya xa vane true hunxa
+    }
+
+    //now to hide the keyboard
+   val  keyboardcontroller= LocalSoftwareKeyboardController.current
 
     Scaffold(
         topBar = {
@@ -75,6 +85,12 @@ fun SearchScreen(navController: NavController= NavController(LocalContext.curren
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Unspecified, imeAction = ImeAction.Search),
                     shape = RoundedCornerShape(12.dp),
+                    keyboardActions = KeyboardActions{
+                        if(!valid)
+                            return@KeyboardActions
+                        keyboardcontroller?.hide()
+
+                    },
                     maxLines = 1)
 
                 //Suggested People

@@ -62,6 +62,7 @@ fun UserCard(
         .clickable{
             //we will navigate to user Profile when Clicked
         },
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border =BorderStroke(2.dp, Color.LightGray),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)){
 

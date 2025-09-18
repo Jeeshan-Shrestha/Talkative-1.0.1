@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.talkative.Talkative
 import com.example.talkative.screens.HomeScreen.HomeScreen
 import com.example.talkative.screens.LoginScreen.LoginScreen
+import com.example.talkative.screens.ProfileScreen.ProfileScreen
 import com.example.talkative.screens.SignupScreen.SignupScreen
 import com.example.talkative.screens.searchScreen.SearchScreen
 
@@ -35,7 +36,7 @@ fun TalkativeNavigation(){
 
         //ProfileScreen
         composable(route= TalkativeScreen.ProfileScreen.name) {
-
+            ProfileScreen(navController=navController)
         }
 
     }
