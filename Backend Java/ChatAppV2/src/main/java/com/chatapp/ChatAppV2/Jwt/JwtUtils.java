@@ -8,11 +8,8 @@ import javax.crypto.SecretKey;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-<<<<<<< HEAD
 import com.chatapp.ChatAppV2.Services.MyUserDetails;
 
-=======
->>>>>>> d2045932f85a820b125c60c0124a02c5dc33b733
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

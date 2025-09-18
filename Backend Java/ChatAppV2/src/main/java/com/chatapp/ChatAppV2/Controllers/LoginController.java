@@ -38,11 +38,7 @@ public class LoginController {
             String token = userService.loginUser(entity);
             response.setHeader("Set-Cookie",
                     "token=" + token +
-<<<<<<< HEAD
                             "; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=" + (365 * 24 * 60 * 60));
-=======
-                            "; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=" + (7 * 24 * 60 * 60));
->>>>>>> d2045932f85a820b125c60c0124a02c5dc33b733
 
             return ResponseEntity.ok().body(new BackendResponse(true, token));
         } catch (Exception e) {
