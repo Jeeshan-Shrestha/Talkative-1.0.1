@@ -1,6 +1,7 @@
 package com.example.talkative.components
 
 import android.Manifest
+import android.net.Uri
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -76,9 +77,7 @@ fun CreatePostDialouge(
     }
 
     //handling images selected From gallery
-    var selectedImage = rememberSaveable {
-        mutableStateOf<String?>(null)
-    }
+    val selectedImage = rememberSaveable { mutableStateOf<Uri?>(null) }
 
     //for drawing dotted line
     val pathEffect =androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(10f,10f),0f)
@@ -96,7 +95,7 @@ fun CreatePostDialouge(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
-            selectedImage.value = it.toString()
+            selectedImage.value = it
         }
     }
 

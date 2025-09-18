@@ -11,11 +11,9 @@ data class User(
     val posts: Int,
     val isFollowing: Boolean = false,
     val isVerified: Boolean = false,
-    val location: String? = null,
     val website: String? = null,
     val joinDate: String? = null,
-    val coverImage: String? = null,
-    val category: String? = null
+    val coverImage: String? = null
 )
 
 data class Post(
@@ -60,7 +58,6 @@ object MockData {
             posts = 456,
             isVerified = true,
             bio = "UI/UX Designer at Google. Passionate about creating beautiful, accessible interfaces.",
-            category = "design"
         ),
         User(
             id = "2",
@@ -72,7 +69,6 @@ object MockData {
             posts = 234,
             isVerified = true,
             bio = "Senior Software Engineer & Tech Lead. Building scalable systems.",
-            category = "tech"
         ),
         User(
             id = "3",
@@ -83,7 +79,6 @@ object MockData {
             following = 567,
             posts = 189,
             bio = "Content Creator & Digital Marketing Strategist.",
-            category = "creators"
         )
     )
 

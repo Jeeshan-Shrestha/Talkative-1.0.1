@@ -17,6 +17,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -37,13 +38,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.talkative.R
 import com.example.talkative.components.EmailField
+import com.example.talkative.components.LoadingDialog
 import com.example.talkative.components.PasswordField
 import com.example.talkative.components.sansButton
 import com.example.talkative.navigation.TalkativeScreen
+import com.example.talkative.utils.LoadingState
 
 
 @Composable
-fun SignupScreen(navController: NavController= NavController(LocalContext.current)){
+fun SignupScreen(navController: NavController= NavController(LocalContext.current)
+                 ,SignupViewmodel: SignUpViewmodel){
 
     //state for managing text in the field
     val email = rememberSaveable {
@@ -72,6 +76,9 @@ fun SignupScreen(navController: NavController= NavController(LocalContext.curren
 
     //to Display toast message
     val context = LocalContext.current
+
+    //From view model to display toast message
+    val uiState= SignupViewmodel.state.collectAsState()
 
 
     Scaffold {it->
@@ -184,7 +191,10 @@ fun SignupScreen(navController: NavController= NavController(LocalContext.curren
                                 if(!valid){
                                     Toast.makeText(context, "Enter all the Fields", Toast.LENGTH_SHORT).show()
                                 }else{
-                                    //account is created move to login screen
+                                    SignupViewmodel.SignupUser(email=email.value, username =username.value, password = password.value ){
+                                        navController.navigate(TalkativeScreen.LoginScreen.name)
+                                        Toast.makeText(context, "Account Created 😜", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
 
                             }
@@ -210,6 +220,13 @@ fun SignupScreen(navController: NavController= NavController(LocalContext.curren
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(top = 32.dp)
                     )
+
+                    if(uiState.value== LoadingState.FAILED){
+                        Toast.makeText(context, uiState.value.message, Toast.LENGTH_SHORT).show()
+                    }
+                    if(uiState.value== LoadingState.LOADING){
+                        LoadingDialog()
+                    }
 
                 }
 

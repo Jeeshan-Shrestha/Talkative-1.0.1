@@ -2,23 +2,19 @@ package com.example.talkative.repository
 
 import android.util.Log
 import com.example.talkative.DataorException.DataorException
-import com.example.talkative.cookieManager.AppCookieJar
 import com.example.talkative.model.LoginRequest.LoginRequest
 import com.example.talkative.model.LoginResponse.LoginResponse
+import com.example.talkative.model.SignupResponse.SignupResponse
+import com.example.talkative.model.signupRequest.SignupRequest
 import com.example.talkative.network.network
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import javax.inject.Inject
 
-class LoginRepository @Inject constructor(
-    private  val network: network,
-    private val cookieJar: AppCookieJar) {
-
-    suspend fun  loginUser(email:String,password:String): DataorException<LoginResponse>{
+class SignupRepository @Inject constructor(private val network: network) {
+    suspend fun  SignupUser(email:String,username:String,password:String): DataorException<SignupResponse>{
 
         return try {
             DataorException.Loading(data = true)
-            Log.d("akriti", "${email}  ${password}")
-            val response = network.LoginUser(LoginRequest(usernameOrGmail = email, password = password))
+            val response = network.SignupUser(SignupRequest(gmail = email,username=username, password = password))
             DataorException.Success(data = response)
         } catch (e: retrofit2.HttpException) {
             // Handle HTTP error responses and parse the error body
@@ -33,7 +29,7 @@ class LoginRepository @Inject constructor(
             catch (parseException: Exception) {
                 null
             }
-            Log.d("april", "repository catch block ${e.message()} | parsedError: $parsedError")
+            //Log.d("april", "repository catch block ${e.message()} | parsedError: $parsedError")
 
             // Return parsed error or fallback to the generic exception message
             if (parsedError != null) {
@@ -44,22 +40,8 @@ class LoginRepository @Inject constructor(
 
         } catch (e: Exception) {
             // Handle other exceptions
-            Log.d("april", "repository catch block ${e.message} ")
+           // Log.d("april", "repository catch block ${e.message} ")
             DataorException.Error(message = e.message.toString())
         }
-    }
-
-    //for coookeis
-    fun logoutTeacher() {
-        cookieJar.clearCookies()
-    }
-
-    fun getStoredCookies(domain:String):List<String>{
-        val url = "https://$domain".toHttpUrl() // val url = HttpUrl.get("https://$domain")
-        //val url = "https://sangyog-cc.vercel.app".toHttpUrl()
-
-        Log.d("boka", "getStoredCookies: ${cookieJar.loadForRequest(url).map { it.toString() }}")
-
-        return cookieJar.loadForRequest(url).map { it.toString() }
     }
 }
