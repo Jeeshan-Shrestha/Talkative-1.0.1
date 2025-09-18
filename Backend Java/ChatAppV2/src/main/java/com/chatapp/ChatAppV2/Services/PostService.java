@@ -1,12 +1,13 @@
 package com.chatapp.ChatAppV2.Services;
 
-import com.chatapp.ChatAppV2.Models.Post;
-import com.chatapp.ChatAppV2.Models.Users;
-import com.chatapp.ChatAppV2.Repository.UserRepostory;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.chatapp.ChatAppV2.Models.Post;
+import com.chatapp.ChatAppV2.Models.Users;
+import com.chatapp.ChatAppV2.Repository.UserRepostory;
 
 @Service
 public class PostService {

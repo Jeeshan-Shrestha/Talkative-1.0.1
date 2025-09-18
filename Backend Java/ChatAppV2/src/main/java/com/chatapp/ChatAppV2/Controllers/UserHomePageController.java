@@ -14,8 +14,6 @@ import com.chatapp.ChatAppV2.Models.UserDTO;
 import com.chatapp.ChatAppV2.Models.UserProfile;
 import com.chatapp.ChatAppV2.Services.UserService;
 
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 
 @RestController

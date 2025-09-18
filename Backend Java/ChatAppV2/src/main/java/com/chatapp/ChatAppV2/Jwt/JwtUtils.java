@@ -8,11 +8,8 @@ import javax.crypto.SecretKey;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-<<<<<<< HEAD
 import com.chatapp.ChatAppV2.Services.MyUserDetails;
 
-=======
->>>>>>> d2045932f85a820b125c60c0124a02c5dc33b733
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -28,7 +25,7 @@ public class JwtUtils {
 
         HashMap<String,Object> claims = new HashMap<>();
         claims.put("username",userDetails.getUsername());
-        claims.put("email",userDetails.getEmail());
+        claims.put("email",userDetails.getGmail());
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
