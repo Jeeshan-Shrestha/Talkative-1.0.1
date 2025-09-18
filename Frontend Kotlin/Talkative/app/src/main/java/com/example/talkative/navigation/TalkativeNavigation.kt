@@ -10,6 +10,7 @@ import com.example.talkative.screens.HomeScreen.HomeScreen
 import com.example.talkative.screens.LoginScreen.LoginScreen
 import com.example.talkative.screens.LoginScreen.LoginViewModel
 import com.example.talkative.screens.ProfileScreen.ProfileScreen
+import com.example.talkative.screens.SignupScreen.SignUpViewmodel
 import com.example.talkative.screens.SignupScreen.SignupScreen
 import com.example.talkative.screens.searchScreen.SearchScreen
 import com.example.talkative.utils.Constants
@@ -37,7 +38,10 @@ fun TalkativeNavigation(){
         }
         //signup screen
         composable(TalkativeScreen.SignUpScreen.name){
-            SignupScreen(navController=navController)
+
+            val signUpViewmodel: SignUpViewmodel= hiltViewModel()
+
+            SignupScreen(navController=navController, SignupViewmodel = signUpViewmodel)
         }
         //home screen
         composable(route = TalkativeScreen.HomeScreen.name) {

@@ -119,7 +119,7 @@ fun ProfileScreen(
             id = "user-2",
             user = profileData,
             content = "Saturday morning vibes ☕ Starting the weekend with a perfect cup of coffee and some light reading. What are your weekend plans?",
-            image = "https://images.unsplash.com/photo-1532980400857-e8d9d275d858",
+            image = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmF2ZWwlMjBsYW5kc2NhcGV8ZW58MXx8fHwxNzU3NzMyMzY3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
             likes = 89,
             comments = 12,
             shares = 3,
