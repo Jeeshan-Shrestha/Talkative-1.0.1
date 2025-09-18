@@ -1,7 +1,9 @@
 package com.chatapp.ChatAppV2.Models;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -29,12 +31,21 @@ public class Users {
 
     private String password;
 
+    @Indexed(unique=true)
+    private String gmail;
+
     private Map<String,List<ChatMessage>> chats;
 
-    private List<String> followers;
+    private Set<String> followers;
 
-    private List<String> following;
+    private Integer followersCount;
+
+    private Set<String> following;
+
+    private Integer followingCount;
 
     private List<Post> posts;
+
+    private LocalDate date;
 
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chatapp.ChatAppV2.Models.BackendResponse;
+import com.chatapp.ChatAppV2.Models.LoginDetails;
 import com.chatapp.ChatAppV2.Models.Users;
 import com.chatapp.ChatAppV2.Services.UserService;
 
@@ -32,12 +33,12 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody Users entity, HttpServletResponse response) {
+    public ResponseEntity<?> loginUser(@RequestBody LoginDetails entity, HttpServletResponse response) {
         try {
             String token = userService.loginUser(entity);
-//             response.setHeader("Set-Cookie",
-//                     "token=" + token +
-//                             "; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=" + (7 * 24 * 60 * 60));
+            response.setHeader("Set-Cookie",
+                    "token=" + token +
+                            "; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=" + (365 * 24 * 60 * 60));
 
             return ResponseEntity.ok().body(new BackendResponse(true, token));
         } catch (Exception e) {
