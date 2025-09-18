@@ -32,7 +32,7 @@ public class Users {
     private String password;
 
     @Indexed(unique=true)
-    private String email;
+    private String gmail;
 
     private Map<String,List<ChatMessage>> chats;
 

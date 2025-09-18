@@ -25,7 +25,7 @@ public class JwtUtils {
 
         HashMap<String,Object> claims = new HashMap<>();
         claims.put("username",userDetails.getUsername());
-        claims.put("email",userDetails.getEmail());
+        claims.put("email",userDetails.getGmail());
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
