@@ -19,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -40,13 +41,16 @@ import androidx.navigation.NavController
 import com.example.talkative.R
 import com.example.talkative.Talkative
 import com.example.talkative.components.EmailField
+import com.example.talkative.components.LoadingDialog
 import com.example.talkative.components.PasswordField
 import com.example.talkative.components.sansButton
 import com.example.talkative.navigation.TalkativeScreen
+import com.example.talkative.utils.LoadingState
 
 
 @Composable
-fun LoginScreen(navController: NavController= NavController(LocalContext.current)){
+fun LoginScreen(navController: NavController= NavController(LocalContext.current),
+                LoginViewModel: LoginViewModel){
 
     //state for managing text in the field
     val email = rememberSaveable {
@@ -69,6 +73,10 @@ fun LoginScreen(navController: NavController= NavController(LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current //we can hide keyboard
 
     val context = LocalContext.current
+
+
+    //From view model to display toast message
+    val uiState= LoginViewModel.state.collectAsState()
 
 
     Scaffold {it->
@@ -167,7 +175,11 @@ fun LoginScreen(navController: NavController= NavController(LocalContext.current
                                 if(!valid){
                                     Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT).show()
                                 }else{
-                                    navController.navigate(TalkativeScreen.HomeScreen.name)
+
+                                    LoginViewModel.LoginUser(email=email.value,password=password.value){
+                                        navController.navigate(TalkativeScreen.HomeScreen.name)
+                                    }
+
                                 }
                             }
                             TextButton (
@@ -192,6 +204,13 @@ fun LoginScreen(navController: NavController= NavController(LocalContext.current
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(top = 32.dp)
                     )
+
+                    if(uiState.value== LoadingState.FAILED){
+                        Toast.makeText(context, uiState.value.message, Toast.LENGTH_SHORT).show()
+                    }
+                    if(uiState.value== LoadingState.LOADING){
+                        LoadingDialog()
+                    }
 
                 }
 
