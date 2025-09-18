@@ -1,6 +1,5 @@
 package com.chatapp.ChatAppV2.Configurations;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.server.ServerHttpRequest;

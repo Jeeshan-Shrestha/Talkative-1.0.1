@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.chatapp.ChatAppV2.Jwt.JwtUtils;
 import com.chatapp.ChatAppV2.Models.ChatMessage;
 import com.chatapp.ChatAppV2.Models.Users;
 import com.chatapp.ChatAppV2.Repository.UserRepostory;
@@ -18,8 +20,12 @@ public class ChatService {
     @Autowired
     UserRepostory userRepo;
 
-    public List<ChatMessage> getMessageByUsername(String sender,String receiver){
-        Users userOnDb = userRepo.findByUsername(sender);
+    @Autowired
+    private JwtUtils jwt;
+
+    public List<ChatMessage> getMessageByUsername(String receiver){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users userOnDb = userRepo.findByUsername(username);
         Map<String,List<ChatMessage>> userChats = userOnDb.getChats();
         return userChats.get(receiver);
     }
