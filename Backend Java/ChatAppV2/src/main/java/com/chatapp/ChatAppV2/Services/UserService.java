@@ -3,6 +3,11 @@ package com.chatapp.ChatAppV2.Services;
 import java.util.List;
 import java.util.stream.Collectors;
 
+<<<<<<< HEAD
+=======
+import com.chatapp.ChatAppV2.Jwt.JwtUtils;
+
+>>>>>>> d2045932f85a820b125c60c0124a02c5dc33b733
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

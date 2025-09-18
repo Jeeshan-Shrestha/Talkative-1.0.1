@@ -32,12 +32,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String username = null;
         String token = null;
+<<<<<<< HEAD
 
         // String path = request.getServletPath();
         // if (path.equals("/register") || path.equals("/login")){
         //     filterChain.doFilter(request, response);
         //     return;
         // }
+=======
+>>>>>>> d2045932f85a820b125c60c0124a02c5dc33b733
         
         Cookie[] cookies = request.getCookies();
         if (cookies != null){
