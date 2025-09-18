@@ -1,5 +1,6 @@
 package com.example.talkative.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -51,7 +53,10 @@ import com.example.talkative.model.Post
 @Preview
 @Composable
 fun PostCard(
-    post: Post= MockData.mockPosts[0]
+    modifier: Modifier= Modifier.padding(start = 8.dp, end = 8.dp),
+    post: Post= MockData.mockPosts[0],
+    ownProfile: Boolean=false,
+    onUserclick: (String)->Unit ={}
 ){
 
     //state for isLiked
@@ -68,7 +73,8 @@ fun PostCard(
         likescount.value= if(isLiked.value) likescount.value + 1 else likescount.value -1
     }
 
-    Card(modifier = Modifier.fillMaxWidth(),
+    Card(modifier = modifier.fillMaxWidth(),
+        border = BorderStroke(width = 1.dp, color = Color.LightGray),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
 
         Column(modifier = Modifier.padding(16.dp),
@@ -76,7 +82,8 @@ fun PostCard(
 
             Row(modifier = Modifier
                 .padding(10.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .clickable{ onUserclick.invoke(post.user.username)},
                 horizontalArrangement = Arrangement.Start,
 
                 verticalAlignment = Alignment.CenterVertically){
@@ -106,7 +113,7 @@ fun PostCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-
+                if(ownProfile){
                Row(modifier = Modifier.fillMaxWidth(),
                    horizontalArrangement = Arrangement.End) {
                    IconButton(onClick = { /* More options */ }) {
@@ -115,10 +122,8 @@ fun PostCard(
                            contentDescription = "More options"
                        )
                    }
-               }
-
+               } }
             }
-
 
 
 

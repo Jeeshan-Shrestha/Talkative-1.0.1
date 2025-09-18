@@ -33,17 +33,18 @@ data class Post(
 
 
 object MockData {
+
+
     val mockUser = User(
         id = "user-1",
         name = "Sanskar Rijal",
         username = "Sans_kar_7_",
-        avatar = "https://images.unsplash.com/photo-1539605480396-a61f99da1041?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBwb3J0cmFpdCUyMHByb2ZpbGV8ZW58MXx8fHwxNzU3NzcxMjg5fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+        avatar = "https://i.imgur.com/WTFTkMh.jpeg",
         bio = "Digital creator sharing my journey through life, travel, and everything in between. Coffee lover ☕ • Adventure seeker 🏔️",
         followers = 1250,
-        following = 892,
-        posts = 234,
-        location = "San Francisco, CA",
-        website = "yourwebsite.com",
+        following = 1252,
+        posts = 2,
+        website = "www.sanskarrijal.com",
         joinDate = "Joined March 2020",
         coverImage = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmF2ZWwlMjBsYW5kc2NhcGV8ZW58MXx8fHwxNzU3NzMyMzY3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
     )

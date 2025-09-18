@@ -66,6 +66,7 @@ dependencies {
 
     // Hilt Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.9.4")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     //retrofit
     implementation ("com.squareup.retrofit2:retrofit:3.0.0")
@@ -97,6 +98,11 @@ dependencies {
 
     //for status bar
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
+
+
+    //okhttp
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
 
 
