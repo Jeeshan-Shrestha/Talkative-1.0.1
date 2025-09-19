@@ -26,7 +26,6 @@ data class Post(
     val shares: Int,
     val timestamp: String,
     val isLiked: Boolean = false,
-    val isBookmarked: Boolean = false
 )
 
 

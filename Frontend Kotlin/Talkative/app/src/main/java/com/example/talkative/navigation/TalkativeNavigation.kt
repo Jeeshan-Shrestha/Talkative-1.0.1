@@ -12,7 +12,9 @@ import com.example.talkative.screens.LoginScreen.LoginViewModel
 import com.example.talkative.screens.ProfileScreen.ProfileScreen
 import com.example.talkative.screens.SignupScreen.SignUpViewmodel
 import com.example.talkative.screens.SignupScreen.SignupScreen
+import com.example.talkative.screens.searchScreen.FollowUnFollowViewModel
 import com.example.talkative.screens.searchScreen.SearchScreen
+import com.example.talkative.screens.searchScreen.SearchViewModel
 import com.example.talkative.utils.Constants
 
 
@@ -49,7 +51,10 @@ fun TalkativeNavigation(){
         }
         //searchScreen
         composable(route= TalkativeScreen.SearchScreen.name) {
-            SearchScreen(navController=navController)
+            val SearchViewModel=hiltViewModel<SearchViewModel>()
+            val followUnFollowViewmodelr = hiltViewModel<FollowUnFollowViewModel>()
+            SearchScreen(navController=navController,SearchViewModel=SearchViewModel,
+                FollowUnFollowViewmodel=followUnFollowViewmodelr)
         }
 
         //ProfileScreen

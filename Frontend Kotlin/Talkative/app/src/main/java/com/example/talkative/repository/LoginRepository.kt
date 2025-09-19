@@ -17,7 +17,7 @@ class LoginRepository @Inject constructor(
 
         return try {
             DataorException.Loading(data = true)
-            Log.d("akriti", "${email}  ${password}")
+
             val response = network.LoginUser(LoginRequest(usernameOrGmail = email, password = password))
             DataorException.Success(data = response)
         } catch (e: retrofit2.HttpException) {
@@ -58,7 +58,7 @@ class LoginRepository @Inject constructor(
         val url = "https://$domain".toHttpUrl() // val url = HttpUrl.get("https://$domain")
         //val url = "https://sangyog-cc.vercel.app".toHttpUrl()
 
-        Log.d("boka", "getStoredCookies: ${cookieJar.loadForRequest(url).map { it.toString() }}")
+      //  Log.d("boka", "getStoredCookies: ${cookieJar.loadForRequest(url).map { it.toString() }}")
 
         return cookieJar.loadForRequest(url).map { it.toString() }
     }
