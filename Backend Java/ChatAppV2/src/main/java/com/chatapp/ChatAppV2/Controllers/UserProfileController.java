@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chatapp.ChatAppV2.Exceptions.AlreadyFollowedException;
-import com.chatapp.ChatAppV2.Exceptions.AlreadyUnfollowedException;
 import com.chatapp.ChatAppV2.Exceptions.SelfFollowException;
 import com.chatapp.ChatAppV2.Models.BackendResponse;
 import com.chatapp.ChatAppV2.Services.UserProfileService;
@@ -44,9 +43,9 @@ public class UserProfileController {
     }
 
     @GetMapping("/follow")
-    public ResponseEntity<?> followSomeone(@RequestParam String followedBy, @RequestParam String followedTo){
+    public ResponseEntity<?> followSomeone(@RequestParam String followedTo){
         try{
-            String followedMsg = userProfileService.follow(followedBy, followedTo);
+            String followedMsg = userProfileService.follow(followedTo);
             return ResponseEntity.ok().body(new BackendResponse(true,followedMsg));
         } catch(AlreadyFollowedException | SelfFollowException e){
             return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
@@ -56,19 +55,19 @@ public class UserProfileController {
         }
     }
 
-    @GetMapping("/unfollow/{unfollowedBy}/{unfollowedTo}")
-    public ResponseEntity<?> unfollowSomeone(@PathVariable String unfollowedBy, @PathVariable String unfollowedTo){
-        try{
-            String unfollowedMsg = userProfileService.unfollow(unfollowedBy, unfollowedTo);
-            return ResponseEntity.ok().body(new BackendResponse(true,unfollowedMsg));
-        }catch(AlreadyUnfollowedException e){
-            return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
-        }catch(SelfFollowException e){
-            return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
-        } 
-        catch (Exception e) {
-            return ResponseEntity.badRequest().body(new BackendResponse(false,"something went wrong"));
-        }
-    }
+    // @GetMapping("/unfollow/{unfollowedBy}/{unfollowedTo}")
+    // public ResponseEntity<?> unfollowSomeone(@PathVariable String unfollowedBy, @PathVariable String unfollowedTo){
+    //     try{
+    //         String unfollowedMsg = userProfileService.unfollow(unfollowedBy, unfollowedTo);
+    //         return ResponseEntity.ok().body(new BackendResponse(true,unfollowedMsg));
+    //     }catch(AlreadyUnfollowedException e){
+    //         return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
+    //     }catch(SelfFollowException e){
+    //         return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
+    //     } 
+    //     catch (Exception e) {
+    //         return ResponseEntity.badRequest().body(new BackendResponse(false,"something went wrong"));
+    //     }
+    // }
 
 }
