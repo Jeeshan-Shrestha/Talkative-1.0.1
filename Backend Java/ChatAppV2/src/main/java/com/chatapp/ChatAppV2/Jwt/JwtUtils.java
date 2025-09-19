@@ -25,7 +25,7 @@ public class JwtUtils {
 
         HashMap<String,Object> claims = new HashMap<>();
         claims.put("username",userDetails.getUsername());
-        claims.put("email",userDetails.getGmail());
+        claims.put("gmail",userDetails.getGmail());
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
@@ -49,7 +49,7 @@ public class JwtUtils {
     }
 
     public String extractEmail(String token){
-        return (String)extractAllClaims(token).get("email");
+        return (String)extractAllClaims(token).get("gmail");
     }
 
     public boolean validateToken(String username, UserDetails userDetails, String token){

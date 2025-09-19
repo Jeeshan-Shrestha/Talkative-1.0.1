@@ -29,6 +29,8 @@ public class Users {
     @Indexed(unique = true)
     private String username;
 
+    private String displayName;
+
     private String password;
 
     @Indexed(unique=true)
@@ -45,6 +47,14 @@ public class Users {
     private Integer followingCount;
 
     private List<Post> posts;
+
+    private Integer numberOfPosts;
+
+    private Boolean isFollowing;
+
+    private String bio;
+
+    private String Avatar;
 
     private LocalDate date;
 
