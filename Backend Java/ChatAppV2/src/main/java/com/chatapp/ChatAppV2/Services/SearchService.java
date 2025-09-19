@@ -21,7 +21,10 @@ public class SearchService {
     public List<ProfileSearch> searchUser(String username){
 
         if (username.isEmpty()){
+            String self = SecurityContextHolder.getContext().getAuthentication().getName();
+            Users selfUser = userRepo.findByUsername(self);
             List<Users> users = userRepo.findAll();
+            users.remove(selfUser);
             Collections.shuffle(users);
             List<Users> filteredUser = users.subList(0, 4);
             List<ProfileSearch> randomUser = filteredUser.stream().map(u -> new ProfileSearch(
