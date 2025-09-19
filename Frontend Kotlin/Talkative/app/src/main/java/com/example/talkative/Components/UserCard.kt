@@ -35,12 +35,13 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.talkative.R
 import com.example.talkative.model.MockData
+import com.example.talkative.model.SearchResponse.Message
 import com.example.talkative.model.User
 
 
 @Composable
-fun UserCard(
-    user: User= MockData.mockUsers[0]){
+fun UserCard(user: Message,
+             onClick:(String)-> Unit={}){
 
 
     val isFollowing = remember {
@@ -48,13 +49,12 @@ fun UserCard(
     }
 
     val followersCount = remember {
-        mutableStateOf(user.followers)
+        mutableStateOf(user.followersCount)
     }
 
     val handlefollow = {
         isFollowing.value = !isFollowing.value
         followersCount.value= if (isFollowing.value) followersCount.value +1 else followersCount.value-1
-
     }
 
     Card(modifier = Modifier
@@ -74,7 +74,7 @@ fun UserCard(
 
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(user.avatar)
+                    .data(user.avatar?:"https://i.imgur.com/WTFTkMh.jpeg")
                     .crossfade(true)
                     .build(),
                 placeholder = painterResource(R.drawable.placeholder),
@@ -86,7 +86,7 @@ fun UserCard(
             )
 
             Text(
-                text = user.name,
+                text = user.displayName,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -99,14 +99,14 @@ fun UserCard(
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            user.bio?.let { it->
+//            user.bio?.let { it->
                 Text(
-                    text = it,
+                    text = user.bio?:"User haven't added their bio yet!!",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
                 )
-            }
+//            }
 
             Row(modifier = Modifier.padding(top = 20.dp),
                 horizontalArrangement = Arrangement.spacedBy(25.dp)){
@@ -115,7 +115,7 @@ fun UserCard(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
                     Text(
-                        text = user.posts.toString(),
+                        text = user.numberOfPosts.toString(),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -132,7 +132,7 @@ fun UserCard(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
                     Text(
-                        text = user.followers.toString(),
+                        text = followersCount.value.toString(),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -150,7 +150,7 @@ fun UserCard(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
                     Text(
-                        text = followersCount.value.toString(),
+                        text = user.followingCount.toString(),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -175,6 +175,7 @@ fun UserCard(
                     Color.Black
             ){
                 handlefollow.invoke()
+                onClick(user.username)
             }
 
 
