@@ -36,6 +36,7 @@ public class UserService {
     private MyUserDetailsService myUserDetailsService;
 
     public Users registerUser(Users user) {
+        user.setDisplayName(user.getUsername());
         user.setPassword(encoder.encode(user.getPassword()));
         return userRepo.save(user);
     }
@@ -62,12 +63,15 @@ public class UserService {
         if (user == null){
             throw new UsernameNotFoundException("User doesnt exist");
         }
-        return new UserProfile(user.getUsername(), 
-                                user.getFollowers(), 
-                                user.getFollowersCount(), 
-                                user.getFollowing(), 
-                                user.getFollowingCount(), 
-                                user.getPosts());  
+        return new UserProfile(user.getUsername(),
+                                user.getDisplayName(),
+                                user.getAvatar(),
+                                user.getBio(),
+                                user.getFollowers(),
+                                user.getFollowersCount(),
+                                user.getFollowing(),
+                                user.getFollowingCount(),
+                                user.getPosts()); 
     }
 
 }
