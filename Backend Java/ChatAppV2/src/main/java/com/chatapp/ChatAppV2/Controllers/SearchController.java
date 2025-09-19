@@ -24,7 +24,5 @@ public class SearchController {
     public ResponseEntity<BackendResponse> searchUser(@RequestParam String username) {
         List<ProfileSearch> searchUsers = search.searchUser(username);
         return new ResponseEntity<>(new BackendResponse(true, searchUsers),HttpStatus.OK);
-    }
-    
-    
+    } 
 }

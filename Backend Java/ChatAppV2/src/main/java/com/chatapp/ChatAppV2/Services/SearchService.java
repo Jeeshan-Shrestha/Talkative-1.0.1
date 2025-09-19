@@ -1,5 +1,6 @@
 package com.chatapp.ChatAppV2.Services;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,32 @@ public class SearchService {
     private UserRepostory userRepo;
 
     public List<ProfileSearch> searchUser(String username){
+
+        if (username.isEmpty()){
+            List<Users> users = userRepo.findAll();
+            Collections.shuffle(users);
+            List<Users> filteredUser = users.subList(0, 4);
+            List<ProfileSearch> randomUser = filteredUser.stream().map(u -> new ProfileSearch(
+            u.getDisplayName(),
+            u.getUsername(),
+            u.getIsFollowing(),
+            u.getFollowersCount(),
+            u.getFollowingCount(),
+            u.getAvatar(),
+            u.getBio(),
+            u.getNumberOfPosts())).collect(Collectors.toList());
+        String searcher = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users searcherDetails = userRepo.findByUsername(searcher);
+        for (ProfileSearch p : randomUser){
+            if (searcherDetails.getFollowing()!= null&&searcherDetails.getFollowing().contains(p.getUsername())){
+                p.setIsFollowing(true);
+            }else{
+                p.setIsFollowing(false);
+            }
+        }
+        return randomUser;
+    }
+
         List<Users> users = userRepo.findByUsernameStartingWithIgnoreCase(username);
         List<ProfileSearch> searchedUser = users.stream().map(u -> new ProfileSearch(
             u.getDisplayName(),
