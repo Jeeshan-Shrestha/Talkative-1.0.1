@@ -1,5 +1,6 @@
 package com.chatapp.ChatAppV2.Models;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -29,5 +30,11 @@ public class UserProfile {
     private Integer followingCount;
 
     private List<Post> posts;
+
+    private String coverPhoto;
+
+    private LocalDate joinDate;
+
+    private Integer numberOfPosts;
 
 }

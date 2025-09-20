@@ -1,8 +1,8 @@
 package com.chatapp.ChatAppV2.Services;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,16 +51,22 @@ public class PostService {
     
     public void postThePost(String caption,MultipartFile file) throws IOException{
 
+        String self = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users selfUser = userRepo.findByUsername(self);
         ObjectId store = gridfs.store(file.getInputStream(),file.getOriginalFilename(),file.getContentType());
 
         Post post = new Post();
         post.setCaption(caption);
         post.setImageUrl("https://talkative-1-0-1-2.onrender.com/post/image/"+store.toHexString());
         post.setId(UUID.randomUUID().toString());
-        post.setDate(new Date(System.currentTimeMillis()));
-
-        String self = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users selfUser = userRepo.findByUsername(self);
+        post.setPostDate(LocalDate.now());
+        post.setUsername(self);
+        post.setDisplayName(selfUser.getDisplayName());
+        if (selfUser.getNumberOfPosts() == null){
+            selfUser.setNumberOfPosts(1); 
+        }else{
+            selfUser.setNumberOfPosts(selfUser.getNumberOfPosts() + 1);
+        }
         List<Post> postOnDb = selfUser.getPosts();
         if (postOnDb == null){
             postOnDb = new ArrayList<>();

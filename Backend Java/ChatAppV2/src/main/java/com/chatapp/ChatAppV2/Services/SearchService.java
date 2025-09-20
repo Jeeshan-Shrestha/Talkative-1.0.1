@@ -61,6 +61,9 @@ public class SearchService {
         String searcher = SecurityContextHolder.getContext().getAuthentication().getName();
         Users searcherDetails = userRepo.findByUsername(searcher);
         for (ProfileSearch p : searchedUser){
+            if (p.getUsername().equals(searcher)){
+                searchedUser.remove(p);
+            }
             if (searcherDetails.getFollowing()!= null&&searcherDetails.getFollowing().contains(p.getUsername())){
                 p.setIsFollowing(true);
             }else{

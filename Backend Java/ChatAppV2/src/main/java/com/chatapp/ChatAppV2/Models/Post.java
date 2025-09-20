@@ -1,6 +1,6 @@
 package com.chatapp.ChatAppV2.Models;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -14,11 +14,15 @@ public class Post {
 
     private String id;
 
+    private String username;
+
+    private String displayName;
+
     private String postAccess; //public or private
 
     private String imageUrl;
 
-    private Double likes;
+    private Integer likes;
 
     private List<String> comments;
 
@@ -26,6 +30,8 @@ public class Post {
 
     private String caption;
 
-    private Date date;
+    private LocalDate postDate;
+
+    private boolean isLiked;
  
 }

@@ -1,13 +1,19 @@
 package com.chatapp.ChatAppV2.Services;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.chatapp.ChatAppV2.Exceptions.SelfFollowException;
+import com.chatapp.ChatAppV2.Models.UserProfile;
 import com.chatapp.ChatAppV2.Models.Users;
 import com.chatapp.ChatAppV2.Repository.UserRepostory;
 
@@ -15,7 +21,11 @@ import com.chatapp.ChatAppV2.Repository.UserRepostory;
 public class UserProfileService {
 
     @Autowired
-    UserRepostory userRepo;
+    private UserRepostory userRepo;
+
+    @Autowired
+    private GridFsTemplate gridFsTemplate;
+
 
     public Set<String> getAllFollowers(String username){
         Users userOnDb = userRepo.findByUsername(username);
@@ -68,36 +78,58 @@ public class UserProfileService {
         return followedBy + " followed " + followedTo;
     }
 
-    // public String unfollow(String unfollowedBy,String unfollowedTo)throws Exception{
-    //     Users unfollowedByUser = userRepo.findByUsername(unfollowedBy);
-    //     Users unfollowedToUser = userRepo.findByUsername(unfollowedTo);
+    public UserProfile getUserProfile(String username)throws Exception{
+        Users user = userRepo.findByUsername(username); 
+        if (user == null){
+            throw new UsernameNotFoundException("User doesnt exist");
+        }
+        return new UserProfile(user.getUsername(),
+                                user.getDisplayName(),
+                                user.getAvatar(),
+                                user.getBio(),
+                                user.getFollowers(),
+                                user.getFollowersCount(),
+                                user.getFollowing(),
+                                user.getFollowingCount(),
+                                user.getPosts(),
+                                user.getCoverPhoto(),
+                                user.getJoinDate(),
+                                user.getNumberOfPosts()); 
+    }
 
-    //     if (!unfollowedByUser.getFollowing().contains(unfollowedTo)){
-    //         throw new AlreadyUnfollowedException("Follow the user first to unfollow them");
-    //     }
-    //     if (unfollowedByUser.getUsername().equals(unfollowedToUser.getUsername())){
-    //         throw new SelfFollowException("You can't unfollow yourself :3");
-    //     }
+    public UserProfile getSelfProfile()throws Exception{
+        String self = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = userRepo.findByUsername(self); 
+        if (user == null){
+            throw new UsernameNotFoundException("User doesnt exist");
+        }
+        return new UserProfile(user.getUsername(),
+                                user.getDisplayName(),
+                                user.getAvatar(),
+                                user.getBio(),
+                                user.getFollowers(),
+                                user.getFollowersCount(),
+                                user.getFollowing(),
+                                user.getFollowingCount(),
+                                user.getPosts(),
+                                user.getCoverPhoto(),
+                                user.getJoinDate(),
+                                user.getNumberOfPosts()
+                                ); 
+    }
 
-    //     Set<String> following = unfollowedByUser.getFollowing();
-    //     if (following == null){
-    //         following = new HashSet<>();
-    //     }
-    //     following.remove(unfollowedToUser.getUsername());
-    //     Set<String> followers = unfollowedToUser.getFollowers();
-    //     if (followers == null){
-    //         followers = new HashSet<>();
-    //     }
-    //     followers.remove(unfollowedByUser.getUsername());
+    public String editProfile(MultipartFile avatar,String bio,String displayName,MultipartFile coverPhoto) throws IOException{
+        String self = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = userRepo.findByUsername(self); 
+        ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(),avatar.getOriginalFilename(),avatar.getContentType());
+        ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(),coverPhoto.getOriginalFilename(),coverPhoto.getContentType());
+        user.setDisplayName(displayName);
+        user.setAvatar("https://talkative-1-0-1-2.onrender.com/image/"+avatarId.toHexString());
+        user.setCoverPhoto("https://talkative-1-0-1-2.onrender.com/image/"+coverPhotoId.toHexString());
+        user.setBio(bio);
+        userRepo.save(user);
+        return "Edited Succesfully";
+    }
 
-    //     unfollowedByUser.setFollowing(following);
-    //     unfollowedByUser.setFollowingCount(unfollowedByUser.getFollowingCount()==null? 0 : unfollowedByUser.getFollowingCount() - 1);
-    //     unfollowedToUser.setFollowers(followers);
-    //     unfollowedToUser.setFollowersCount(unfollowedToUser.getFollowersCount()==null? 0 : unfollowedToUser.getFollowersCount() - 1);
-
-    //     userRepo.save(unfollowedByUser);
-    //     userRepo.save(unfollowedToUser);
-    //     return unfollowedBy + " unfollowed " + unfollowedTo;
-    // }
 
 }

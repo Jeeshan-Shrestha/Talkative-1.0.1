@@ -56,6 +56,8 @@ public class Users {
 
     private String Avatar;
 
-    private LocalDate date;
+    private LocalDate joinDate;
+
+    private String coverPhoto;
 
 }
