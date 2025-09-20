@@ -1,5 +1,6 @@
 package com.chatapp.ChatAppV2.Models;
 
+import java.util.Date;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -10,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Post {
+
+    private String id;
 
     private String postAccess; //public or private
 
@@ -22,5 +25,7 @@ public class Post {
     private String videoUrl;
 
     private String caption;
+
+    private Date date;
  
 }
