@@ -55,9 +55,9 @@ public class UserProfileService {
             followers.remove(followedBy);
 
             followedByUser.setFollowing(following);
-            followedByUser.setFollowingCount(followedByUser.getFollowingCount()==null? 0 : followedByUser.getFollowingCount() - 1);
+            followedByUser.setFollowingCount(followedByUser.getFollowingCount() - 1);
             followedToUser.setFollowers(followers);
-            followedToUser.setFollowersCount(followedToUser.getFollowersCount()==null? 0 : followedToUser.getFollowersCount() - 1);
+            followedToUser.setFollowersCount(followedToUser.getFollowersCount() - 1);
             userRepo.save(followedByUser);
             userRepo.save(followedToUser);
 
@@ -69,9 +69,9 @@ public class UserProfileService {
         following.add(followedTo);
         followers.add(followedBy);
         followedByUser.setFollowing(following);
-        followedByUser.setFollowingCount(followedByUser.getFollowingCount()==null? 1 : followedByUser.getFollowingCount() + 1);
+        followedByUser.setFollowingCount(followedByUser.getFollowingCount() + 1);
         followedToUser.setFollowers(followers);
-        followedToUser.setFollowersCount(followedToUser.getFollowersCount()==null? 1 : followedToUser.getFollowersCount() + 1);
+        followedToUser.setFollowersCount(followedToUser.getFollowersCount() + 1);
 
         userRepo.save(followedByUser);
         userRepo.save(followedToUser);

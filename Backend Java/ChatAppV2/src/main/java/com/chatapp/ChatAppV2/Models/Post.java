@@ -22,7 +22,7 @@ public class Post {
 
     private String imageUrl;
 
-    private Integer likes;
+    private Integer likes = 0;
 
     private List<String> comments;
 
@@ -32,6 +32,8 @@ public class Post {
 
     private LocalDate postDate;
 
-    private boolean isLiked;
+    private Boolean liked = false;
+
+    private String avatar;
  
 }

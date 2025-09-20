@@ -13,16 +13,16 @@ public class ProfileSearch {
 
     private String username;
 
-    private Boolean isFollowing;
+    private Boolean isFollowing = false;
 
-    private Integer followersCount;
+    private Integer followersCount = 0;
 
-    private Integer followingCount;
+    private Integer followingCount = 0;
 
     private String Avatar;
 
     private String Bio;
 
-    private Integer numberOfPosts;
+    private Integer numberOfPosts = 0;
 
 }

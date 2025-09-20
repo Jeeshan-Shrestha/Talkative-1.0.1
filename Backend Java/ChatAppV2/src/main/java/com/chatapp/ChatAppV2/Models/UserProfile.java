@@ -23,11 +23,11 @@ public class UserProfile {
 
     private Set<String> followers;
 
-    private Integer followersCount;
+    private Integer followersCount = 0;
 
     private Set<String> following;
 
-    private Integer followingCount;
+    private Integer followingCount = 0;
 
     private List<Post> posts;
 
@@ -35,6 +35,6 @@ public class UserProfile {
 
     private LocalDate joinDate;
 
-    private Integer numberOfPosts;
+    private Integer numberOfPosts = 0;
 
 }

@@ -62,11 +62,8 @@ public class PostService {
         post.setPostDate(LocalDate.now());
         post.setUsername(self);
         post.setDisplayName(selfUser.getDisplayName());
-        if (selfUser.getNumberOfPosts() == null){
-            selfUser.setNumberOfPosts(1); 
-        }else{
-            selfUser.setNumberOfPosts(selfUser.getNumberOfPosts() + 1);
-        }
+        post.setAvatar(selfUser.getAvatar());
+        selfUser.setNumberOfPosts(selfUser.getNumberOfPosts() + 1);
         List<Post> postOnDb = selfUser.getPosts();
         if (postOnDb == null){
             postOnDb = new ArrayList<>();
@@ -76,6 +73,32 @@ public class PostService {
         userRepo.save(selfUser);  
     }
 
-    
+    public String likePost(String id, String likedUsername){
+        Users likedUser = userRepo.findByUsername(likedUsername);
+        List<Post> posts = likedUser.getPosts();
+        Post likedPost = null;
+        for (Post post : posts){
+            if (post.getId().equals(id)){
+                likedPost = post; 
+                break;
+            }
+        }
+        if (likedPost == null){
+            throw new RuntimeException("No post found");
+        }
+
+        if (likedPost.getLiked()){
+            likedPost.setLikes(likedPost.getLikes() -1);
+            likedPost.setLiked(false);
+            userRepo.save(likedUser);
+            return "post unliked";
+        }
+        likedPost.setLikes(likedPost.getLikes() + 1);
+        likedPost.setLiked(true);
+
+        userRepo.save(likedUser);
+        return "post liked";
+
+    }
 
 }

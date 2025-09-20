@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +27,8 @@ import com.chatapp.ChatAppV2.Services.PostService;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import io.jsonwebtoken.io.IOException;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -89,6 +92,20 @@ public class PostController {
             .contentType(MediaType.parseMediaType(file.getMetadata().get("_contentType").toString()))
             .body(resource.getInputStream().readAllBytes());
 }
+
+    @GetMapping("/like")
+    public ResponseEntity<?> likePost(@RequestParam String id, @RequestParam String likedUsername) {
+        try{
+            String message = postService.likePost(id, likedUsername);
+            return ResponseEntity.ok().body(new BackendResponse(true, message));
+        }catch(RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BackendResponse(false,e.getMessage()));
+        }
+        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BackendResponse(false,"something went wrong"));
+        }
+    }
+    
     
 
 }

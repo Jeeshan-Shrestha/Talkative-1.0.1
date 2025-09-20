@@ -40,17 +40,17 @@ public class Users {
 
     private Set<String> followers;
 
-    private Integer followersCount;
+    private Integer followersCount = 0;
 
     private Set<String> following;
 
-    private Integer followingCount;
+    private Integer followingCount = 0;
 
     private List<Post> posts;
 
-    private Integer numberOfPosts;
+    private Integer numberOfPosts = 0;
 
-    private Boolean isFollowing;
+    private Boolean isFollowing = false;
 
     private String bio;
 
