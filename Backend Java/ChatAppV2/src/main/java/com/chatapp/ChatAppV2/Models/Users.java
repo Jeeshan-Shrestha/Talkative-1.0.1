@@ -40,17 +40,17 @@ public class Users {
 
     private Set<String> followers;
 
-    private Integer followersCount = 0;
+    private int followersCount;
 
     private Set<String> following;
 
-    private Integer followingCount = 0;
+    private int followingCount;
 
     private List<Post> posts;
 
-    private Integer numberOfPosts = 0;
+    private int numberOfPosts;
 
-    private Boolean isFollowing = false;
+    private boolean isFollowing;
 
     private String bio;
 
@@ -60,4 +60,12 @@ public class Users {
 
     private String coverPhoto;
 
+    public boolean getIsFollowing() {
+        return isFollowing;
+    }
+
+    public void setIsFollowing(boolean isFollowing) {
+        this.isFollowing = isFollowing;    
+    }
 }
+

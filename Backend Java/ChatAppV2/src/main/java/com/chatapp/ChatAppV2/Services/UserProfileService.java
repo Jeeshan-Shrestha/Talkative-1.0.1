@@ -2,6 +2,7 @@ package com.chatapp.ChatAppV2.Services;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.chatapp.ChatAppV2.Exceptions.SelfFollowException;
+import com.chatapp.ChatAppV2.Models.Post;
 import com.chatapp.ChatAppV2.Models.UserProfile;
 import com.chatapp.ChatAppV2.Models.Users;
 import com.chatapp.ChatAppV2.Repository.UserRepostory;
@@ -127,6 +129,10 @@ public class UserProfileService {
         user.setAvatar("https://talkative-1-0-1-2.onrender.com/image/"+avatarId.toHexString());
         user.setCoverPhoto("https://talkative-1-0-1-2.onrender.com/image/"+coverPhotoId.toHexString());
         user.setBio(bio);
+       List<Post> posts = user.getPosts();
+       for (Post p : posts){
+            p.setDisplayName(displayName);
+       }
         userRepo.save(user);
         return "Edited Succesfully";
     }

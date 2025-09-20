@@ -5,7 +5,9 @@ import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
 @AllArgsConstructor
@@ -22,7 +24,7 @@ public class Post {
 
     private String imageUrl;
 
-    private Integer likes = 0;
+    private int likes;
 
     private List<String> comments;
 
@@ -32,8 +34,15 @@ public class Post {
 
     private LocalDate postDate;
 
-    private Boolean liked = false;
+    private boolean liked;
 
     private String avatar;
- 
+
+    public boolean getLiked(){
+        return liked;
+    }
+
+    public void setLiked(boolean liked){
+        this.liked = liked;
+    }
 }
