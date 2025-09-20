@@ -48,14 +48,14 @@ public class PostService {
         }
         return post;
     }
-    //https://talkative-1-0-1-2.onrender.com/posts/image/
+    
     public void postThePost(String caption,MultipartFile file) throws IOException{
 
         ObjectId store = gridfs.store(file.getInputStream(),file.getOriginalFilename(),file.getContentType());
 
         Post post = new Post();
         post.setCaption(caption);
-        post.setImageUrl("https://localhost:8081/posts/image/"+store.toHexString());
+        post.setImageUrl("https://talkative-1-0-1-2.onrender.com/post/image/"+store.toHexString());
         post.setId(UUID.randomUUID().toString());
         post.setDate(new Date(System.currentTimeMillis()));
 
