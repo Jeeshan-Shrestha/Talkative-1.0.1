@@ -7,6 +7,8 @@ enum class TalkativeScreen {
     SearchScreen,
     PostScreen,
     ProfileScreen,
+    OtherUserProfileScreen,
     ChatPeopleScreen,
-    ChatScreen
+    ChatScreen,
+    EditProfileScreen
 }

@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.HorizontalRule
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -65,21 +66,13 @@ import com.example.talkative.screens.CreatePost.CreatePostViewmodel
 
 
 @Composable
-fun ProfileScreen(
-    username:String = "you",
+fun OtherUserProflieScreen(
     createPostViewmodel: CreatePostViewmodel,
     navController: NavController= NavController(LocalContext.current)
 ){
 
-    val isOwnProfile = username == "you"
+    val profileData: User = MockData.mockUser
 
-    val profileData: User = if(isOwnProfile){
-        MockData.mockUser
-    }else{
-            //else get the user from backend
-            //send id to backend and it will send
-        MockData.mockUser
-    }
 
     //boolean value for ture or false
     var isFollowing by remember {
@@ -140,7 +133,7 @@ fun ProfileScreen(
 
             LazyColumn(modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
-            //    contentPadding = PaddingValues(10.dp)
+                //    contentPadding = PaddingValues(10.dp)
             ) {
 
                 //Cover Image
@@ -176,47 +169,16 @@ fun ProfileScreen(
 
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
-                                if(isOwnProfile){
-                                    FilledTonalButton(onClick = {
-                                        //edit profile
-                                        navController.navigate(TalkativeScreen.EditProfileScreen.name)
-                                    },
-                                        colors = ButtonDefaults.buttonColors(Color.White)){
-                                        Icon(imageVector = Icons.Default.Edit,
-                                            tint = Color.Black,
-                                            modifier = Modifier.size(16.dp),
-                                            contentDescription = "edit profile")
-
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text("Edit Profile",
-                                            style = TextStyle(color = Color.Black))
-                                    }
-
-//                                    IconButton(onClick = {}) {
-//                                        Icon(imageVector = Icons.Default.Settings,
-//                                            contentDescription = "Settings")
-//                                    }
-
-                                    FilledTonalButton(onClick = {
-                                        //settings button
-                                    },
-                                        colors = ButtonDefaults.buttonColors(Color.White)) {
-                                        Icon(
-                                            imageVector = Icons.Default.Settings,
-                                            tint = Color.Black,
-                                            modifier = Modifier.size(16.dp),
-                                            contentDescription = "Settings Button"
-                                        )
-                                    }
-
-
-                                }else{
-                                    IconButton(onClick = {}) {
-                                        Icon(
-                                            imageVector = Icons.Default.HorizontalRule,
-                                            contentDescription = "More"
-                                        )
-                                    }
+                                FilledTonalButton(onClick = {
+                                    //button to report or Block user
+                                },
+                                    colors = ButtonDefaults.buttonColors(Color.White)) {
+                                    Icon(
+                                        imageVector = Icons.Default.MoreHoriz,
+                                        tint = Color.Black,
+                                        modifier = Modifier.size(16.dp),
+                                        contentDescription = "More button"
+                                    )
                                 }
                             }
                         }
@@ -251,26 +213,9 @@ fun ProfileScreen(
 
                         //display name and username
                         Column(modifier = Modifier
-                           // .offset(y=(-100).dp)
+                            // .offset(y=(-100).dp)
                             .padding(10.dp),
                             verticalArrangement = Arrangement.spacedBy(5.dp),) {
-
-                            //follow and following button
-                            if(!isOwnProfile){
-                                //button
-                                sansButton(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textcolor = if(isFollowing) Color.Black else Color.White,
-                                    text =if (isFollowing) "Following" else "Follow",
-                                    icon = false,
-                                    color =  if (isFollowing)
-                                        Color.White
-                                    else
-                                        Color.Black
-                                ){
-                                    handlefollow.invoke()
-                                }
-                            }
 
                             //Name and username of the people
                             Text(text = profileData.name ?:"unknown",
@@ -280,6 +225,21 @@ fun ProfileScreen(
                             Text(text = profileData.username?:"username",
                                 style=MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+                            //follow and following button
+                            sansButton(
+                                modifier = Modifier.fillMaxWidth(),
+                                textcolor = if(isFollowing) Color.Black else Color.White,
+                                text =if (isFollowing) "Following" else "Follow",
+                                icon = false,
+                                color =  if (isFollowing)
+                                    Color.White
+                                else
+                                    Color.Black
+                            ){
+                                handlefollow.invoke()
+                            }
+
 
                             //Bio
                             profileData.bio?.let { it->
@@ -295,16 +255,16 @@ fun ProfileScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(10.dp)){
 
-                                   profileData.website?.let {it->
-                                       Icon(imageVector = Icons.Default.Link,
-                                           contentDescription = "Website",
-                                           modifier = Modifier.size(18.dp),
-                                           tint = MaterialTheme.colorScheme.primary)
+                                    profileData.website?.let {it->
+                                        Icon(imageVector = Icons.Default.Link,
+                                            contentDescription = "Website",
+                                            modifier = Modifier.size(18.dp),
+                                            tint = MaterialTheme.colorScheme.primary)
 
-                                       Text(text = it?: "No link",
-                                           style = MaterialTheme.typography.bodyMedium,
-                                           color=MaterialTheme.colorScheme.primary)
-                                   }
+                                        Text(text = it?: "No link",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color=MaterialTheme.colorScheme.primary)
+                                    }
                                 }
 
                                 Row(verticalAlignment = Alignment.CenterVertically,
@@ -365,11 +325,11 @@ fun ProfileScreen(
                 }
 
                 //Content Tabs Posts
-              items(userPosts){posts->
-                  PostCard(post = posts,
-                      modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
-                    ownProfile =true)
-              }
+                items(userPosts){posts->
+                    PostCard(post = posts,
+                        modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
+                        ownProfile =false)
+                }
 
             }
             if(showPostDialouge.value){

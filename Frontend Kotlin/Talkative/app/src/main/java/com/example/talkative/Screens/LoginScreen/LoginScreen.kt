@@ -177,7 +177,12 @@ fun LoginScreen(navController: NavController= NavController(LocalContext.current
                                 }else{
 
                                     LoginViewModel.LoginUser(email=email.value,password=password.value){
-                                        navController.navigate(TalkativeScreen.HomeScreen.name)
+                                        navController.navigate("main"){
+                                            popUpTo("auth"){
+                                                inclusive = true //clearing auth graph so when user hits back it cant go to login screen
+                                            }
+                                            launchSingleTop=true
+                                        }
                                     }
 
                                 }

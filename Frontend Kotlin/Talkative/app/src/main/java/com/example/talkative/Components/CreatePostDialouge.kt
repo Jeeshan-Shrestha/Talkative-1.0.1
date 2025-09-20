@@ -3,6 +3,7 @@ package com.example.talkative.components
 import android.Manifest
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -48,16 +50,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.talkative.R
 import com.example.talkative.model.MockData
+import com.example.talkative.screens.CreatePost.CreatePostViewmodel
+import com.example.talkative.utils.LoadingState
 
 
 @Composable
 fun CreatePostDialouge(
     onDismiss: () -> Unit ={},
-    onPost : () -> Unit ={}){
+    createPostViewmodel: CreatePostViewmodel,
+    onPost:()->Unit={}
+    ){
 
     //context for toast
     val context = LocalContext.current
@@ -69,18 +76,17 @@ fun CreatePostDialouge(
     val characterlimit= 260
     val charactersRemaining = characterlimit - content.value.length
 
-    //handle Post
-    val handlePost = {
-        if(content.value.isNotBlank()){
-            onPost.invoke()
-        }
-    }
 
     //handling images selected From gallery
     val selectedImage = rememberSaveable { mutableStateOf<Uri?>(null) }
 
     //for drawing dotted line
     val pathEffect =androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(10f,10f),0f)
+
+
+    //From view model to display toast message
+    val uiState= createPostViewmodel.state.collectAsState()
+
 
 
     // Permission to request based on Android version
@@ -115,7 +121,7 @@ fun CreatePostDialouge(
     Dialog(onDismissRequest = {onDismiss()}) {
 
         Card(modifier = Modifier
-            .heightIn(max=600.dp, min = 300.dp)
+            .heightIn(max = 600.dp, min = 300.dp)
             .verticalScroll(rememberScrollState())
             .fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 9.dp)) {
@@ -219,7 +225,7 @@ fun CreatePostDialouge(
                                     contentDescription = "userimage",
                                     contentScale = ContentScale.FillBounds,
                                     modifier = Modifier
-                                        .heightIn(max=400.dp)
+                                        .heightIn(max = 400.dp)
                                         .fillMaxWidth()
                                 )
 
@@ -266,15 +272,30 @@ fun CreatePostDialouge(
 
                     sansButton(text = "Post",
                         color = Color.Black,
-                        icon = false
-                    ) {
-                        //Handle Post
-                        handlePost.invoke()
+                        icon = false) { //Handle Post
+
+                        if(content.value.isNotBlank() && selectedImage.value !=null){
+//            onPost.invoke() we wont be using lamda let's call view model here only
+                            selectedImage.value?.let{uri->
+                                createPostViewmodel.PostImage(caption = content.value, imageUri = uri){
+                                    //navigate to home Screen
+                                    Toast.makeText(context, "Uploded Successfully", Toast.LENGTH_SHORT).show()
+                                    onPost.invoke()
+                                }
+                            }
+
+                        }else{
+                            Toast.makeText(context, "Please add Image and caption", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    if(uiState.value== LoadingState.FAILED){
+                        Toast.makeText(context, uiState.value.message, Toast.LENGTH_SHORT).show()
+                    }
+                    if(uiState.value== LoadingState.LOADING){
+                        LoadingDialog()
                     }
                 }
-
-
-
 
             }
 

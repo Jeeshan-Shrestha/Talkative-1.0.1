@@ -4,6 +4,7 @@ import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,7 +39,11 @@ fun sansButton(
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             color = textcolor)
-//        if(icon)
-//            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "button")
+        if(icon) {
+            Icon(
+                imageVector = Icons.Default.Save,
+                contentDescription = "button"
+            )
+        }
     }
 }

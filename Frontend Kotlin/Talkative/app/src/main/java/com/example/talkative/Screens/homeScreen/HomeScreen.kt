@@ -1,5 +1,6 @@
 package com.example.talkative.screens.HomeScreen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,10 +23,13 @@ import com.example.talkative.components.OnyourMind
 import com.example.talkative.components.PostCard
 import com.example.talkative.components.TopBar
 import com.example.talkative.model.MockData
+import com.example.talkative.navigation.TalkativeScreen
+import com.example.talkative.screens.CreatePost.CreatePostViewmodel
 
 
 @Composable
-fun HomeScreen(navController: NavController= NavController(LocalContext.current)){
+fun HomeScreen(navController: NavController= NavController(LocalContext.current),
+               createPostViewmodel: CreatePostViewmodel){
 
     val showPostDialouge = remember { mutableStateOf(false) }
 
@@ -51,7 +55,10 @@ fun HomeScreen(navController: NavController= NavController(LocalContext.current)
 
                 }
                 items(MockData.mockPosts){posts->
-                    PostCard(post = posts)
+                    PostCard(post = posts){
+                        //when user clicks the username or name or profile navigate to otheruser screen
+                        navController.navigate(TalkativeScreen.OtherUserProfileScreen.name)
+                    }
                 }
 
             }
@@ -63,7 +70,9 @@ fun HomeScreen(navController: NavController= NavController(LocalContext.current)
                     onPost = {
                         //we will handle post logic here
                         showPostDialouge.value=false
-                    })
+                    },
+                    createPostViewmodel = createPostViewmodel
+                )
             }
 
         }
