@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.filled.EnhancedEncryption
 import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -100,3 +102,29 @@ fun PasswordField(
     )
 }
 
+@Composable
+fun CustomTextField(
+    state: MutableState<String>,
+    labelid:String,
+    imeAction: ImeAction = ImeAction.Default,
+    onAction: KeyboardActions =KeyboardActions.Default,
+    maxlines:Int=1,
+    keyboardtype: KeyboardType = KeyboardType.Unspecified,
+    isSingleLine:Boolean
+){
+    OutlinedTextField(
+        value = state.value,
+        onValueChange = { state.value = it },
+        label = { Text(text = labelid) },
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth(),
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = Color(0xFFF5F4F4),
+            focusedContainerColor = Color(0xFFF5F4F4)
+        ),
+        singleLine = isSingleLine,
+        keyboardActions =onAction,
+        maxLines = maxlines,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardtype, imeAction = imeAction)
+    )
+}

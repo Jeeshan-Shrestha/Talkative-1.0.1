@@ -9,4 +9,8 @@ object Constants {
     const val SEARCH_USER="search"
 
     const val Follow_UnFollowUser="follow"
+
+    const val Post_Url="post"
+
+    const val Own_profile="post"
 }

@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.talkative.navigation.TalkativeScreen
 
@@ -56,7 +57,7 @@ fun BottomBar(navController: NavController,
                             //now we navigate so that app don't crash , we created PostScreen enum only for icon
                     navController.navigate(screen.name) {
                             // Prevent building up back stack with multiple copies
-                            popUpTo(navController.graph.startDestinationId) {
+                            popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }
                             launchSingleTop = true

@@ -42,13 +42,15 @@ import com.example.talkative.components.TopBar
 import com.example.talkative.components.UserCard
 import com.example.talkative.model.SearchResponse.Message
 import com.example.talkative.model.SearchResponse.SearchResponse
+import com.example.talkative.screens.CreatePost.CreatePostViewmodel
 import com.example.talkative.utils.LoadingState
 
 
 @Composable
 fun SearchScreen(navController: NavController= NavController(LocalContext.current),
                  SearchViewModel: SearchViewModel,
-                 FollowUnFollowViewmodel: FollowUnFollowViewModel){
+                 FollowUnFollowViewmodel: FollowUnFollowViewModel,
+                 createPostViewmodel: CreatePostViewmodel){
 
     val showPostDialouge = remember { mutableStateOf(false) }
 
@@ -131,6 +133,7 @@ fun SearchScreen(navController: NavController= NavController(LocalContext.curren
                 CreatePostDialouge(onDismiss = {
                     showPostDialouge.value=false
                 },
+                    createPostViewmodel = createPostViewmodel,
                     onPost = {
                         //we will handle post logic here
                         showPostDialouge.value=false
