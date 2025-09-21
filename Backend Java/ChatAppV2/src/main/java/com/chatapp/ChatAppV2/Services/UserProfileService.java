@@ -126,8 +126,8 @@ public class UserProfileService {
         ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(),avatar.getOriginalFilename(),avatar.getContentType());
         ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(),coverPhoto.getOriginalFilename(),coverPhoto.getContentType());
         user.setDisplayName(displayName);
-        user.setAvatar("https://talkative-1-0-1-2.onrender.com/image/"+avatarId.toHexString());
-        user.setCoverPhoto("https://talkative-1-0-1-2.onrender.com/image/"+coverPhotoId.toHexString());
+        user.setAvatar("https://talkative-1-0-1-2.onrender.com/post/image/"+avatarId.toHexString());
+        user.setCoverPhoto("https://talkative-1-0-1-2.onrender.com/post/image/"+coverPhotoId.toHexString());
         user.setBio(bio);
        List<Post> posts = user.getPosts();
        for (Post p : posts){
