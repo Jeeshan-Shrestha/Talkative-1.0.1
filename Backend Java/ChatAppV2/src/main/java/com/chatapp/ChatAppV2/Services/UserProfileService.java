@@ -123,12 +123,14 @@ public class UserProfileService {
     public String editProfile(MultipartFile avatar,String bio,String displayName,MultipartFile coverPhoto) throws IOException{
         String self = SecurityContextHolder.getContext().getAuthentication().getName();
         Users user = userRepo.findByUsername(self); 
+        if (avatar != null || coverPhoto != null){
         ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(),avatar.getOriginalFilename(),avatar.getContentType());
         ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(),coverPhoto.getOriginalFilename(),coverPhoto.getContentType());
-        user.setDisplayName(displayName);
         user.setAvatar("https://talkative-1-0-1-2.onrender.com/post/image/"+avatarId.toHexString());
-        user.setCoverPhoto("https://talkative-1-0-1-2.onrender.com/post/image/"+coverPhotoId.toHexString());
+        user.setCoverPhoto("https://talkative-1-0-1-2.onrender.com/post/image/"+coverPhotoId.toHexString());  
+        }
         user.setBio(bio);
+        user.setDisplayName(displayName);
        List<Post> posts = user.getPosts();
        for (Post p : posts){
             p.setDisplayName(displayName);

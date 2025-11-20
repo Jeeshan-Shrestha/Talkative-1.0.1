@@ -89,10 +89,10 @@ public class UserProfileController {
 
     @PostMapping("/profile/edit")
     public ResponseEntity<?> editProfile(
-        @RequestPart("avatar") MultipartFile avatar,
+        @RequestPart(value="avatar",required=false) MultipartFile avatar,
         @RequestPart("bio") String bio,
         @RequestPart("displayName") String displayName,
-        @RequestPart("coverPhoto") MultipartFile coverPhoto
+        @RequestPart(value="coverPhoto",required=false) MultipartFile coverPhoto
     ) {
         try {
             String change = userProfileService.editProfile(avatar,bio,displayName,coverPhoto);
