@@ -29,6 +29,8 @@ public class Post {
 
     private int likes;
 
+    private int numberOfComments;
+
     private List<Comment> comments;
 
     private String videoUrl;

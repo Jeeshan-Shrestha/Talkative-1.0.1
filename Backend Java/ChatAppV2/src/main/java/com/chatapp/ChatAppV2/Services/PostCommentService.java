@@ -44,7 +44,10 @@ public class PostCommentService {
             comments = new ArrayList<>();
             
         }
+        
         comments.add(comment);
+        int numberOfComments = comments.size();
+        commentedPost.setNumberOfComments(numberOfComments);
         commentedPost.setComments(comments);
         userRepo.save(postOwner);
         return "Successfully commented";

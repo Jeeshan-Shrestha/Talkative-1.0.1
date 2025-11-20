@@ -89,14 +89,13 @@ public class UserProfileService {
                                 user.getDisplayName(),
                                 user.getAvatar(),
                                 user.getBio(),
-                                user.getFollowers(),
                                 user.getFollowersCount(),
-                                user.getFollowing(),
                                 user.getFollowingCount(),
                                 user.getPosts(),
                                 user.getCoverPhoto(),
                                 user.getJoinDate(),
-                                user.getNumberOfPosts()); 
+                                user.getNumberOfPosts(),
+                                user.getIsFollowing()); 
     }
 
     public UserProfile getSelfProfile()throws Exception{
@@ -109,15 +108,14 @@ public class UserProfileService {
                                 user.getDisplayName(),
                                 user.getAvatar(),
                                 user.getBio(),
-                                user.getFollowers(),
                                 user.getFollowersCount(),
-                                user.getFollowing(),
                                 user.getFollowingCount(),
                                 user.getPosts(),
                                 user.getCoverPhoto(),
                                 user.getJoinDate(),
-                                user.getNumberOfPosts()
-                                ); 
+                                user.getNumberOfPosts(),
+                                user.getIsFollowing()
+                            ); 
     }
 
     public String editProfile(MultipartFile avatar,String bio,String displayName,MultipartFile coverPhoto) throws IOException{
