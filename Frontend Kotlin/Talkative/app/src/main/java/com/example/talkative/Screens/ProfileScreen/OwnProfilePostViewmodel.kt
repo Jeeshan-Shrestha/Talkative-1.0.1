@@ -24,15 +24,16 @@ import kotlin.String
 class OwnProfilePostViewmodel @Inject constructor(private val repository: OwnProfilePostRepository): ViewModel() {
     var item : OwnProfileResponse by mutableStateOf(OwnProfileResponse(message =
         Message(
-             avatar="",
+            avatar="",
          bio="",
          coverPhoto="",
      displayName="",
-     followers=emptyList(),
+     following =false,
      followersCount=0,
-     following=emptyList(),
      followingCount=0,
-     posts=emptyList(), numberOfPosts = 0, joinDate = "",
+     posts=emptyList(),
+            numberOfPosts = 0,
+            joinDate = "",
      username=""
         ), success = false))
     var isLoading: Boolean by mutableStateOf(false)

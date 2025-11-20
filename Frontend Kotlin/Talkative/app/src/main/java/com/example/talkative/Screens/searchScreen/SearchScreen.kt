@@ -1,5 +1,6 @@
 package com.example.talkative.screens.searchScreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,6 +43,7 @@ import com.example.talkative.components.TopBar
 import com.example.talkative.components.UserCard
 import com.example.talkative.model.SearchResponse.Message
 import com.example.talkative.model.SearchResponse.SearchResponse
+import com.example.talkative.navigation.TalkativeScreen
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
 import com.example.talkative.utils.LoadingState
 
@@ -105,6 +107,8 @@ fun SearchScreen(navController: NavController= NavController(LocalContext.curren
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top) {
 
+                //search bar
+
                 OutlinedTextField(value = searchQuery.value,
                     onValueChange = {searchQuery.value=it},
                     placeholder = { Text("Search for people") },
@@ -125,7 +129,9 @@ fun SearchScreen(navController: NavController= NavController(LocalContext.curren
                 //Suggested People
                 PeopleContent(getUsers = getUsers.message,
                     FollowUnFollowViewmodel=FollowUnFollowViewmodel ,
-                    uiState = uiState)
+                    uiState = uiState){username->
+                    navController.navigate(TalkativeScreen.OtherUserProfileScreen.name+"/${username}")
+                }
 
             }
 
@@ -149,7 +155,8 @@ fun SearchScreen(navController: NavController= NavController(LocalContext.curren
 @Composable
 fun PeopleContent(getUsers: List<Message>,
                   FollowUnFollowViewmodel: FollowUnFollowViewModel,
-                  uiState: State<LoadingState>){
+                  uiState: State<LoadingState>,
+                  openUserProfile:(String)-> Unit){
 
     if(uiState.value== LoadingState.LOADING) {
         Column(
@@ -195,7 +202,9 @@ fun PeopleContent(getUsers: List<Message>,
         }
 
         items(getUsers){it->
-            UserCard(user = it){username->
+            UserCard(user = it, onCardClick = {username->
+                //navigate to view profile screen
+                openUserProfile.invoke(username)}){username->
                 FollowUnFollowViewmodel.FollowUnfollowuser(username = username)
             }
         }

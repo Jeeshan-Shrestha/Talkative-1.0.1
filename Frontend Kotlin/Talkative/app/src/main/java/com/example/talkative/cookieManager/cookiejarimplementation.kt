@@ -1,6 +1,7 @@
 package com.example.talkative.cookieManager
 
 import android.content.Context
+import android.util.Log
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
@@ -17,6 +18,8 @@ class AppCookieJar(context: Context) : CookieJar {
     }
 
     override fun loadForRequest(url: HttpUrl): List<Cookie> {
+        val cookies = cookiePreferences.loadCookies()
+        Log.d("CookieJar", "Sending cookies for ${url.host}: $cookies")
         return cookiePreferences.loadCookies() // Loads from SharedPreferences
     }
 
