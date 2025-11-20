@@ -16,11 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.AddComment
-import androidx.compose.material.icons.outlined.ChatBubble
-import androidx.compose.material.icons.outlined.ChatBubbleOutline
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,25 +38,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.imageLoader
 import coil.request.ImageRequest
 import com.example.talkative.R
-import com.example.talkative.model.MockData
-import com.example.talkative.model.Post
+import com.example.talkative.model.OwnProfileResponse.Post
 
 
-
-@Preview
 @Composable
 fun PostCard(
     modifier: Modifier= Modifier.padding(start = 8.dp, end = 8.dp),
-    post: Post= MockData.mockPosts[0],
+    post: Post,
     ownProfile: Boolean=false,
     onUserclick: (String)->Unit ={}
 ){
 
     //state for isLiked
     var isLiked = remember {
-        mutableStateOf(post.isLiked)
+        mutableStateOf(post.liked)
     }
 
     var likescount = remember {
@@ -83,14 +76,15 @@ fun PostCard(
             Row(modifier = Modifier
                 .padding(10.dp)
                 .fillMaxWidth()
-                .clickable{ onUserclick.invoke(post.user.username)},
+                .clickable{ onUserclick.invoke(post.username?:"no username")},
                 horizontalArrangement = Arrangement.Start,
 
                 verticalAlignment = Alignment.CenterVertically){
 
+                //profile Picture
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(post.user.avatar)
+                        .data(post.imageUrl?:"https://i.imgur.com/WTFTkMh.jpeg")
                         .crossfade(true)
                         .build(),
                     placeholder = painterResource(R.drawable.placeholder),
@@ -103,33 +97,33 @@ fun PostCard(
 
                 Column(modifier = Modifier.padding(start = 20.dp)) {
                     Text(
-                        text = post.user.name,
+                        text = post.displayName?:"No name",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
-                        text = "@${post.user.username} • ${post.timestamp}",
+                        text = "@${post.username} • ${post.postDate}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                if(ownProfile){
-               Row(modifier = Modifier.fillMaxWidth(),
-                   horizontalArrangement = Arrangement.End) {
-                   IconButton(onClick = { /* More options */ }) {
-                       Icon(
-                           imageVector = Icons.Default.MoreHoriz,
-                           contentDescription = "More options"
-                       )
-                   }
-               } }
-            }
+//                if(ownProfile){
+//               Row(modifier = Modifier.fillMaxWidth(),
+//                   horizontalArrangement = Arrangement.End) {
+//                   IconButton(onClick = { /* More options */ }) {
+//                       Icon(
+//                           imageVector = Icons.Default.MoreHoriz,
+//                           contentDescription = "More options"
+//                       )
+//                   }
+//               } }
+           }
 
 
 
             // Post content
             Text(
-                text = post.content,
+                text = post.caption?:"nothing is in caption",
                 style = MaterialTheme.typography.bodyMedium,
                 lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
             )
@@ -137,7 +131,7 @@ fun PostCard(
             Spacer(modifier = Modifier.height(15.dp))
 
             //post image
-            post.image?.let{imageUrl->
+            post.imageUrl?.let{imageUrl->
 
                 AsyncImage(
                     model = imageUrl,
@@ -145,9 +139,9 @@ fun PostCard(
                     contentDescription = "Post image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 300.dp)
+                        .heightIn(max = 600.dp)
                         .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.FillBounds
                 )
             }
 
@@ -199,7 +193,7 @@ fun PostCard(
                         )
 
 
-                        Text(text = post.comments.toString(),
+                        Text(text = post.numberOfComments?.toString()?:"0",
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

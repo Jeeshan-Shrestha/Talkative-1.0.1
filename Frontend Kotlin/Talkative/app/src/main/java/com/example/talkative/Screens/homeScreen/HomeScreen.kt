@@ -55,10 +55,10 @@ fun HomeScreen(navController: NavController= NavController(LocalContext.current)
 
                 }
                 items(MockData.mockPosts){posts->
-                    PostCard(post = posts){
-                        //when user clicks the username or name or profile navigate to otheruser screen
-                        navController.navigate(TalkativeScreen.OtherUserProfileScreen.name)
-                    }
+//                    PostCard(post = posts){
+//                        //when user clicks the username or name or profile navigate to otheruser screen
+//                        navController.navigate(TalkativeScreen.OtherUserProfileScreen.name)
+//                    }
                 }
 
             }

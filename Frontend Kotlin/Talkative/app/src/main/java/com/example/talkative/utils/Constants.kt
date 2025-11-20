@@ -12,5 +12,10 @@ object Constants {
 
     const val Post_Url="post"
 
-    const val Own_profile="post"
+    const val Own_profile="profile"
+
+    const val Edit_Profile="profile/edit"
+
+    //view other's profile
+    const val Others_Profile="profile/{username}"
 }

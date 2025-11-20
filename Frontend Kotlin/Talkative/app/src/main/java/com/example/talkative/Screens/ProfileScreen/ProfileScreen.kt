@@ -1,5 +1,8 @@
 package com.example.talkative.screens.ProfileScreen
 
+import android.net.Uri
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,8 +27,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.HorizontalRule
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -35,6 +36,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,86 +50,35 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.example.talkative.R
 import com.example.talkative.components.BottomBar
 import com.example.talkative.components.CreatePostDialouge
 import com.example.talkative.components.PostCard
-import com.example.talkative.components.sansButton
-import com.example.talkative.model.MockData
-import com.example.talkative.model.Post
-import com.example.talkative.model.User
+import com.example.talkative.model.OwnProfileResponse.Message
+import com.example.talkative.model.customDataPassing.ProfileArgument
 import com.example.talkative.navigation.TalkativeScreen
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 
 @Composable
 fun ProfileScreen(
-    username:String = "you",
     createPostViewmodel: CreatePostViewmodel,
-    navController: NavController= NavController(LocalContext.current)
+    ownProfilePostViewmodel: OwnProfilePostViewmodel,
+    navController: NavController
 ){
 
-    val isOwnProfile = username == "you"
 
-    val profileData: User = if(isOwnProfile){
-        MockData.mockUser
-    }else{
-            //else get the user from backend
-            //send id to backend and it will send
-        MockData.mockUser
-    }
-
-    //boolean value for ture or false
-    var isFollowing by remember {
-        mutableStateOf(profileData.isFollowing)
-    }
-
-    var FollowingCount by remember {
-        mutableStateOf(profileData.following)
-    }
-
-    var followersCount by remember {
-        mutableStateOf(profileData.followers)
-    }
-
-    //handle follow
-    val handlefollow = {
-        isFollowing = !isFollowing
-        followersCount= if (isFollowing) followersCount +1 else followersCount-1
-
-    }
 
     //to add posts by clicsking + icon from profile screen
     val showPostDialouge = remember { mutableStateOf(false) }
 
-    // Mock user posts
-    val userPosts = listOf(
-        Post(
-            id = "user-1",
-            user = profileData,
-            content = "Just wrapped up an amazing design workshop with some incredibly talented folks! There's nothing quite like collaborating with passionate creatives. Thanks to everyone who participated! 🎨✨",
-            image = "https://images.unsplash.com/photo-1623715537851-8bc15aa8c145",
-            likes = 156,
-            comments = 23,
-            shares = 8,
-            timestamp = "1d",
-            isLiked = true
-        ),
-        Post(
-            id = "user-2",
-            user = profileData,
-            content = "Saturday morning vibes ☕ Starting the weekend with a perfect cup of coffee and some light reading. What are your weekend plans?",
-            image = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmF2ZWwlMjBsYW5kc2NhcGV8ZW58MXx8fHwxNzU3NzMyMzY3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-            likes = 89,
-            comments = 12,
-            shares = 3,
-            timestamp = "3d"
-        )
-    )
+    val ownProfileData: Message = ownProfilePostViewmodel.item.message
 
     Scaffold(bottomBar = {
         BottomBar(navController=navController){
@@ -150,7 +101,7 @@ fun ProfileScreen(
                         .fillMaxWidth()){
 
                         AsyncImage(
-                            model =profileData.coverImage ?: "https://images.unsplash.com/photo-1501785888041-af3ef285b470" ,
+                            model =ownProfileData.coverPhoto ?: "https://images.unsplash.com/photo-1501785888041-af3ef285b470" ,
                             placeholder = painterResource(R.drawable.placeholder),
                             contentDescription = "Cover Image",
                             modifier = Modifier
@@ -158,11 +109,11 @@ fun ProfileScreen(
                             contentScale = ContentScale.Crop
                         )
                         AsyncImage(
-                            model =profileData.avatar ?: "https://images.unsplash.com/photo-1501785888041-af3ef285b470" ,
+                            model =ownProfileData.avatar ?: "https://i.imgur.com/veVP6GL.png" ,
                             placeholder = painterResource(R.drawable.placeholder),
                             contentDescription = "Profile picture",
                             modifier = Modifier
-                                .offset(x = 20.dp,y=(150).dp)
+                                .offset(x = 20.dp, y = (150).dp)
                                 .size(128.dp)
                                 .clip(CircleShape),
                             contentScale = ContentScale.Crop
@@ -175,11 +126,19 @@ fun ProfileScreen(
                             contentAlignment = Alignment.TopEnd){
 
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-
-                                if(isOwnProfile){
                                     FilledTonalButton(onClick = {
-                                        //edit profile
-                                        navController.navigate(TalkativeScreen.EditProfileScreen.name)
+                                        //encoding only necessary data
+                                        val args = ProfileArgument(
+                                            avatar = ownProfileData.avatar,
+                                            bio = ownProfileData.bio,
+                                            displayName = ownProfileData.displayName,
+                                            coverPhoto = ownProfileData.coverPhoto
+                                        )
+
+                                        // Save to SavedStateHandle of the EditProfileScreen's back stack entry
+                                        navController.currentBackStackEntry?.savedStateHandle?.set("profileArg", args)
+
+                                        navController.navigate(TalkativeScreen.EditProfileScreen.name )
                                     },
                                         colors = ButtonDefaults.buttonColors(Color.White)){
                                         Icon(imageVector = Icons.Default.Edit,
@@ -209,15 +168,6 @@ fun ProfileScreen(
                                         )
                                     }
 
-
-                                }else{
-                                    IconButton(onClick = {}) {
-                                        Icon(
-                                            imageVector = Icons.Default.HorizontalRule,
-                                            contentDescription = "More"
-                                        )
-                                    }
-                                }
                             }
                         }
                     }
@@ -229,23 +179,6 @@ fun ProfileScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ){
 
-                        //Avatar (ocverlapping cover image)
-//                        Row(modifier = Modifier,
-//                            verticalAlignment = Alignment.Bottom,
-//                            horizontalArrangement = Arrangement.SpaceBetween){
-//
-//                            AsyncImage(
-//                                model =profileData.avatar ?: "https://images.unsplash.com/photo-1501785888041-af3ef285b470" ,
-//                                placeholder = painterResource(R.drawable.placeholder),
-//                                contentDescription = "Profile picture",
-//                                modifier = Modifier
-//                                    .offset(y=(-100).dp)
-//                                    .size(128.dp)
-//                                    .clip(CircleShape),
-//                                contentScale = ContentScale.Crop
-//                            )
-//                        }
-
                         //Spacer
                         Spacer(modifier = Modifier.height(25.dp))
 
@@ -255,34 +188,17 @@ fun ProfileScreen(
                             .padding(10.dp),
                             verticalArrangement = Arrangement.spacedBy(5.dp),) {
 
-                            //follow and following button
-                            if(!isOwnProfile){
-                                //button
-                                sansButton(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textcolor = if(isFollowing) Color.Black else Color.White,
-                                    text =if (isFollowing) "Following" else "Follow",
-                                    icon = false,
-                                    color =  if (isFollowing)
-                                        Color.White
-                                    else
-                                        Color.Black
-                                ){
-                                    handlefollow.invoke()
-                                }
-                            }
-
                             //Name and username of the people
-                            Text(text = profileData.name ?:"unknown",
+                            Text(text = ownProfileData.displayName?:"unknown",
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold)
 
-                            Text(text = profileData.username?:"username",
+                            Text(text = ownProfileData.username?:"username",
                                 style=MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                             //Bio
-                            profileData.bio?.let { it->
+                            ownProfileData.bio?.let { it->
                                 Text(text = it,
                                     style = MaterialTheme.typography.bodyMedium,
                                     lineHeight = MaterialTheme.typography.bodyMedium.lineHeight)
@@ -291,32 +207,32 @@ fun ProfileScreen(
                             //Meta info website , joined date etc
                             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
 
-                                //website link
+//                                //website link
+//                                Row(verticalAlignment = Alignment.CenterVertically,
+//                                    horizontalArrangement = Arrangement.spacedBy(10.dp)){
+//
+//                                   profileData.website?.let {it->
+//                                       Icon(imageVector = Icons.Default.Link,
+//                                           contentDescription = "Website",
+//                                           modifier = Modifier.size(18.dp),
+//                                           tint = MaterialTheme.colorScheme.primary)
+//
+//                                       Text(text = it?: "No link",
+//                                           style = MaterialTheme.typography.bodyMedium,
+//                                           color=MaterialTheme.colorScheme.primary)
+//                                   }
+//                                }
+
                                 Row(verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(10.dp)){
 
-                                   profileData.website?.let {it->
-                                       Icon(imageVector = Icons.Default.Link,
-                                           contentDescription = "Website",
-                                           modifier = Modifier.size(18.dp),
-                                           tint = MaterialTheme.colorScheme.primary)
-
-                                       Text(text = it?: "No link",
-                                           style = MaterialTheme.typography.bodyMedium,
-                                           color=MaterialTheme.colorScheme.primary)
-                                   }
-                                }
-
-                                Row(verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)){
-
-                                    profileData.joinDate?.let {it->
+                                    ownProfileData.joinDate?.let {it->
                                         Icon(imageVector = Icons.Default.CalendarToday,
-                                            contentDescription = "Website",
+                                            contentDescription = "Date",
                                             modifier = Modifier.size(18.dp),
                                             tint = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                                        Text(text = it?: "No link",
+                                        Text(text = it?: "No Date",
                                             style = MaterialTheme.typography.bodyMedium,
                                             color=MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
@@ -328,7 +244,7 @@ fun ProfileScreen(
 
                                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
-                                    Text(text = profileData.posts.toString(),
+                                    Text(text = ownProfileData.numberOfPosts?.toString()?:"0",
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.Bold)
 
@@ -339,7 +255,7 @@ fun ProfileScreen(
 
                                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
-                                    Text(text = profileData.followers.toString(),
+                                    Text(text = ownProfileData.followersCount.toString(),
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.Bold)
 
@@ -350,7 +266,7 @@ fun ProfileScreen(
 
                                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
-                                    Text(text = profileData.following.toString(),
+                                    Text(text = ownProfileData.followingCount.toString()?:"0",
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.Bold)
 
@@ -364,12 +280,16 @@ fun ProfileScreen(
                     }
                 }
 
+
                 //Content Tabs Posts
-              items(userPosts){posts->
-                  PostCard(post = posts,
-                      modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
-                    ownProfile =true)
-              }
+                ownProfileData.posts?.let { posts ->
+                    items(posts) { post ->
+                        PostCard(post = post,
+                            modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
+                            ownProfile = true)
+                    }
+                }
+
 
             }
             if(showPostDialouge.value){

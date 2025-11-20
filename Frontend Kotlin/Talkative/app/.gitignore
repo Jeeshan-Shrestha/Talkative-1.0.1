@@ -1,1 +1,26 @@
 /build
+# Gradle
+.gradle/
+build/
+*/build/
+
+# Local configuration
+*.iml
+.idea/
+local.properties
+
+# Logs
+*.log
+
+# Kotlin
+*.kotlin_module
+
+# Android
+captures/
+output.json
+
+# Jetpack Compose previews
+*.preview
+
+# Others
+.DS_Store

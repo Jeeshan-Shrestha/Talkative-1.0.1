@@ -1,5 +1,6 @@
 package com.example.talkative.screens.ProfileScreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,8 +71,26 @@ import com.example.talkative.screens.CreatePost.CreatePostViewmodel
 @Composable
 fun OtherUserProflieScreen(
     createPostViewmodel: CreatePostViewmodel,
-    navController: NavController= NavController(LocalContext.current)
+    OtherUserProfileViewModel: OtherUserProfileViewModel,
+    navController: NavController= NavController(LocalContext.current),
+    otherUsername: String?
 ){
+
+    val uiState= OtherUserProfileViewModel.state.collectAsState()
+
+    val userInfo = OtherUserProfileViewModel.item.message
+
+   // Log.d("akriti", "from ui screen screen: ${userInfo} ")
+
+    LaunchedEffect(otherUsername) {
+        if(!otherUsername.isNullOrEmpty()){
+
+            otherUsername?.let {it->
+                OtherUserProfileViewModel.OtherUserProfile(it)
+
+            }
+        }
+    }
 
     val profileData: User = MockData.mockUser
 
@@ -143,7 +164,7 @@ fun OtherUserProflieScreen(
                         .fillMaxWidth()){
 
                         AsyncImage(
-                            model =profileData.coverImage ?: "https://images.unsplash.com/photo-1501785888041-af3ef285b470" ,
+                            model =userInfo.coverPhoto?: "https://images.unsplash.com/photo-1501785888041-af3ef285b470" ,
                             placeholder = painterResource(R.drawable.placeholder),
                             contentDescription = "Cover Image",
                             modifier = Modifier
@@ -151,11 +172,11 @@ fun OtherUserProflieScreen(
                             contentScale = ContentScale.Crop
                         )
                         AsyncImage(
-                            model =profileData.avatar ?: "https://images.unsplash.com/photo-1501785888041-af3ef285b470" ,
+                            model =userInfo.avatar ?: "https://i.imgur.com/veVP6GL.png" ,
                             placeholder = painterResource(R.drawable.placeholder),
                             contentDescription = "Profile picture",
                             modifier = Modifier
-                                .offset(x = 20.dp,y=(150).dp)
+                                .offset(x = 20.dp, y = (150).dp)
                                 .size(128.dp)
                                 .clip(CircleShape),
                             contentScale = ContentScale.Crop
@@ -218,11 +239,11 @@ fun OtherUserProflieScreen(
                             verticalArrangement = Arrangement.spacedBy(5.dp),) {
 
                             //Name and username of the people
-                            Text(text = profileData.name ?:"unknown",
+                            Text(text = userInfo.displayName?:"unknown",
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold)
 
-                            Text(text = profileData.username?:"username",
+                            Text(text = userInfo.username?:"username",
                                 style=MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
 
@@ -242,7 +263,7 @@ fun OtherUserProflieScreen(
 
 
                             //Bio
-                            profileData.bio?.let { it->
+                            userInfo.bio?.let { it->
                                 Text(text = it,
                                     style = MaterialTheme.typography.bodyMedium,
                                     lineHeight = MaterialTheme.typography.bodyMedium.lineHeight)
@@ -252,31 +273,31 @@ fun OtherUserProflieScreen(
                             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
 
                                 //website link
+//                                Row(verticalAlignment = Alignment.CenterVertically,
+//                                    horizontalArrangement = Arrangement.spacedBy(10.dp)){
+//
+//                                    profileData.website?.let {it->
+//                                        Icon(imageVector = Icons.Default.Link,
+//                                            contentDescription = "Website",
+//                                            modifier = Modifier.size(18.dp),
+//                                            tint = MaterialTheme.colorScheme.primary)
+//
+//                                        Text(text = it?: "No link",
+//                                            style = MaterialTheme.typography.bodyMedium,
+//                                            color=MaterialTheme.colorScheme.primary)
+//                                    }
+//                                }
+
                                 Row(verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(10.dp)){
 
-                                    profileData.website?.let {it->
-                                        Icon(imageVector = Icons.Default.Link,
-                                            contentDescription = "Website",
-                                            modifier = Modifier.size(18.dp),
-                                            tint = MaterialTheme.colorScheme.primary)
-
-                                        Text(text = it?: "No link",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color=MaterialTheme.colorScheme.primary)
-                                    }
-                                }
-
-                                Row(verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)){
-
-                                    profileData.joinDate?.let {it->
+                                    userInfo.joinDate?.let {it->
                                         Icon(imageVector = Icons.Default.CalendarToday,
                                             contentDescription = "Website",
                                             modifier = Modifier.size(18.dp),
                                             tint = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                                        Text(text = it?: "No link",
+                                        Text(text = it?: "No Date",
                                             style = MaterialTheme.typography.bodyMedium,
                                             color=MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
@@ -288,7 +309,7 @@ fun OtherUserProflieScreen(
 
                                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
-                                    Text(text = profileData.posts.toString(),
+                                    Text(text = userInfo.numberOfPosts.toString(),
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.Bold)
 
@@ -299,7 +320,7 @@ fun OtherUserProflieScreen(
 
                                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
-                                    Text(text = profileData.followers.toString(),
+                                    Text(text = userInfo.followersCount.toString(),
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.Bold)
 
@@ -310,7 +331,7 @@ fun OtherUserProflieScreen(
 
                                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
-                                    Text(text = profileData.following.toString(),
+                                    Text(text = userInfo.followingCount.toString(),
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.Bold)
 
@@ -325,11 +346,20 @@ fun OtherUserProflieScreen(
                 }
 
                 //Content Tabs Posts
-                items(userPosts){posts->
-                    PostCard(post = posts,
-                        modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
-                        ownProfile =false)
+
+                //Content Tabs Posts
+                userInfo.posts?.let { posts ->
+                    items(posts) { post ->
+                        PostCard(post = post,
+                            modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
+                            ownProfile = false)
+                    }
                 }
+//                items(userInfo.posts){posts->
+//                    PostCard(post = posts,
+//                        modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
+//                        ownProfile =false)
+//                }
 
             }
             if(showPostDialouge.value){
