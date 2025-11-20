@@ -3,17 +3,20 @@ package com.chatapp.ChatAppV2.Models;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.stereotype.Component;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
 public class Post {
 
+    @Id
     private String id;
 
     private String username;
@@ -26,7 +29,7 @@ public class Post {
 
     private int likes;
 
-    private List<String> comments;
+    private List<Comment> comments;
 
     private String videoUrl;
 
@@ -45,4 +48,6 @@ public class Post {
     public void setLiked(boolean liked){
         this.liked = liked;
     }
+
+    
 }
