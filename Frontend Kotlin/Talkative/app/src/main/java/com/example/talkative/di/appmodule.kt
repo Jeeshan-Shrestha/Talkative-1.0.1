@@ -1,6 +1,7 @@
 package com.example.talkative.di
 
 import android.content.Context
+import coil.ImageLoader
 import com.example.talkative.cookieManager.AppCookieJar
 import com.example.talkative.network.network
 import com.example.talkative.utils.Constants
@@ -25,6 +26,7 @@ object appmodule {
         return AppCookieJar(context)
     }
 
+
     @Singleton
     @Provides
     fun provideOkHttpClient(cookieJar: AppCookieJar): OkHttpClient {
@@ -48,5 +50,18 @@ object appmodule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(network::class.java)
+    }
+
+
+    //passing cookies on async image with each request
+    @Singleton
+    @Provides
+    fun provideImageLoader(
+        @ApplicationContext context: Context,
+        okHttpClient: OkHttpClient
+    ): ImageLoader {
+        return ImageLoader.Builder(context)
+            .okHttpClient { okHttpClient } // using  client with cookies
+            .build()
     }
 }

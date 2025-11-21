@@ -41,6 +41,7 @@ import com.example.talkative.model.User
 
 @Composable
 fun UserCard(user: Message,
+             onCardClick:(String)-> Unit, //open user Profilie
              onClick:(String)-> Unit={}){
 
 
@@ -61,6 +62,7 @@ fun UserCard(user: Message,
         .fillMaxWidth()
         .clickable{
             //we will navigate to user Profile when Clicked
+            onCardClick.invoke(user.username)
         },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border =BorderStroke(2.dp, Color.LightGray),
