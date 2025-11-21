@@ -1,6 +1,7 @@
 package com.chatapp.ChatAppV2.Services;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.chatapp.ChatAppV2.Exceptions.SelfFollowException;
 import com.chatapp.ChatAppV2.Models.Post;
+import com.chatapp.ChatAppV2.Models.PostDTO;
 import com.chatapp.ChatAppV2.Models.UserProfile;
 import com.chatapp.ChatAppV2.Models.Users;
 import com.chatapp.ChatAppV2.Repository.UserRepostory;
@@ -27,6 +29,9 @@ public class UserProfileService {
 
     @Autowired
     private GridFsTemplate gridFsTemplate;
+
+    @Autowired
+    private PostService postService;
 
 
     public Set<String> getAllFollowers(String username){
@@ -86,14 +91,22 @@ public class UserProfileService {
         if (user == null){
             throw new UsernameNotFoundException("User doesnt exist");
         }
- 
+
+        List<Post> posts = user.getPosts();
+        if (posts == null) {
+            posts = new ArrayList<>();
+        }
+
+        List<PostDTO> dto = postService.convertPostsToDTO(posts);
+
+
         return new UserProfile(user.getUsername(),
                                 user.getDisplayName(),
                                 user.getAvatar(),
                                 user.getBio(),
                                 user.getFollowersCount(),
                                 user.getFollowingCount(),
-                                user.getPosts(),
+                                dto,
                                 user.getCoverPhoto(),
                                 user.getJoinDate(),
                                 user.getNumberOfPosts(),
@@ -106,13 +119,20 @@ public class UserProfileService {
         if (user == null){
             throw new UsernameNotFoundException("User doesnt exist");
         }
+
+        List<Post> posts = user.getPosts();
+        if (posts == null) {
+            posts = new ArrayList<>();
+        }
+
+        List<PostDTO> dto = postService.convertPostsToDTO(posts);
         return new UserProfile(user.getUsername(),
                                 user.getDisplayName(),
                                 user.getAvatar(),
                                 user.getBio(),
                                 user.getFollowersCount(),
                                 user.getFollowingCount(),
-                                user.getPosts(),
+                                dto,
                                 user.getCoverPhoto(),
                                 user.getJoinDate(),
                                 user.getNumberOfPosts(),

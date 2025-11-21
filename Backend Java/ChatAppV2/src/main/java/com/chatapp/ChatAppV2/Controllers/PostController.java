@@ -22,12 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.chatapp.ChatAppV2.Models.BackendResponse;
-import com.chatapp.ChatAppV2.Models.Post;
+import com.chatapp.ChatAppV2.Models.PostDTO;
 import com.chatapp.ChatAppV2.Services.PostService;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import io.jsonwebtoken.io.IOException;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 
@@ -44,7 +43,7 @@ public class PostController {
     @GetMapping("/{username}")
     public ResponseEntity<?> getPostsFromUser(@PathVariable String username){
         try{
-            List<Post> postsFromUser = postService.getPostsFromUser(username);
+            List<PostDTO> postsFromUser = postService.getPostsFromUser(username);
             return ResponseEntity.ok().body(new BackendResponse(true,postsFromUser));
         }catch(UsernameNotFoundException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BackendResponse(false,e.getMessage()));
@@ -57,7 +56,7 @@ public class PostController {
     @GetMapping
     public ResponseEntity<?> getSelfPost(){
         try{
-            List<Post> postsFromUser = postService.getSelfPost();
+            List<PostDTO> postsFromUser = postService.getSelfPost();
             return ResponseEntity.ok().body(new BackendResponse(true,postsFromUser));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BackendResponse(false,"something went wrong"));

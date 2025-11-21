@@ -2,21 +2,20 @@ package com.chatapp.ChatAppV2.Models;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Component
-public class Post {
-
+@Builder
+@AllArgsConstructor
+public class PostDTO {
+    
     @Id
     private String id;
 
@@ -40,8 +39,8 @@ public class Post {
 
     private LocalDate postDate;
 
-    private Set<String> likedBy;
-
     private String avatar;
-  
+
+    private boolean liked;
+    
 }
