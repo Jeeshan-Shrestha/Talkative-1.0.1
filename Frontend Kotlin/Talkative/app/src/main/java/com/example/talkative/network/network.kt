@@ -7,6 +7,7 @@ import com.example.talkative.model.FollowUnfollowResponse.FollowUnFollowResponse
 import com.example.talkative.model.LoginRequest.LoginRequest
 import com.example.talkative.model.LoginResponse.LoginResponse
 import com.example.talkative.model.OwnProfileResponse.OwnProfileResponse
+import com.example.talkative.model.PostLikeResponse.PostLikeResponse
 import com.example.talkative.model.SearchResponse.SearchResponse
 import com.example.talkative.model.SignupResponse.SignupResponse
 import com.example.talkative.model.signupRequest.SignupRequest
@@ -76,5 +77,11 @@ interface network {
     suspend fun OtherUserProfile(
         @Path("username") username: String
     ): OtherUsreProfileResponse
+
+    //like and unlike
+    @GET(value = Constants.like_unlike)
+    suspend fun LikeUnLike(
+        @Query(value="id") id: String,
+        @Query(value="likedUsername") likedUsername:String): PostLikeResponse
 
 }

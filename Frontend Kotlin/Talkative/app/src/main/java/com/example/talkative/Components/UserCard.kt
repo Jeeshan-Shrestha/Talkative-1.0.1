@@ -74,9 +74,11 @@ fun UserCard(user: Message,
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
 
+            //avatar
+
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(user.avatar?:"https://i.imgur.com/WTFTkMh.jpeg")
+                    .data(user.avatar?:"https://i.imgur.com/veVP6GL.png")
                     .crossfade(true)
                     .build(),
                 placeholder = painterResource(R.drawable.placeholder),

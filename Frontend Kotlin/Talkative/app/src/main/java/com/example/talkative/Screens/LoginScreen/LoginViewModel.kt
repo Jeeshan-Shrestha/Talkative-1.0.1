@@ -76,4 +76,10 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
         }
     }
 
+    fun logoutTeacher(){
+        viewModelScope.launch {
+            repository.logOutUser()
+        }
+    }
+
 }

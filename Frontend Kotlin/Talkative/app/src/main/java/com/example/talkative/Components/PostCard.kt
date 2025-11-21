@@ -37,17 +37,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.example.talkative.R
 import com.example.talkative.model.OwnProfileResponse.Post
+import com.example.talkative.screens.ProfileScreen.LikeUnLikeViewModel
 
 
 @Composable
 fun PostCard(
     modifier: Modifier= Modifier.padding(start = 8.dp, end = 8.dp),
     post: Post,
+    LikeunLikeViewModel: LikeUnLikeViewModel= hiltViewModel(),
     ownProfile: Boolean=false,
     onUserclick: (String)->Unit ={}
 ){
@@ -84,7 +87,7 @@ fun PostCard(
                 //profile Picture
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(post.imageUrl?:"https://i.imgur.com/WTFTkMh.jpeg")
+                        .data(post.avatar?:"https://i.imgur.com/veVP6GL.png")
                         .crossfade(true)
                         .build(),
                     placeholder = painterResource(R.drawable.placeholder),
@@ -158,7 +161,14 @@ fun PostCard(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(9.dp),
-                        modifier = Modifier.clickable{ handlelike.invoke() }
+                        modifier = Modifier.clickable{
+                            //user clicks like button
+                            handlelike.invoke()
+                            post.username?.let {it->
+                                LikeunLikeViewModel.LikeUnLikePost(id=post.id,
+                                    username = it)
+                            }
+                        }
                     ) {
                         Icon(
                             imageVector = if (isLiked.value) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
@@ -166,7 +176,6 @@ fun PostCard(
                             tint = if (isLiked.value) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(30.dp)
                         )
-
 
                         Text(
                             text = likescount.value.toString(),

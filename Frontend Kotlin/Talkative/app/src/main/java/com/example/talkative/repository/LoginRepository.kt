@@ -50,7 +50,7 @@ class LoginRepository @Inject constructor(
     }
 
     //for coookeis
-    fun logoutTeacher() {
+    fun logOutUser() {
         cookieJar.clearCookies()
     }
 

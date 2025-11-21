@@ -57,20 +57,25 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.talkative.R
 import com.example.talkative.components.BottomBar
 import com.example.talkative.components.CreatePostDialouge
+import com.example.talkative.components.DropdownMenuWithDetails
 import com.example.talkative.components.PostCard
 import com.example.talkative.model.OwnProfileResponse.Message
 import com.example.talkative.model.customDataPassing.ProfileArgument
 import com.example.talkative.navigation.TalkativeScreen
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
+import com.example.talkative.screens.LoginScreen.LoginViewModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.math.exp
 
 
 @Composable
 fun ProfileScreen(
     createPostViewmodel: CreatePostViewmodel,
+    loginViewmodel: LoginViewModel,
     ownProfilePostViewmodel: OwnProfilePostViewmodel,
-    navController: NavController
+    navController: NavController,
+    LikeUnLikeViewModel: LikeUnLikeViewModel
 ){
 
 
@@ -79,6 +84,11 @@ fun ProfileScreen(
     val showPostDialouge = remember { mutableStateOf(false) }
 
     val ownProfileData: Message = ownProfilePostViewmodel.item.message
+
+    //show dropdown when user presses settings button
+    val expanded = remember {
+        mutableStateOf(false)
+    }
 
     Scaffold(bottomBar = {
         BottomBar(navController=navController){
@@ -126,6 +136,34 @@ fun ProfileScreen(
                             contentAlignment = Alignment.TopEnd){
 
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+                                //Drop down menu and settings button
+                                DropdownMenuWithDetails(expanded= expanded.value, logOutUser = {
+                                    //logout User
+                                    loginViewmodel.logoutTeacher()
+                                    navController.navigate("auth"){
+                                        popUpTo("main"){
+                                            inclusive=true //when user hit's back they can't be loggined
+                                        }
+                                        launchSingleTop=true
+                                    }
+
+                                }){
+                                    expanded.value=false
+                                }
+                                FilledTonalButton(onClick = {
+                                    //settings button
+                                    expanded.value=true
+                                },
+                                    colors = ButtonDefaults.buttonColors(Color.White)) {
+                                    Icon(
+                                        imageVector = Icons.Default.Settings,
+                                        tint = Color.Black,
+                                        modifier = Modifier.size(16.dp),
+                                        contentDescription = "Settings Button"
+                                    )
+                                }
+
                                     FilledTonalButton(onClick = {
                                         //encoding only necessary data
                                         val args = ProfileArgument(
@@ -155,18 +193,6 @@ fun ProfileScreen(
 //                                        Icon(imageVector = Icons.Default.Settings,
 //                                            contentDescription = "Settings")
 //                                    }
-
-                                    FilledTonalButton(onClick = {
-                                        //settings button
-                                    },
-                                        colors = ButtonDefaults.buttonColors(Color.White)) {
-                                        Icon(
-                                            imageVector = Icons.Default.Settings,
-                                            tint = Color.Black,
-                                            modifier = Modifier.size(16.dp),
-                                            contentDescription = "Settings Button"
-                                        )
-                                    }
 
                             }
                         }
@@ -285,6 +311,7 @@ fun ProfileScreen(
                 ownProfileData.posts?.let { posts ->
                     items(posts) { post ->
                         PostCard(post = post,
+                            LikeunLikeViewModel=LikeUnLikeViewModel,
                             modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
                             ownProfile = true)
                     }

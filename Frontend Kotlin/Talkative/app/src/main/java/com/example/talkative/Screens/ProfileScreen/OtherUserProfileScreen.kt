@@ -21,9 +21,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.HorizontalRule
-import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -66,12 +63,15 @@ import com.example.talkative.model.Post
 import com.example.talkative.model.User
 import com.example.talkative.navigation.TalkativeScreen
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
+import com.example.talkative.screens.searchScreen.FollowUnFollowViewModel
 
 
 @Composable
 fun OtherUserProflieScreen(
     createPostViewmodel: CreatePostViewmodel,
+    FollowunFollowViewModel: FollowUnFollowViewModel,
     OtherUserProfileViewModel: OtherUserProfileViewModel,
+    likeUnLikeViewModel: LikeUnLikeViewModel,
     navController: NavController= NavController(LocalContext.current),
     otherUsername: String?
 ){
@@ -80,7 +80,7 @@ fun OtherUserProflieScreen(
 
     val userInfo = OtherUserProfileViewModel.item.message
 
-   // Log.d("akriti", "from ui screen screen: ${userInfo} ")
+    Log.d("akriti", "from ui screen screen: ${userInfo} ")
 
     LaunchedEffect(otherUsername) {
         if(!otherUsername.isNullOrEmpty()){
@@ -92,21 +92,33 @@ fun OtherUserProflieScreen(
         }
     }
 
+    var followersCount by remember {
+        mutableStateOf(0)
+    }
+    var isFollowing by remember {
+        mutableStateOf(false)
+    }
+
+
+    LaunchedEffect(userInfo) {
+         isFollowing = userInfo.following
+         followersCount = userInfo.followersCount
+
+    }
+
     val profileData: User = MockData.mockUser
 
 
     //boolean value for ture or false
-    var isFollowing by remember {
-        mutableStateOf(profileData.isFollowing)
-    }
-
-    var FollowingCount by remember {
-        mutableStateOf(profileData.following)
-    }
-
-    var followersCount by remember {
-        mutableStateOf(profileData.followers)
-    }
+//    var isFollowing by remember {
+//        mutableStateOf(userInfo.isFollowing)
+//    }
+//
+//
+//    var followersCount by remember {
+//        mutableStateOf(userInfo.followersCount)
+//    }
+//
 
     //handle follow
     val handlefollow = {
@@ -256,9 +268,10 @@ fun OtherUserProflieScreen(
                                 color =  if (isFollowing)
                                     Color.White
                                 else
-                                    Color.Black
-                            ){
+                                    Color.Black){
                                 handlefollow.invoke()
+                                FollowunFollowViewModel.FollowUnfollowuser(userInfo.username)
+
                             }
 
 
@@ -319,8 +332,7 @@ fun OtherUserProflieScreen(
                                 }
 
                                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-
-                                    Text(text = userInfo.followersCount.toString(),
+                                    Text(text = followersCount.toString(),
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.Bold)
 
@@ -351,6 +363,7 @@ fun OtherUserProflieScreen(
                 userInfo.posts?.let { posts ->
                     items(posts) { post ->
                         PostCard(post = post,
+                            LikeunLikeViewModel = likeUnLikeViewModel,
                             modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
                             ownProfile = false)
                     }

@@ -18,4 +18,8 @@ object Constants {
 
     //view other's profile
     const val Others_Profile="profile/{username}"
+
+
+    //like unlike
+    const val like_unlike="post/like"
 }

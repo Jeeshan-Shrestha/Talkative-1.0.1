@@ -19,6 +19,7 @@ import com.example.talkative.screens.EditProfileScreen.EditProfileViewModel
 import com.example.talkative.screens.HomeScreen.HomeScreen
 import com.example.talkative.screens.LoginScreen.LoginScreen
 import com.example.talkative.screens.LoginScreen.LoginViewModel
+import com.example.talkative.screens.ProfileScreen.LikeUnLikeViewModel
 import com.example.talkative.screens.ProfileScreen.OtherUserProfileViewModel
 import com.example.talkative.screens.ProfileScreen.OtherUserProflieScreen
 import com.example.talkative.screens.ProfileScreen.OwnProfilePostViewmodel
@@ -94,10 +95,17 @@ fun TalkativeNavigation(){
             composable(TalkativeScreen.ProfileScreen.name) {
                 val createPostViewmodel=hiltViewModel<CreatePostViewmodel>()
 
+                val loginViewModel= hiltViewModel<LoginViewModel>()
+
                 val  OwnProfilePostViewmodel=hiltViewModel<OwnProfilePostViewmodel>()
+
+                //like unlike viewmodel
+                val LikeUnLikeViewModel = hiltViewModel<LikeUnLikeViewModel>()
 
                 ProfileScreen(navController = navController,
                     createPostViewmodel = createPostViewmodel,
+                    loginViewmodel=loginViewModel,
+                    LikeUnLikeViewModel= LikeUnLikeViewModel,
                     ownProfilePostViewmodel = OwnProfilePostViewmodel)
             }
 
@@ -116,8 +124,19 @@ fun TalkativeNavigation(){
                 val userName = backStackEntry.arguments?.getString("username")
                 val createPostViewmodel=hiltViewModel<CreatePostViewmodel>()
 
+                //follow un follow viewmodel
+                val FollowunFollowViewModel = hiltViewModel<FollowUnFollowViewModel>()
+
                 val OtherUserProfileViewModel = hiltViewModel<OtherUserProfileViewModel>()
-                OtherUserProflieScreen(navController = navController,createPostViewmodel=createPostViewmodel,otherUsername=userName,
+
+                //like unlike viewmodel
+                val likeUnLikeViewModel=hiltViewModel<LikeUnLikeViewModel>()
+
+                OtherUserProflieScreen(navController = navController,
+                    FollowunFollowViewModel=FollowunFollowViewModel,
+                    createPostViewmodel=createPostViewmodel,
+                    otherUsername=userName,
+                    likeUnLikeViewModel=likeUnLikeViewModel,
                     OtherUserProfileViewModel= OtherUserProfileViewModel)
             }
         }

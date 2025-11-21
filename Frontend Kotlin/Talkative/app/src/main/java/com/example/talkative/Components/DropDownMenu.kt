@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Feedback
+import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Password
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
@@ -25,34 +27,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-
 @Composable
-fun DropdownMenuWithDetails() {
-    var expanded by remember { mutableStateOf(false) }
+fun DropdownMenuWithDetails(expanded: Boolean,
+                            logOutUser:()-> Unit,
+                            onDismiss:()-> Unit) {
+
+
         DropdownMenu(
-            expanded = true,
-            onDismissRequest = { expanded = false }
+            expanded = expanded,
+            onDismissRequest = onDismiss
         ) {
+
             // First section
             DropdownMenuItem(
                 text = { Text("Change password") },
-                leadingIcon = { Icon(Icons.Outlined.Password, contentDescription = null) },
-                onClick = { /* Do something... */ }
-            )
-            DropdownMenuItem(
-                text = { Text("Settings") },
-                leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
-                onClick = { /* Do something... */ }
+                leadingIcon = { Icon(Icons.Outlined.Password, contentDescription = "change password") },
+                onClick = {  }
             )
 
+            DropdownMenuItem(
+                text = { Text("Logout") },
+                leadingIcon = { Icon(Icons.AutoMirrored.Outlined.Logout, contentDescription = "logout") },
+                onClick = { logOutUser.invoke() }
+            )
             HorizontalDivider()
-
-            // Second section
-            DropdownMenuItem(
-                text = { Text("Send Feedback") },
-                leadingIcon = { Icon(Icons.Outlined.Feedback, contentDescription = null) },
-                trailingIcon = { Icon(Icons.AutoMirrored.Outlined.Send, contentDescription = null) },
-                onClick = { /* Do something... */ }
-            )
     }
 }
+
+
