@@ -87,19 +87,22 @@ public class UserProfileService {
     }
 
     public UserProfile getUserProfile(String username)throws Exception{
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         Users user = userRepo.findByUsername(username); 
         if (user == null){
             throw new UsernameNotFoundException("User doesnt exist");
         }
-
         List<Post> posts = user.getPosts();
         if (posts == null) {
             posts = new ArrayList<>();
         }
-
+        boolean isFollowing = false;
         List<PostDTO> dto = postService.convertPostsToDTO(posts);
-
-
+        if (user.getFollowers().contains(currentUser)){
+            isFollowing = true;
+        }else{
+            isFollowing = false;
+        }
         return new UserProfile(user.getUsername(),
                                 user.getDisplayName(),
                                 user.getAvatar(),
@@ -110,7 +113,7 @@ public class UserProfileService {
                                 user.getCoverPhoto(),
                                 user.getJoinDate(),
                                 user.getNumberOfPosts(),
-                                user.getIsFollowing()); 
+                                isFollowing); 
     }
 
     public UserProfile getSelfProfile()throws Exception{
