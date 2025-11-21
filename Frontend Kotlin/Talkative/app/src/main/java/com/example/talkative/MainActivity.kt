@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
             TalkativeTheme {
                 myApp {
                     TalkativeNavigation()
+                    //Hello world
                 }
             }
         }
