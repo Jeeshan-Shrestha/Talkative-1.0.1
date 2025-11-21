@@ -132,7 +132,7 @@ public class UserProfileService {
         user.setBio(bio);
         user.setDisplayName(displayName);
        List<Post> posts = user.getPosts();
-       if (posts != null){
+       if (posts != null && avatar != null){
        for (Post p : posts){
             ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(),avatar.getOriginalFilename(),avatar.getContentType());
             p.setDisplayName(displayName);
