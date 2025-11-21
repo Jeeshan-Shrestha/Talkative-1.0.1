@@ -60,6 +60,7 @@ public class UserProfileService {
             followedByUser.setFollowingCount(followedByUser.getFollowingCount() - 1);
             followedToUser.setFollowers(followers);
             followedToUser.setFollowersCount(followedToUser.getFollowersCount() - 1);
+            followedToUser.setIsFollowing(false);
             userRepo.save(followedByUser);
             userRepo.save(followedToUser);
 
@@ -74,7 +75,7 @@ public class UserProfileService {
         followedByUser.setFollowingCount(followedByUser.getFollowingCount() + 1);
         followedToUser.setFollowers(followers);
         followedToUser.setFollowersCount(followedToUser.getFollowersCount() + 1);
-
+        followedToUser.setIsFollowing(true);
         userRepo.save(followedByUser);
         userRepo.save(followedToUser);
         return followedBy + " followed " + followedTo;
@@ -85,6 +86,7 @@ public class UserProfileService {
         if (user == null){
             throw new UsernameNotFoundException("User doesnt exist");
         }
+ 
         return new UserProfile(user.getUsername(),
                                 user.getDisplayName(),
                                 user.getAvatar(),
@@ -130,9 +132,13 @@ public class UserProfileService {
         user.setBio(bio);
         user.setDisplayName(displayName);
        List<Post> posts = user.getPosts();
+       if (posts != null){
        for (Post p : posts){
+            ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(),avatar.getOriginalFilename(),avatar.getContentType());
             p.setDisplayName(displayName);
+            p.setAvatar("https://talkative-1-0-1-2.onrender.com/post/image/"+avatarId.toHexString());
        }
+    }
         userRepo.save(user);
         return "Edited Succesfully";
     }
