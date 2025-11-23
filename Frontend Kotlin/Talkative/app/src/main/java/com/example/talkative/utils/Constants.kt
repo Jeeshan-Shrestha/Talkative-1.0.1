@@ -22,4 +22,13 @@ object Constants {
 
     //like unlike
     const val like_unlike="post/like"
+
+    //get followers
+    const val get_followers="followers/{username}"
+
+    //get Following
+    const val get_following ="following/{username}"
+
+    //Delete Post
+    const val delete_post = "/post/delete/{postid}"
 }

@@ -3,6 +3,7 @@ package com.example.talkative.screens.ProfileScreen
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,13 +22,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.HorizontalRule
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -51,6 +58,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -67,20 +75,23 @@ import com.example.talkative.navigation.TalkativeScreen
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
 import com.example.talkative.screens.LoginScreen.LoginViewModel
 import com.example.talkative.utils.LoadingState
+import kotlinx.coroutines.delay
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.math.exp
+import kotlin.math.roundToInt
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProfileScreen(
     createPostViewmodel: CreatePostViewmodel,
     loginViewmodel: LoginViewModel,
     ownProfilePostViewmodel: OwnProfilePostViewmodel,
     navController: NavController,
+    DeletePostViewModel: DeletePostViewModel,
     LikeUnLikeViewModel: LikeUnLikeViewModel
-){
-
+) {
 
 
     //to add posts by clicsking + icon from profile screen
@@ -88,112 +99,167 @@ fun ProfileScreen(
 
     val uiState = ownProfilePostViewmodel.state.collectAsState()
 
+    val uiStateforDelete=DeletePostViewModel.state.collectAsState()
+
     val ownProfileData: Message = ownProfilePostViewmodel.item.message
 
     //show dropdown when user presses settings button
     val expanded = remember {
         mutableStateOf(false)
     }
+    LaunchedEffect(Unit) {
+        ownProfilePostViewmodel.OwnprofilePost()
+    }
+
+    //making pull to refresh like instagram
+    val isRefreshing = remember { mutableStateOf(false) }
+
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing.value,
+        onRefresh = {
+            isRefreshing.value = true
+            ownProfilePostViewmodel.OwnprofilePost()
+        }
+    )
+    //stopping refreshing when data is loaded
+    LaunchedEffect(uiState.value) {
+        isRefreshing.value = false
+    }
 
     Scaffold(bottomBar = {
-        BottomBar(navController=navController){
-            showPostDialouge.value=true
+        BottomBar(navController = navController) {
+            showPostDialouge.value = true
         }
-    }) {it->
-        Surface(modifier = Modifier
-            .fillMaxSize()
-            .padding(it)) {
-            if(uiState.value == LoadingState.LOADING){
+    }) { it ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            if (uiState.value == LoadingState.LOADING || uiStateforDelete.value == LoadingState.LOADING) {
                 LoadingDialog()
             }
-            LazyColumn(modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-            //    contentPadding = PaddingValues(10.dp)
+            //wrapping inside box so that refresh will work
+            Box(
+                modifier = Modifier
+                    .pullRefresh(pullRefreshState)
+                    .fillMaxSize()
             ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .offset {
+                            IntOffset(
+                                x = 0,
+                                y = (pullRefreshState.progress * 80f).roundToInt() // UI pull-down animation
+                            )
+                        }
+                    ,
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    //    contentPadding = PaddingValues(10.dp)
+                ) {
 
-                //Cover Image
-                item {
-                    Box(modifier = Modifier
-                        .height(230.dp)
-                        .fillMaxWidth()){
-
-                        AsyncImage(
-                            model =ownProfileData.coverPhoto ?: "https://images.unsplash.com/photo-1501785888041-af3ef285b470" ,
-                            placeholder = painterResource(R.drawable.placeholder),
-                            contentDescription = "Cover Image",
+                    //Cover Image
+                    item {
+                        Box(
                             modifier = Modifier
-                                .fillMaxWidth(),
-                            contentScale = ContentScale.Crop
-                        )
-                        AsyncImage(
-                            model =ownProfileData.avatar ?: "https://i.imgur.com/veVP6GL.png" ,
-                            placeholder = painterResource(R.drawable.placeholder),
-                            contentDescription = "Profile picture",
-                            modifier = Modifier
-                                .offset(x = 20.dp, y = (150).dp)
-                                .size(128.dp)
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
+                                .height(230.dp)
+                                .fillMaxWidth()
+                        ) {
 
-                        // Overlay
-                        Box(modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxSize(),
-                            contentAlignment = Alignment.TopEnd){
+                            AsyncImage(
+                                model = ownProfileData.coverPhoto
+                                    ?: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+                                placeholder = painterResource(R.drawable.placeholder),
+                                contentDescription = "Cover Image",
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                contentScale = ContentScale.Crop
+                            )
+                            AsyncImage(
+                                model = ownProfileData.avatar ?: "https://i.imgur.com/veVP6GL.png",
+                                placeholder = painterResource(R.drawable.placeholder),
+                                contentDescription = "Profile picture",
+                                modifier = Modifier
+                                    .offset(x = 20.dp, y = (150).dp)
+                                    .size(128.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.FillBounds
+                            )
 
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            // Overlay
+                            Box(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxSize(),
+                                contentAlignment = Alignment.TopEnd
+                            ) {
 
-                                //Drop down menu and settings button
-                                DropdownMenuWithDetails(expanded= expanded.value, logOutUser = {
-                                    //logout User
-                                    loginViewmodel.logoutTeacher()
-                                    navController.navigate("auth"){
-                                        popUpTo("main"){
-                                            inclusive=true //when user hit's back they can't be loggined
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+                                    //Drop down menu and settings button
+                                    DropdownMenuWithDetails(expanded = expanded.value, onClick = {
+                                        //logout User
+                                        loginViewmodel.logoutTeacher()
+                                        navController.navigate("auth") {
+                                            popUpTo("main") {
+                                                inclusive =
+                                                    true //when user hit's back they can't be loggined
+                                            }
+                                            launchSingleTop = true
+                                            expanded.value=false
                                         }
-                                        launchSingleTop=true
+                                    }) {
+                                        expanded.value = false
                                     }
-
-                                }){
-                                    expanded.value=false
-                                }
-                                FilledTonalButton(onClick = {
-                                    //settings button
-                                    expanded.value=true
-                                },
-                                    colors = ButtonDefaults.buttonColors(Color.White)) {
-                                    Icon(
-                                        imageVector = Icons.Default.Settings,
-                                        tint = Color.Black,
-                                        modifier = Modifier.size(16.dp),
-                                        contentDescription = "Settings Button"
-                                    )
-                                }
-
-                                    FilledTonalButton(onClick = {
-                                        //encoding only necessary data
-                                        val args = ProfileArgument(
-                                            avatar = ownProfileData.avatar,
-                                            bio = ownProfileData.bio,
-                                            displayName = ownProfileData.displayName,
-                                            coverPhoto = ownProfileData.coverPhoto
-                                        )
-
-                                        // Save to SavedStateHandle of the EditProfileScreen's back stack entry
-                                        navController.currentBackStackEntry?.savedStateHandle?.set("profileArg", args)
-
-                                        navController.navigate(TalkativeScreen.EditProfileScreen.name )
-                                    },
-                                        colors = ButtonDefaults.buttonColors(Color.White)){
-                                        Icon(imageVector = Icons.Default.Edit,
+                                    FilledTonalButton(
+                                        onClick = {
+                                            //settings button
+                                            expanded.value = true
+                                        },
+                                        colors = ButtonDefaults.buttonColors(Color.White)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Settings,
                                             tint = Color.Black,
                                             modifier = Modifier.size(16.dp),
-                                            contentDescription = "edit profile")
+                                            contentDescription = "Settings Button"
+                                        )
+                                    }
+
+                                    FilledTonalButton(
+                                        onClick = {
+                                            //encoding only necessary data
+                                            val args = ProfileArgument(
+                                                avatar = ownProfileData.avatar,
+                                                bio = ownProfileData.bio,
+                                                displayName = ownProfileData.displayName,
+                                                coverPhoto = ownProfileData.coverPhoto
+                                            )
+
+                                            // Save to SavedStateHandle of the EditProfileScreen's back stack entry
+                                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                "profileArg",
+                                                args
+                                            )
+
+                                            navController.navigate(TalkativeScreen.EditProfileScreen.name)
+                                        },
+                                        colors = ButtonDefaults.buttonColors(Color.White)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Edit,
+                                            tint = Color.Black,
+                                            modifier = Modifier.size(16.dp),
+                                            contentDescription = "edit profile"
+                                        )
 
                                         Spacer(modifier = Modifier.width(4.dp))
-                                        Text("Edit Profile",
-                                            style = TextStyle(color = Color.Black))
+                                        Text(
+                                            "Edit Profile",
+                                            style = TextStyle(color = Color.Black)
+                                        )
                                     }
 
 //                                    IconButton(onClick = {}) {
@@ -201,44 +267,53 @@ fun ProfileScreen(
 //                                            contentDescription = "Settings")
 //                                    }
 
+                                }
                             }
                         }
                     }
-                }
-                //Profile Info
-                item{
-                    Column(modifier = Modifier
-                        .padding(5.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ){
+                    //Profile Info
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .padding(5.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
 
-                        //Spacer
-                        Spacer(modifier = Modifier.height(25.dp))
+                            //Spacer
+                            Spacer(modifier = Modifier.height(25.dp))
 
-                        //display name and username
-                        Column(modifier = Modifier
-                           // .offset(y=(-100).dp)
-                            .padding(10.dp),
-                            verticalArrangement = Arrangement.spacedBy(5.dp),) {
+                            //display name and username
+                            Column(
+                                modifier = Modifier
+                                    // .offset(y=(-100).dp)
+                                    .padding(10.dp),
+                                verticalArrangement = Arrangement.spacedBy(5.dp),
+                            ) {
 
-                            //Name and username of the people
-                            Text(text = ownProfileData.displayName?:"unknown",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold)
+                                //Name and username of the people
+                                Text(
+                                    text = ownProfileData.displayName ?: "unknown",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
 
-                            Text(text = ownProfileData.username?:"username",
-                                style=MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(
+                                    text = ownProfileData.username ?: "username",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
 
-                            //Bio
-                            ownProfileData.bio?.let { it->
-                                Text(text = it,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    lineHeight = MaterialTheme.typography.bodyMedium.lineHeight)
-                            }
+                                //Bio
+                                ownProfileData.bio?.let { it ->
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
+                                    )
+                                }
 
-                            //Meta info website , joined date etc
-                            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
+                                //Meta info website , joined date etc
+                                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
 
 //                                //website link
 //                                Row(verticalAlignment = Alignment.CenterVertically,
@@ -256,91 +331,137 @@ fun ProfileScreen(
 //                                   }
 //                                }
 
-                                Row(verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)){
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
 
-                                    ownProfileData.joinDate?.let {it->
-                                        Icon(imageVector = Icons.Default.CalendarToday,
-                                            contentDescription = "Date",
-                                            modifier = Modifier.size(18.dp),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        ownProfileData.joinDate?.let { it ->
+                                            Icon(
+                                                imageVector = Icons.Default.CalendarToday,
+                                                contentDescription = "Date",
+                                                modifier = Modifier.size(18.dp),
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
 
-                                        Text(text = it?: "No Date",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color=MaterialTheme.colorScheme.onSurfaceVariant)
+                                            Text(
+                                                text = it ?: "No Date",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
                                     }
                                 }
+
+                                Row(
+                                    modifier = Modifier.offset(y = 25.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(24.dp)
+                                ) {
+
+                                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+
+                                        Text(
+                                            text = ownProfileData.numberOfPosts?.toString() ?: "0",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = FontWeight.Bold
+                                        )
+
+                                        Text(
+                                            text = "Posts",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+
+                                    //Followers Count
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                        modifier = Modifier.clickable {
+                                            navController.navigate(TalkativeScreen.ShowFollowersScreen.name + "/${ownProfileData.username}")
+                                        }) {
+
+                                        Text(
+                                            text = ownProfileData.followersCount.toString(),
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = FontWeight.Bold
+                                        )
+
+                                        Text(
+                                            text = "Followers",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+
+                                    //Following Count
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                        modifier = Modifier.clickable {
+                                            navController.navigate(TalkativeScreen.ShowFollowingScreen.name + "/${ownProfileData.username}")
+                                        }) {
+
+                                        Text(
+                                            text = ownProfileData.followingCount.toString() ?: "0",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = FontWeight.Bold
+                                        )
+
+                                        Text(
+                                            text = "Following",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+
                             }
-
-                            Row(modifier = Modifier.offset(y=25.dp),
-                                horizontalArrangement = Arrangement.spacedBy(24.dp)){
-
-                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-
-                                    Text(text = ownProfileData.numberOfPosts?.toString()?:"0",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = FontWeight.Bold)
-
-                                    Text(text = "Posts",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-
-                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-
-                                    Text(text = ownProfileData.followersCount.toString(),
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = FontWeight.Bold)
-
-                                    Text(text = "Followers",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-
-                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-
-                                    Text(text = ownProfileData.followingCount.toString()?:"0",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = FontWeight.Bold)
-
-                                    Text(text = "Following",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            }
-
                         }
                     }
-                }
 
 
-                //Content Tabs Posts
-                ownProfileData.posts?.let { posts ->
-                    items(posts) { post ->
-                        PostCard(post = post,
-                            LikeunLikeViewModel=LikeUnLikeViewModel,
-                            modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
-                            onCommentClick = {
-                                navController.navigate(TalkativeScreen.CommentScreen.name)
-                            },
-                            ownProfile = true)
+                    //Content Tabs Posts
+                    ownProfileData.posts?.let { posts ->
+                        items(posts) { post ->
+                            PostCard(
+                                post = post,
+                                LikeunLikeViewModel = LikeUnLikeViewModel,
+                                modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
+                                onCommentClick = {
+                                    navController.navigate(TalkativeScreen.CommentScreen.name)
+                                },
+                                ownProfile = true,
+                                onDeletePost = {
+                                    //delete post
+                                    DeletePostViewModel.DeletePost(it)
+                                    //after Deleting the post refresh the page
+                                    navController.navigate(TalkativeScreen.ProfileScreen.name)
+                                }
+                            )
+                        }
                     }
+
+
+                }
+                PullRefreshIndicator(
+                    refreshing = isRefreshing.value,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
+
+                if (showPostDialouge.value) {
+                    CreatePostDialouge(
+                        onDismiss = {
+                            showPostDialouge.value = false
+                        },
+                        createPostViewmodel = createPostViewmodel,
+                        onPost = {
+                            //we will handle post logic here
+                            showPostDialouge.value = false
+                        })
                 }
 
-
-            }
-            if(showPostDialouge.value){
-                CreatePostDialouge(onDismiss = {
-                    showPostDialouge.value=false
-                },
-                    createPostViewmodel=createPostViewmodel,
-                    onPost = {
-                        //we will handle post logic here
-                        showPostDialouge.value=false
-                    })
             }
 
         }
-
     }
 }

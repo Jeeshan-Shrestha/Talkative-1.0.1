@@ -53,6 +53,7 @@ fun PostCard(
     LikeunLikeViewModel: LikeUnLikeViewModel= hiltViewModel(),
     ownProfile: Boolean=false,
     onCommentClick:()-> Unit,
+    onDeletePost:(String)->Unit={},
     onUserclick: (String)->Unit ={}
 ){
 
@@ -68,6 +69,11 @@ fun PostCard(
     val handlelike = {
         isLiked.value=!isLiked.value
         likescount.value= if(isLiked.value) likescount.value + 1 else likescount.value -1
+    }
+
+    //to handle drop down to delete a post
+    val expanded = remember {
+        mutableStateOf(false)
     }
 
     Card(modifier = modifier.fillMaxWidth(),
@@ -111,17 +117,30 @@ fun PostCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-//                if(ownProfile){
-//               Row(modifier = Modifier.fillMaxWidth(),
-//                   horizontalArrangement = Arrangement.End) {
-//                   IconButton(onClick = { /* More options */ }) {
-//                       Icon(
-//                           imageVector = Icons.Default.MoreHoriz,
-//                           contentDescription = "More options"
-//                       )
-//                   }
-//               } }
-           }
+                //Delete Post option
+                if(ownProfile){
+               Row(modifier = Modifier.fillMaxWidth(),
+                   horizontalArrangement = Arrangement.End) {
+                   IconButton(onClick = { /* More options */
+                       //delete post
+                       expanded.value=true
+                   }) {
+                       Icon(
+                           imageVector = Icons.Default.MoreHoriz,
+                           contentDescription = "More options"
+                       )
+                   }
+                   DropdownMenuWithDetails(text = "Delete Post", expanded = expanded.value, onDismiss = {
+                       expanded.value=false
+                   },
+                       onClick = {
+                           //make api request to delete the post and navigate to this screen only
+                           onDeletePost(post.id)
+                           expanded.value=false
+                       })
+
+               } }
+            }
 
 
 

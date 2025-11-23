@@ -23,22 +23,34 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.talkative.R
+import com.example.talkative.model.GetFollowersResponse.Message
+
 
 @Composable
-fun UserCompactCard(){
+fun UserCompactCard(userInfo: Message,
+                    followUnFollow:(String)-> Unit={},
+                    openUserProfile:(String)-> Unit={}){
 
     val isFollowing= remember{
-        mutableStateOf(false)
+        mutableStateOf(userInfo.following)
     }
+
+    val handleFollow ={
+        isFollowing.value=!isFollowing.value
+    }
+
+    val isOwnProfile: Boolean = userInfo.ownProfile
 
     Card(modifier = Modifier
         .fillMaxWidth()
         .clickable{
             //open userprofile on click
+            openUserProfile(userInfo.username)
         },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)){
@@ -55,7 +67,7 @@ fun UserCompactCard(){
                 //user avatar
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data("https://i.imgur.com/veVP6GL.png")
+                        .data(userInfo.avatar?:"https://i.imgur.com/veVP6GL.png")
                         .crossfade(true)
                         .build(),
                     placeholder = painterResource(R.drawable.placeholder),
@@ -69,29 +81,33 @@ fun UserCompactCard(){
                 //username and  displayName
                 Column {
                     Text(
-                        text = "boka",
+                        text = userInfo.username?:"unknown",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold
                     )
 
                     Text(
-                        text = "katnuprny",
+                        text = userInfo.displayName?:"unknown",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
 
-            sansButton(
-                modifier = Modifier,
-                textcolor = if(isFollowing.value) Color.Black else Color.White,
-                text =if (isFollowing.value) "Following" else "Follow",
-                icon = false,
-                color =  if (isFollowing.value)
-                    Color.White
-                else
-                    Color.Black){
-                //follow or unfollow should happen
+            if(!isOwnProfile) {
+                sansButton(
+                    modifier = Modifier,
+                    textcolor = if (isFollowing.value) Color.Black else Color.White,
+                    text = if (isFollowing.value) "Following" else "Follow",
+                    icon = false,
+                    color = if (isFollowing.value)
+                        Color.White
+                    else
+                        Color.Black) {
+                    //follow or unfollow should happen
+                    handleFollow.invoke()
+                    followUnFollow(userInfo.username)
+                }
             }
 
 

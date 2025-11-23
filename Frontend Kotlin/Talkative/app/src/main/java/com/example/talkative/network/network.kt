@@ -2,8 +2,10 @@ package com.example.talkative.network
 
 import android.view.Display
 import com.example.talkative.model.CreatePostResponse.CreatePostResponse
+import com.example.talkative.model.DeletePostResponse.DeletePostResponse
 import com.example.talkative.model.EditProfileResponse.EditProfileResponse
 import com.example.talkative.model.FollowUnfollowResponse.FollowUnFollowResponse
+import com.example.talkative.model.GetFollowersResponse.GetFollowersResponse
 import com.example.talkative.model.LoginRequest.LoginRequest
 import com.example.talkative.model.LoginResponse.LoginResponse
 import com.example.talkative.model.OwnProfileResponse.OwnProfileResponse
@@ -16,6 +18,7 @@ import com.example.talkative.utils.Constants
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -83,5 +86,21 @@ interface network {
     suspend fun LikeUnLike(
         @Query(value="id") id: String,
         @Query(value="likedUsername") likedUsername:String): PostLikeResponse
+
+    //get followers of user
+    @GET(value = Constants.get_followers)
+    suspend fun getFollowers(
+        @Path("username") username: String): GetFollowersResponse
+
+    //both request and response for get followers and followoing are same so using same code
+    @GET(value = Constants.get_following)
+    suspend fun getFollowing(
+        @Path("username") username: String): GetFollowersResponse
+
+    //Delete your own post
+    @DELETE(value = Constants.delete_post)
+    suspend fun deletePost(
+        @Path("postid") postId:String): DeletePostResponse
+
 
 }
