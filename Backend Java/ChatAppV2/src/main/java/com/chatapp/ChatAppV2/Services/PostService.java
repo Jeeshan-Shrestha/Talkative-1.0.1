@@ -141,6 +141,7 @@ public class PostService {
         for (Post post: posts){
             if (post.getId().equals(postId)){
                 posts.remove(posts.indexOf(post));
+                user.setNumberOfPosts(user.getNumberOfPosts() - 1);
                 user.setPosts(posts);
                 userRepo.save(user);
                 return "Successfully deleted the post";

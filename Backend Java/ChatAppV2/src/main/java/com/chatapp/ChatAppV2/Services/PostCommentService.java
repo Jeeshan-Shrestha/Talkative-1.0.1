@@ -91,6 +91,7 @@ public class PostCommentService {
                 if (comment.getCommentId().equals(commentId)){
                     comments.remove(comments.indexOf(comment));
                     post.setComments(comments);
+                    post.setNumberOfComments(post.getNumberOfComments() -1);
                     posts.set(posts.indexOf(post),post);
                     user.setPosts(posts);
                     userRepo.save(user);
