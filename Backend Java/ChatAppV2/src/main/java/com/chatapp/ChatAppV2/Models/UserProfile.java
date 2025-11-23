@@ -26,7 +26,7 @@ public class UserProfile {
 
     private int followingCount;
 
-    private List<PostDTO> postDTOS;
+    private List<PostDTO> posts;
 
     private String coverPhoto;
 
