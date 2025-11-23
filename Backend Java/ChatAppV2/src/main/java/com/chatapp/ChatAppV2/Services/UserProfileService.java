@@ -178,10 +178,19 @@ public class UserProfileService {
         String self = SecurityContextHolder.getContext().getAuthentication().getName();
         Users user = userRepo.findByUsername(self); 
         if (avatar != null && coverPhoto != null){
-        ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(),avatar.getOriginalFilename(),avatar.getContentType());
-        ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(),coverPhoto.getOriginalFilename(),coverPhoto.getContentType());
-        user.setAvatar("https://talkative-1-0-1-2.onrender.com/post/image/"+avatarId.toHexString());
-        user.setCoverPhoto("https://talkative-1-0-1-2.onrender.com/post/image/"+coverPhotoId.toHexString());  
+            ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(),avatar.getOriginalFilename(),avatar.getContentType());
+            ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(),coverPhoto.getOriginalFilename(),coverPhoto.getContentType());
+            user.setAvatar("https://talkative-1-0-1-2.onrender.com/post/image/"+avatarId.toHexString());
+            user.setCoverPhoto("https://talkative-1-0-1-2.onrender.com/post/image/"+coverPhotoId.toHexString());  
+        }
+        if (avatar == null && coverPhoto != null){
+            ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(),coverPhoto.getOriginalFilename(),coverPhoto.getContentType());  
+            user.setCoverPhoto("https://talkative-1-0-1-2.onrender.com/post/image/"+coverPhotoId.toHexString());  
+        }
+
+        if (avatar != null && coverPhoto == null){
+            ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(),avatar.getOriginalFilename(),avatar.getContentType());
+            user.setAvatar("https://talkative-1-0-1-2.onrender.com/post/image/"+avatarId.toHexString());
         }
         user.setBio(bio);
         user.setDisplayName(displayName);
