@@ -135,4 +135,18 @@ public class PostService {
 
     }
 
+    public String deletePost(String postId){
+        Users user = userRepo.findByPostsId(postId);
+        List<Post> posts = user.getPosts();
+        for (Post post: posts){
+            if (post.getId().equals(postId)){
+                posts.remove(posts.indexOf(post));
+                user.setPosts(posts);
+                userRepo.save(user);
+                return "Successfully deleted the post";
+            }
+        }
+        return "Couldnt find the comment";
+    }
+
 }

@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -103,6 +104,12 @@ public class PostController {
         catch(Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BackendResponse(false,"something went wrong"));
         }
+    }
+
+    @DeleteMapping("/delete/{postId}")
+    public ResponseEntity<?> deletePost(@PathVariable String postId){
+        String message = postService.deletePost(postId);
+        return ResponseEntity.ok().body(new BackendResponse(true, message));
     }
     
     

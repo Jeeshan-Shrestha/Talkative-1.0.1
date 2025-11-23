@@ -18,4 +18,7 @@ public interface UserRepostory extends MongoRepository<Users, ObjectId> {
 
     @Query("{ 'posts.id': ?0 }")
     Users findByPostsId(String postId);
+
+    @Query("{ 'posts.comments.commentId':?0}")
+    Users findByPostsCommentsCommentId(String commentId);
 }

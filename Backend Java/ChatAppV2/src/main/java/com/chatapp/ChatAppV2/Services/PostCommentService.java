@@ -2,6 +2,7 @@ package com.chatapp.ChatAppV2.Services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +22,7 @@ public class PostCommentService {
 
     public String postComment(Comment comment){
 
+        comment.setCommentId(UUID.randomUUID().toString());
         String commentedBy = SecurityContextHolder.getContext().getAuthentication().getName();
         comment.setCommentedBy(commentedBy);
         Users postOwner = userRepo.findByPostsId(comment.getPostId());
@@ -59,6 +61,25 @@ public class PostCommentService {
         Users user = userRepo.findByPostsId(postId);
         Post post = user.getPosts().stream().filter(p -> p.getId().equals(postId)).findFirst().orElse(null);
         return post.getComments();
+    }
+
+    public String deleteComment(String commentId){
+        Users user = userRepo.findByPostsCommentsCommentId(commentId);
+        List<Post> posts = user.getPosts();
+        for (Post post : posts){
+            List<Comment> comments = post.getComments();
+            for (Comment comment : comments){
+                if (comment.getCommentId().equals(commentId)){
+                    comments.remove(comments.indexOf(comment));
+                    post.setComments(comments);
+                    posts.set(posts.indexOf(post),post);
+                    user.setPosts(posts);
+                    userRepo.save(user);
+                    return  "Deleted the comment";
+                }
+            }
+        }
+        return "Comment not found";
     }
     
 }

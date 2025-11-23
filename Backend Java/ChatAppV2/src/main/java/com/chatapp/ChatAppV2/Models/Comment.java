@@ -8,14 +8,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Comment {
+
+    private String commentId;
     
     private String commentText;
 
     private String postId;
 
     private boolean liked; 
-
-    private String postOwnerUsername;
 
     private int numberOfLikes;
 
