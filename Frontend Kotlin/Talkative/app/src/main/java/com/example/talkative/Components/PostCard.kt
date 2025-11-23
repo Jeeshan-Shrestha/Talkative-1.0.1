@@ -52,6 +52,7 @@ fun PostCard(
     post: Post,
     LikeunLikeViewModel: LikeUnLikeViewModel= hiltViewModel(),
     ownProfile: Boolean=false,
+    onCommentClick:()-> Unit,
     onUserclick: (String)->Unit ={}
 ){
 
@@ -186,12 +187,12 @@ fun PostCard(
 
 
                     //Comment Button
-
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(9.dp),
                         modifier = Modifier.clickable{
-
+                            //navigate to comment button
+                            onCommentClick.invoke()
                         }
                     ) {
                         Icon(

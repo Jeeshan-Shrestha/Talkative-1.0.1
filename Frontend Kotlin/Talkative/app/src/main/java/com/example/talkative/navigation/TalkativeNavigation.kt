@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.talkative.model.OwnProfileResponse.Message
 import com.example.talkative.model.customDataPassing.ProfileArgument
+import com.example.talkative.screens.CommentScreen.CommentScreen
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
 import com.example.talkative.screens.EditProfileScreen.EditProfileScreen
 import com.example.talkative.screens.EditProfileScreen.EditProfileViewModel
@@ -115,6 +116,11 @@ fun TalkativeNavigation(){
                 val editProfileViewModel = hiltViewModel<EditProfileViewModel>()
 
                     EditProfileScreen(navController=navController,editProfileViewModel=editProfileViewModel)
+            }
+
+            //comment Screeen
+            composable(TalkativeScreen.CommentScreen.name){
+                CommentScreen()
             }
 
 
