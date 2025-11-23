@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,6 +57,7 @@ import coil.compose.AsyncImage
 import com.example.talkative.R
 import com.example.talkative.components.BottomBar
 import com.example.talkative.components.CreatePostDialouge
+import com.example.talkative.components.LoadingDialog
 import com.example.talkative.components.PostCard
 import com.example.talkative.components.sansButton
 import com.example.talkative.model.MockData
@@ -64,6 +66,7 @@ import com.example.talkative.model.User
 import com.example.talkative.navigation.TalkativeScreen
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
 import com.example.talkative.screens.searchScreen.FollowUnFollowViewModel
+import com.example.talkative.utils.LoadingState
 
 
 @Composable
@@ -74,18 +77,18 @@ fun OtherUserProflieScreen(
     likeUnLikeViewModel: LikeUnLikeViewModel,
     navController: NavController= NavController(LocalContext.current),
     otherUsername: String?
-){
+) {
 
-    val uiState= OtherUserProfileViewModel.state.collectAsState()
+    val uiState = OtherUserProfileViewModel.state.collectAsState()
 
     val userInfo = OtherUserProfileViewModel.item.message
 
     Log.d("akriti", "from ui screen screen: ${userInfo} ")
 
     LaunchedEffect(otherUsername) {
-        if(!otherUsername.isNullOrEmpty()){
+        if (!otherUsername.isNullOrEmpty()) {
 
-            otherUsername?.let {it->
+            otherUsername?.let { it ->
                 OtherUserProfileViewModel.OtherUserProfile(it)
 
             }
@@ -101,8 +104,8 @@ fun OtherUserProflieScreen(
 
 
     LaunchedEffect(userInfo) {
-         isFollowing = userInfo.following
-         followersCount = userInfo.followersCount
+        isFollowing = userInfo.following
+        followersCount = userInfo.followersCount
 
     }
 
@@ -123,7 +126,7 @@ fun OtherUserProflieScreen(
     //handle follow
     val handlefollow = {
         isFollowing = !isFollowing
-        followersCount= if (isFollowing) followersCount +1 else followersCount-1
+        followersCount = if (isFollowing) followersCount + 1 else followersCount - 1
 
     }
 
@@ -156,75 +159,96 @@ fun OtherUserProflieScreen(
     )
 
     Scaffold(bottomBar = {
-        BottomBar(navController=navController){
-            showPostDialouge.value=true
+        BottomBar(navController = navController) {
+            showPostDialouge.value = true
         }
-    }) {it->
-        Surface(modifier = Modifier
-            .fillMaxSize()
-            .padding(it)) {
+    }) { it ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
 
-            LazyColumn(modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                //    contentPadding = PaddingValues(10.dp)
-            ) {
+            if (uiState.value == LoadingState.LOADING) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 40.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top) {
+                    LoadingDialog()
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    //    contentPadding = PaddingValues(10.dp)
+                ) {
 
-                //Cover Image
-                item {
-                    Box(modifier = Modifier
-                        .height(230.dp)
-                        .fillMaxWidth()){
-
-                        AsyncImage(
-                            model =userInfo.coverPhoto?: "https://images.unsplash.com/photo-1501785888041-af3ef285b470" ,
-                            placeholder = painterResource(R.drawable.placeholder),
-                            contentDescription = "Cover Image",
+                    //Cover Image
+                    item {
+                        Box(
                             modifier = Modifier
-                                .fillMaxWidth(),
-                            contentScale = ContentScale.Crop
-                        )
-                        AsyncImage(
-                            model =userInfo.avatar ?: "https://i.imgur.com/veVP6GL.png" ,
-                            placeholder = painterResource(R.drawable.placeholder),
-                            contentDescription = "Profile picture",
-                            modifier = Modifier
-                                .offset(x = 20.dp, y = (150).dp)
-                                .size(128.dp)
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
+                                .height(230.dp)
+                                .fillMaxWidth()
+                        ) {
 
-                        // Overlay
-                        Box(modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxSize(),
-                            contentAlignment = Alignment.TopEnd){
+                            AsyncImage(
+                                model = userInfo.coverPhoto
+                                    ?: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+                                placeholder = painterResource(R.drawable.placeholder),
+                                contentDescription = "Cover Image",
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                contentScale = ContentScale.Crop
+                            )
+                            AsyncImage(
+                                model = userInfo.avatar ?: "https://i.imgur.com/veVP6GL.png",
+                                placeholder = painterResource(R.drawable.placeholder),
+                                contentDescription = "Profile picture",
+                                modifier = Modifier
+                                    .offset(x = 20.dp, y = (150).dp)
+                                    .size(128.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
 
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            // Overlay
+                            Box(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxSize(),
+                                contentAlignment = Alignment.TopEnd
+                            ) {
 
-                                FilledTonalButton(onClick = {
-                                    //button to report or Block user
-                                },
-                                    colors = ButtonDefaults.buttonColors(Color.White)) {
-                                    Icon(
-                                        imageVector = Icons.Default.MoreHoriz,
-                                        tint = Color.Black,
-                                        modifier = Modifier.size(16.dp),
-                                        contentDescription = "More button"
-                                    )
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+                                    FilledTonalButton(
+                                        onClick = {
+                                            //button to report or Block user
+                                        },
+                                        colors = ButtonDefaults.buttonColors(Color.White)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.MoreHoriz,
+                                            tint = Color.Black,
+                                            modifier = Modifier.size(16.dp),
+                                            contentDescription = "More button"
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                //Profile Info
-                item{
-                    Column(modifier = Modifier
-                        .padding(5.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ){
+                    //Profile Info
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .padding(5.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
 
-                        //Avatar (ocverlapping cover image)
+                            //Avatar (ocverlapping cover image)
 //                        Row(modifier = Modifier,
 //                            verticalAlignment = Alignment.Bottom,
 //                            horizontalArrangement = Arrangement.SpaceBetween){
@@ -241,51 +265,61 @@ fun OtherUserProflieScreen(
 //                            )
 //                        }
 
-                        //Spacer
-                        Spacer(modifier = Modifier.height(25.dp))
+                            //Spacer
+                            Spacer(modifier = Modifier.height(25.dp))
 
-                        //display name and username
-                        Column(modifier = Modifier
-                            // .offset(y=(-100).dp)
-                            .padding(10.dp),
-                            verticalArrangement = Arrangement.spacedBy(5.dp),) {
+                            //display name and username
+                            Column(
+                                modifier = Modifier
+                                    // .offset(y=(-100).dp)
+                                    .padding(10.dp),
+                                verticalArrangement = Arrangement.spacedBy(5.dp),
+                            ) {
 
-                            //Name and username of the people
-                            Text(text = userInfo.displayName?:"unknown",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold)
+                                //Name and username of the people
+                                Text(
+                                    text = userInfo.displayName ?: "unknown",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
 
-                            Text(text = userInfo.username?:"username",
-                                style=MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
-
-                            //follow and following button
-                            sansButton(
-                                modifier = Modifier.fillMaxWidth(),
-                                textcolor = if(isFollowing) Color.Black else Color.White,
-                                text =if (isFollowing) "Following" else "Follow",
-                                icon = false,
-                                color =  if (isFollowing)
-                                    Color.White
-                                else
-                                    Color.Black){
-                                handlefollow.invoke()
-                                FollowunFollowViewModel.FollowUnfollowuser(userInfo.username)
-
-                            }
+                                Text(
+                                    text = userInfo.username ?: "username",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
 
 
-                            //Bio
-                            userInfo.bio?.let { it->
-                                Text(text = it,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    lineHeight = MaterialTheme.typography.bodyMedium.lineHeight)
-                            }
+                                //follow and following button
+                                sansButton(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textcolor = if (isFollowing) Color.Black else Color.White,
+                                    text = if (isFollowing) "Following" else "Follow",
+                                    icon = false,
+                                    color = if (isFollowing)
+                                        Color.White
+                                    else
+                                        Color.Black
+                                ) {
+                                    handlefollow.invoke()
+                                    FollowunFollowViewModel.FollowUnfollowuser(userInfo.username)
 
-                            //Meta info website , joined date etc
-                            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
+                                }
 
-                                //website link
+
+                                //Bio
+                                userInfo.bio?.let { it ->
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
+                                    )
+                                }
+
+                                //Meta info website , joined date etc
+                                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+
+                                    //website link
 //                                Row(verticalAlignment = Alignment.CenterVertically,
 //                                    horizontalArrangement = Arrangement.spacedBy(10.dp)){
 //
@@ -301,92 +335,119 @@ fun OtherUserProflieScreen(
 //                                    }
 //                                }
 
-                                Row(verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)){
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
 
-                                    userInfo.joinDate?.let {it->
-                                        Icon(imageVector = Icons.Default.CalendarToday,
-                                            contentDescription = "Website",
-                                            modifier = Modifier.size(18.dp),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        userInfo.joinDate?.let { it ->
+                                            Icon(
+                                                imageVector = Icons.Default.CalendarToday,
+                                                contentDescription = "Website",
+                                                modifier = Modifier.size(18.dp),
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
 
-                                        Text(text = it?: "No Date",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color=MaterialTheme.colorScheme.onSurfaceVariant)
+                                            Text(
+                                                text = it ?: "No Date",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
                                     }
                                 }
+
+                                Row(
+                                    modifier = Modifier.offset(y = 25.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(24.dp)
+                                ) {
+
+                                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+
+                                        Text(
+                                            text = userInfo.numberOfPosts.toString(),
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = FontWeight.Bold
+                                        )
+
+                                        Text(
+                                            text = "Posts",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+
+                                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                        Text(
+                                            text = followersCount.toString(),
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = FontWeight.Bold
+                                        )
+
+                                        Text(
+                                            text = "Followers",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+
+                                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+
+                                        Text(
+                                            text = userInfo.followingCount.toString(),
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = FontWeight.Bold
+                                        )
+
+                                        Text(
+                                            text = "Following",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+
                             }
-
-                            Row(modifier = Modifier.offset(y=25.dp),
-                                horizontalArrangement = Arrangement.spacedBy(24.dp)){
-
-                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-
-                                    Text(text = userInfo.numberOfPosts.toString(),
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = FontWeight.Bold)
-
-                                    Text(text = "Posts",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-
-                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    Text(text = followersCount.toString(),
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = FontWeight.Bold)
-
-                                    Text(text = "Followers",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-
-                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-
-                                    Text(text = userInfo.followingCount.toString(),
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = FontWeight.Bold)
-
-                                    Text(text = "Following",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            }
-
                         }
                     }
-                }
 
-                //Content Tabs Posts
+                    //Content Tabs Posts
 
-                //Content Tabs Posts
-                userInfo.posts?.let { posts ->
-                    items(posts) { post ->
-                        PostCard(post = post,
-                            LikeunLikeViewModel = likeUnLikeViewModel,
-                            modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
-                            ownProfile = false)
+                    //Content Tabs Posts
+                    userInfo.posts?.let { posts ->
+                        items(posts) { post ->
+                            PostCard(
+                                post = post,
+                                LikeunLikeViewModel = likeUnLikeViewModel,
+                                modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
+                                onCommentClick = {
+                                    navController.navigate(TalkativeScreen.CommentScreen.name)
+                                },
+                                ownProfile = false
+                            )
+                        }
                     }
-                }
 //                items(userInfo.posts){posts->
 //                    PostCard(post = posts,
 //                        modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
 //                        ownProfile =false)
 //                }
 
-            }
-            if(showPostDialouge.value){
-                CreatePostDialouge(onDismiss = {
-                    showPostDialouge.value=false
-                },
-                    createPostViewmodel=createPostViewmodel,
-                    onPost = {
-                        //we will handle post logic here
-                        showPostDialouge.value=false
-                    })
+                }
+                if (showPostDialouge.value) {
+                    CreatePostDialouge(
+                        onDismiss = {
+                            showPostDialouge.value = false
+                        },
+                        createPostViewmodel = createPostViewmodel,
+                        onPost = {
+                            //we will handle post logic here
+                            showPostDialouge.value = false
+                        })
+                }
+
             }
 
         }
-
     }
 }

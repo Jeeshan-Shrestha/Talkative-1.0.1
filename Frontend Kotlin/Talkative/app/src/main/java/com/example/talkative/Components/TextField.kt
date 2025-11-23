@@ -8,10 +8,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.EnhancedEncryption
 import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -110,7 +113,9 @@ fun CustomTextField(
     onAction: KeyboardActions =KeyboardActions.Default,
     maxlines:Int=1,
     keyboardtype: KeyboardType = KeyboardType.Unspecified,
-    isSingleLine:Boolean
+    isSingleLine:Boolean,
+    trailingIcon: Boolean=false,
+    onSend:()-> Unit={}
 ){
     OutlinedTextField(
         value = state.value,
@@ -125,6 +130,23 @@ fun CustomTextField(
         singleLine = isSingleLine,
         keyboardActions =onAction,
         maxLines = maxlines,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardtype, imeAction = imeAction)
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardtype, imeAction = imeAction),
+        trailingIcon={
+            if(trailingIcon){
+                IconButton(onClick = {
+                    //send Comment
+
+                },
+                    enabled = state.value.trim().isNotEmpty()){
+                    Icon(imageVector = Icons.AutoMirrored.Filled.Send,
+                        contentDescription = "Send button",
+                        tint = if(state.value.trim().isNotEmpty()){
+                            MaterialTheme.colorScheme.primary
+                        }else{
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        })
+                }
+            }
+        }
     )
 }

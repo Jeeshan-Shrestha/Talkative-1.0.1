@@ -37,6 +37,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,12 +59,14 @@ import com.example.talkative.R
 import com.example.talkative.components.BottomBar
 import com.example.talkative.components.CreatePostDialouge
 import com.example.talkative.components.DropdownMenuWithDetails
+import com.example.talkative.components.LoadingDialog
 import com.example.talkative.components.PostCard
 import com.example.talkative.model.OwnProfileResponse.Message
 import com.example.talkative.model.customDataPassing.ProfileArgument
 import com.example.talkative.navigation.TalkativeScreen
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
 import com.example.talkative.screens.LoginScreen.LoginViewModel
+import com.example.talkative.utils.LoadingState
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.math.exp
@@ -83,6 +86,8 @@ fun ProfileScreen(
     //to add posts by clicsking + icon from profile screen
     val showPostDialouge = remember { mutableStateOf(false) }
 
+    val uiState = ownProfilePostViewmodel.state.collectAsState()
+
     val ownProfileData: Message = ownProfilePostViewmodel.item.message
 
     //show dropdown when user presses settings button
@@ -98,7 +103,9 @@ fun ProfileScreen(
         Surface(modifier = Modifier
             .fillMaxSize()
             .padding(it)) {
-
+            if(uiState.value == LoadingState.LOADING){
+                LoadingDialog()
+            }
             LazyColumn(modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             //    contentPadding = PaddingValues(10.dp)
@@ -313,6 +320,9 @@ fun ProfileScreen(
                         PostCard(post = post,
                             LikeunLikeViewModel=LikeUnLikeViewModel,
                             modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
+                            onCommentClick = {
+                                navController.navigate(TalkativeScreen.CommentScreen.name)
+                            },
                             ownProfile = true)
                     }
                 }

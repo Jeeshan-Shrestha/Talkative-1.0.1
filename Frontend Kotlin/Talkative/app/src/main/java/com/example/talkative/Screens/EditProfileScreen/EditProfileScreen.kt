@@ -164,8 +164,8 @@ fun EditProfileScreen(navController: NavController= NavController(LocalContext.c
                         editProfileViewModel.PostImage(
                             displayName = name.value,
                             bio=bio.value,
-                            avatar= avatar.value!!,
-                            coverPhoto = coverImage.value!!){
+                            avatar= avatar.value,
+                            coverPhoto = coverImage.value){
                             navController.navigate(TalkativeScreen.ProfileScreen.name)
                         }
                     }else{
