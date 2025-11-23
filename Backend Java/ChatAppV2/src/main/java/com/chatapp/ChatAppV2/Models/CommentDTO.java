@@ -1,21 +1,19 @@
 package com.chatapp.ChatAppV2.Models;
 
-import org.bson.types.ObjectId;
-
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Comment {
-
+@Builder
+public class CommentDTO {
+    
     private String commentId;
     
     private String commentText;
-
-    private String postId;
 
     private boolean liked; 
 
@@ -23,6 +21,6 @@ public class Comment {
 
     private String commentedBy;
 
-    private ObjectId userId;
+    private String avatar;
 
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chatapp.ChatAppV2.Models.BackendResponse;
 import com.chatapp.ChatAppV2.Models.Comment;
+import com.chatapp.ChatAppV2.Models.CommentDTO;
 import com.chatapp.ChatAppV2.Services.PostCommentService;
 
 
@@ -41,7 +42,7 @@ public class PostCommentController {
     }
 
     @GetMapping("/comment")
-    public List<Comment> getAllCommentFromPost(@RequestParam String postId) {
+    public List<CommentDTO> getAllCommentFromPost(@RequestParam String postId) {
         return postCommentService.getAllCommentsFromPost(postId);
     }
     

@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.chatapp.ChatAppV2.Models.Comment;
+import com.chatapp.ChatAppV2.Models.CommentDTO;
 import com.chatapp.ChatAppV2.Models.Post;
 import com.chatapp.ChatAppV2.Models.Users;
 import com.chatapp.ChatAppV2.Repository.UserRepostory;
@@ -21,10 +22,11 @@ public class PostCommentService {
     private UserRepostory userRepo;
 
     public String postComment(Comment comment){
-
         comment.setCommentId(UUID.randomUUID().toString());
         String commentedBy = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepo.findByUsername(commentedBy);
         comment.setCommentedBy(commentedBy);
+        comment.setUserId(currentUser.getId());
         Users postOwner = userRepo.findByPostsId(comment.getPostId());
         if (postOwner == null){
             throw new UsernameNotFoundException("No user found");
@@ -57,10 +59,27 @@ public class PostCommentService {
         return "Successfully commented";
     }
 
-    public List<Comment> getAllCommentsFromPost(String postId){
+    public List<CommentDTO> getAllCommentsFromPost(String postId){
         Users user = userRepo.findByPostsId(postId);
         Post post = user.getPosts().stream().filter(p -> p.getId().equals(postId)).findFirst().orElse(null);
-        return post.getComments();
+
+        List<Comment> comments = post.getComments();
+        List<CommentDTO> commentDTO = convertCommentToCommentDTO(comments);
+        return commentDTO;
+    }
+
+    public List<CommentDTO> convertCommentToCommentDTO(List<Comment> comments){
+        List<CommentDTO> commentDTOs = new ArrayList<>();
+        for (Comment comment : comments){
+            Users user = userRepo.findById(comment.getUserId()).orElse(null);
+            CommentDTO dto = new CommentDTO();
+            dto.setCommentId(comment.getCommentId());
+            dto.setCommentedBy(comment.getCommentedBy());
+            dto.setCommentText(comment.getCommentText());
+            dto.setAvatar(user != null ? user.getAvatar() : null);
+            commentDTOs.add(dto);
+        }
+        return commentDTOs;
     }
 
     public String deleteComment(String commentId){

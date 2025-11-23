@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.chatapp.ChatAppV2.Exceptions.SelfFollowException;
+import com.chatapp.ChatAppV2.Models.FollowerDTO;
 import com.chatapp.ChatAppV2.Models.Post;
 import com.chatapp.ChatAppV2.Models.PostDTO;
 import com.chatapp.ChatAppV2.Models.UserProfile;
@@ -34,14 +35,44 @@ public class UserProfileService {
     private PostService postService;
 
 
-    public Set<String> getAllFollowers(String username){
+    public Set<FollowerDTO> getAllFollowers(String username){
+        String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepo.findByUsername(currentUserName);
         Users userOnDb = userRepo.findByUsername(username);
-        return userOnDb.getFollowers();
+        Set<String> followers = userOnDb.getFollowers();
+        Set<FollowerDTO> followerDTOs = new HashSet<>();
+        if (followers != null){
+            for (String follower : followers){
+                FollowerDTO followerDTO = new FollowerDTO();
+                Users user = userRepo.findByUsername(follower);
+                followerDTO.setUsername(user.getUsername());
+                followerDTO.setDisplayName(user.getDisplayName());
+                followerDTO.setAvatar(user.getAvatar());
+                followerDTO.setFollowing(currentUser.getFollowing().contains(follower));
+                followerDTO.setOwnProfile(follower.equals(currentUserName));
+                followerDTOs.add(followerDTO);
+            }
+        }
+        return followerDTOs;
     }
 
-    public Set<String> getAllFollowing(String username){
+    public Set<FollowerDTO> getAllFollowing(String username){
+        String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepo.findByUsername(currentUserName);
         Users userOnDb = userRepo.findByUsername(username);
-        return userOnDb.getFollowing();
+        Set<String> following = userOnDb.getFollowing();
+        Set<FollowerDTO> followerDTOs = new HashSet<>();
+        for (String follower : following){
+            FollowerDTO followerDTO = new FollowerDTO();
+            Users user = userRepo.findByUsername(follower);
+            followerDTO.setUsername(user.getUsername());
+            followerDTO.setDisplayName(user.getDisplayName());
+            followerDTO.setAvatar(user.getAvatar());
+            followerDTO.setFollowing(currentUser.getFollowing().contains(follower));
+            followerDTO.setOwnProfile(follower.equals(currentUserName));
+            followerDTOs.add(followerDTO);
+        }
+        return followerDTOs;
     }
 
     public String follow(String followedTo)throws Exception{
@@ -146,7 +177,7 @@ public class UserProfileService {
     public String editProfile(MultipartFile avatar,String bio,String displayName,MultipartFile coverPhoto) throws IOException{
         String self = SecurityContextHolder.getContext().getAuthentication().getName();
         Users user = userRepo.findByUsername(self); 
-        if (avatar != null || coverPhoto != null){
+        if (avatar != null && coverPhoto != null){
         ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(),avatar.getOriginalFilename(),avatar.getContentType());
         ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(),coverPhoto.getOriginalFilename(),coverPhoto.getContentType());
         user.setAvatar("https://talkative-1-0-1-2.onrender.com/post/image/"+avatarId.toHexString());

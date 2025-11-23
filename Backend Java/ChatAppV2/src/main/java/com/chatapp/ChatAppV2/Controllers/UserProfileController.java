@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.chatapp.ChatAppV2.Exceptions.AlreadyFollowedException;
 import com.chatapp.ChatAppV2.Exceptions.SelfFollowException;
 import com.chatapp.ChatAppV2.Models.BackendResponse;
+import com.chatapp.ChatAppV2.Models.FollowerDTO;
 import com.chatapp.ChatAppV2.Models.UserProfile;
 import com.chatapp.ChatAppV2.Services.UserProfileService;
 
@@ -30,7 +31,7 @@ public class UserProfileController {
     @GetMapping("/followers/{username}")
     public ResponseEntity<?> getAllFollowers(@PathVariable String username){
         try{
-            Set<String> allFollowers = userProfileService.getAllFollowers(username);
+            Set<FollowerDTO> allFollowers = userProfileService.getAllFollowers(username);
             return ResponseEntity.ok().body(new BackendResponse(true,allFollowers));
         }catch (Exception e) {
             return ResponseEntity.badRequest().body(new BackendResponse(false,"something went wrong"));
@@ -41,7 +42,7 @@ public class UserProfileController {
     @GetMapping("/following/{username}")
     public ResponseEntity<?> getAllFollowing(@PathVariable String username){
         try{
-            Set<String> allFollowing = userProfileService.getAllFollowing(username);
+            Set<FollowerDTO> allFollowing = userProfileService.getAllFollowing(username);
             return ResponseEntity.ok().body(new BackendResponse(true,allFollowing));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new BackendResponse(false,"something went wrong"));
