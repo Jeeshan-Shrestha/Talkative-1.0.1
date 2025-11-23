@@ -20,11 +20,16 @@ import com.example.talkative.screens.EditProfileScreen.EditProfileViewModel
 import com.example.talkative.screens.HomeScreen.HomeScreen
 import com.example.talkative.screens.LoginScreen.LoginScreen
 import com.example.talkative.screens.LoginScreen.LoginViewModel
+import com.example.talkative.screens.ProfileScreen.DeletePostViewModel
 import com.example.talkative.screens.ProfileScreen.LikeUnLikeViewModel
 import com.example.talkative.screens.ProfileScreen.OtherUserProfileViewModel
 import com.example.talkative.screens.ProfileScreen.OtherUserProflieScreen
 import com.example.talkative.screens.ProfileScreen.OwnProfilePostViewmodel
 import com.example.talkative.screens.ProfileScreen.ProfileScreen
+import com.example.talkative.screens.ShowFollowersandFollowingScreen.GetFollowersViewModel
+import com.example.talkative.screens.ShowFollowersandFollowingScreen.GetFollowingViewModel
+import com.example.talkative.screens.ShowFollowersandFollowingScreen.ShowFollowersScreen
+import com.example.talkative.screens.ShowFollowersandFollowingScreen.ShowFollowingScreen
 import com.example.talkative.screens.SignupScreen.SignUpViewmodel
 import com.example.talkative.screens.SignupScreen.SignupScreen
 import com.example.talkative.screens.searchScreen.FollowUnFollowViewModel
@@ -100,6 +105,8 @@ fun TalkativeNavigation(){
 
                 val  OwnProfilePostViewmodel=hiltViewModel<OwnProfilePostViewmodel>()
 
+                val DeletePostViewModel=hiltViewModel<DeletePostViewModel>()
+
                 //like unlike viewmodel
                 val LikeUnLikeViewModel = hiltViewModel<LikeUnLikeViewModel>()
 
@@ -107,6 +114,7 @@ fun TalkativeNavigation(){
                     createPostViewmodel = createPostViewmodel,
                     loginViewmodel=loginViewModel,
                     LikeUnLikeViewModel= LikeUnLikeViewModel,
+                    DeletePostViewModel=DeletePostViewModel,
                     ownProfilePostViewmodel = OwnProfilePostViewmodel)
             }
 
@@ -121,6 +129,39 @@ fun TalkativeNavigation(){
             //comment Screeen
             composable(TalkativeScreen.CommentScreen.name){
                 CommentScreen()
+            }
+
+            //show followers screen
+            composable(route= TalkativeScreen.ShowFollowersScreen.name+"/{username}",
+                arguments = listOf(navArgument(name="username"){ type= NavType.StringType })){backStackEntry->
+
+                val userName=backStackEntry.arguments?.getString("username")
+
+                val GetFollowersViewModel = hiltViewModel<GetFollowersViewModel>()
+
+                val FollowUnFollowViewModel= hiltViewModel<FollowUnFollowViewModel>()
+
+
+                ShowFollowersScreen(navController=navController,
+                    GetFollowersViewModel=GetFollowersViewModel,
+                    FollowUnFollowViewModel=FollowUnFollowViewModel,
+                    username=userName)
+            }
+
+            //show following Screen
+            composable(TalkativeScreen.ShowFollowingScreen.name+"/{username}",
+                arguments = listOf(navArgument(name="username"){type= NavType.StringType})){backStackEntry->
+
+                val userName = backStackEntry.arguments?.getString("username")
+
+                val FollowUnFollowViewModel= hiltViewModel<FollowUnFollowViewModel>()
+
+                val GetFollowingViewModel = hiltViewModel<GetFollowingViewModel>()
+
+                ShowFollowingScreen(navController=navController,
+                    FollowUnFollowViewModel=FollowUnFollowViewModel,
+                    GetFollowingViewModel=GetFollowingViewModel,
+                    username=userName)
             }
 
 

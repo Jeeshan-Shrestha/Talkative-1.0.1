@@ -29,7 +29,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DropdownMenuWithDetails(expanded: Boolean,
-                            logOutUser:()-> Unit,
+                            text:String="Logout",
+                            onClick:()-> Unit,
                             onDismiss:()-> Unit) {
 
 
@@ -38,17 +39,17 @@ fun DropdownMenuWithDetails(expanded: Boolean,
             onDismissRequest = onDismiss
         ) {
 
-            // First section
-            DropdownMenuItem(
-                text = { Text("Change password") },
-                leadingIcon = { Icon(Icons.Outlined.Password, contentDescription = "change password") },
-                onClick = {  }
-            )
+//            // First section
+//            DropdownMenuItem(
+//                text = { Text("Change password") },
+//                leadingIcon = { Icon(Icons.Outlined.Password, contentDescription = "change password") },
+//                onClick = {  }
+//            )
 
             DropdownMenuItem(
-                text = { Text("Logout") },
+                text = { Text(text) },
                 leadingIcon = { Icon(Icons.AutoMirrored.Outlined.Logout, contentDescription = "logout") },
-                onClick = { logOutUser.invoke() }
+                onClick = { onClick.invoke() }
             )
             HorizontalDivider()
     }

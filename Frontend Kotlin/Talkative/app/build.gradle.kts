@@ -108,6 +108,8 @@ dependencies {
     // for serilization i.e to passs class as object between screens
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
+    //material theme
+    implementation("androidx.compose.material:material:1.9.5")
 
 
 }

@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.talkative.components.BottomBar
 import com.example.talkative.components.CreatePostDialouge
+import com.example.talkative.components.EmptyText
+import com.example.talkative.components.SimpleLoadingAnimation
 import com.example.talkative.components.TopBar
 import com.example.talkative.components.UserCard
 import com.example.talkative.model.SearchResponse.Message
@@ -157,36 +159,12 @@ fun PeopleContent(getUsers: List<Message>,
                   FollowUnFollowViewmodel: FollowUnFollowViewModel,
                   uiState: State<LoadingState>,
                   openUserProfile:(String)-> Unit){
+//simple loading animation
+    SimpleLoadingAnimation(uiState=uiState)
 
-    if(uiState.value== LoadingState.LOADING) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 40.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ) {
-            CircularProgressIndicator()
-            Text(
-                text = "Loading...",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 12.dp)
-            )
-        }
-    }
-
+    //if backend sends null then there is no user so
     if(getUsers.isEmpty()){
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "User not found",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
-            )
-        }
+        EmptyText(text = "No user found.")
     }
 
     LazyColumn(modifier = Modifier.fillMaxSize(),
