@@ -69,6 +69,7 @@ public class PostCommentService {
     }
 
     public List<CommentDTO> convertCommentToCommentDTO(List<Comment> comments){
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         List<CommentDTO> commentDTOs = new ArrayList<>();
         for (Comment comment : comments){
             Users user = userRepo.findById(comment.getUserId()).orElse(null);
@@ -77,6 +78,7 @@ public class PostCommentService {
             dto.setCommentedBy(comment.getCommentedBy());
             dto.setCommentText(comment.getCommentText());
             dto.setAvatar(user != null ? user.getAvatar() : null);
+            dto.setOwnProfile(comment.getCommentedBy().equals(currentUsername));
             commentDTOs.add(dto);
         }
         return commentDTOs;

@@ -23,4 +23,6 @@ public class CommentDTO {
 
     private String avatar;
 
+    private boolean isOwnProfile;
+
 }

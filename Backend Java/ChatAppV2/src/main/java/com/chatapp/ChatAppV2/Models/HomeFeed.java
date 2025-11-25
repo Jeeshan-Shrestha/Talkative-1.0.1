@@ -1,7 +1,6 @@
 package com.chatapp.ChatAppV2.Models;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.data.annotation.Id;
 
@@ -10,11 +9,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
 @Builder
+@Data
 @AllArgsConstructor
-public class PostDTO {
+@NoArgsConstructor
+public class HomeFeed {
     
     @Id
     private String id;
@@ -23,17 +22,11 @@ public class PostDTO {
 
     private String displayName;
 
-    private String postAccess; //public or private
-
     private String imageUrl;
 
     private int likes;
 
     private int numberOfComments;
-
-    private List<Comment> comments;
-
-    private String videoUrl;
 
     private String caption;
 
@@ -42,9 +35,4 @@ public class PostDTO {
     private String avatar;
 
     private boolean liked;
-
-    public boolean getLiked(){
-        return liked;
-    }
-    
 }

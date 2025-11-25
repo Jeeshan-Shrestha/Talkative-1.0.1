@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.chatapp.ChatAppV2.Models.HomeFeed;
 import com.chatapp.ChatAppV2.Models.PostDTO;
 import com.chatapp.ChatAppV2.Models.Users;
 import com.chatapp.ChatAppV2.Repository.UserRepostory;
@@ -21,7 +22,7 @@ public class FeedService {
     @Autowired
     private PostService postService;
 
-    public List<PostDTO> getHomeFeed(){
+    public List<HomeFeed> getHomeFeed(){
         String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = userRepo.findByUsername(currentUserName);
         Set<String> following = currentUser.getFollowing();
@@ -33,7 +34,26 @@ public class FeedService {
             postList.addAll(followedUserPosts);
             }
         }
-        return postList;
+        List<HomeFeed> homefeed = convertPostDTOtoHomeFeed(postList);
+        return homefeed;
+    }
+
+    public List<HomeFeed> convertPostDTOtoHomeFeed(List<PostDTO> posts){
+        List<HomeFeed> homeFeeds = posts.stream().map(post -> {
+            HomeFeed homeFeed = new HomeFeed();
+            homeFeed.setUsername(post.getUsername());
+            homeFeed.setAvatar(post.getAvatar());
+            homeFeed.setCaption(post.getCaption());
+            homeFeed.setDisplayName(post.getDisplayName());
+            homeFeed.setLikes(post.getLikes());
+            homeFeed.setPostDate(post.getPostDate());
+            homeFeed.setLiked(post.getLiked());
+            homeFeed.setNumberOfComments(post.getNumberOfComments());
+            homeFeed.setImageUrl(post.getImageUrl());
+            homeFeed.setId(post.getId());
+            return homeFeed;
+        }).toList();
+        return homeFeeds;
     }
 
 }
