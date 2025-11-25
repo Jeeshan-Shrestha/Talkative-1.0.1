@@ -34,4 +34,10 @@ object Constants {
 
     //get comments on POst
     const val GET_COMMENT="/comment"
+
+    //Post Comments
+    const val POST_COMMENT="/comment"
+
+    //Delete Comment
+    const val DELETE_COMMENT="/comment/delete/{commentId}"
 }
