@@ -32,8 +32,6 @@ fun DropdownMenuWithDetails(expanded: Boolean,
                             text:String="Logout",
                             onClick:()-> Unit,
                             onDismiss:()-> Unit) {
-
-
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = onDismiss
@@ -48,11 +46,17 @@ fun DropdownMenuWithDetails(expanded: Boolean,
 
             DropdownMenuItem(
                 text = { Text(text) },
-                leadingIcon = { Icon(Icons.AutoMirrored.Outlined.Logout, contentDescription = "logout") },
+                leadingIcon = {
+                    Icon(
+                        Icons.AutoMirrored.Outlined.Logout,
+                        contentDescription = "logout"
+                    )
+                },
                 onClick = { onClick.invoke() }
             )
             HorizontalDivider()
+        }
     }
-}
+
 
 

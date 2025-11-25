@@ -135,7 +135,7 @@ fun CustomTextField(
             if(trailingIcon){
                 IconButton(onClick = {
                     //send Comment
-
+                    onSend.invoke()
                 },
                     enabled = state.value.trim().isNotEmpty()){
                     Icon(imageVector = Icons.AutoMirrored.Filled.Send,

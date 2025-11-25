@@ -1,7 +1,10 @@
 package com.example.talkative.network
 
 import android.view.Display
+import com.example.talkative.model.AddCommentResponse.AddCommentRequest
+import com.example.talkative.model.AddCommentResponse.AddCommentResponse
 import com.example.talkative.model.CreatePostResponse.CreatePostResponse
+import com.example.talkative.model.DeleteComment.DeleteCommentResponse
 import com.example.talkative.model.DeletePostResponse.DeletePostResponse
 import com.example.talkative.model.EditProfileResponse.EditProfileResponse
 import com.example.talkative.model.FollowUnfollowResponse.FollowUnFollowResponse
@@ -107,5 +110,16 @@ interface network {
     @GET(value= Constants.GET_COMMENT)
     suspend fun getAllComment(
         @Query(value="postId") postId:String): List<Comment>
+
+    //Add Comments
+    @POST(value = Constants.POST_COMMENT)
+    suspend fun  AddComment(
+        @Body AddCommentRequest: AddCommentRequest): AddCommentResponse
+
+    //Delete comment
+    @DELETE(value = Constants.DELETE_COMMENT)
+    suspend fun DeleteComment(
+        @Path(value = "commentId") commentId: String): DeleteCommentResponse
+
 
 }

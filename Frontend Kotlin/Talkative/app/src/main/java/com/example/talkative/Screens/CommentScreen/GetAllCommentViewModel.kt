@@ -22,12 +22,18 @@ class GetAllCommentViewModel @Inject constructor(private val repository: GetAllC
 
     val state= _state.asStateFlow()
 
-    var item :List<Comment> by mutableStateOf(emptyList())
+//    var item :List<Comment> by mutableStateOf(emptyList())
+//
+    private val _comments = MutableStateFlow<List<Comment>>(emptyList())
+    val comments = _comments.asStateFlow()
+
 
     fun getAllComments(id:String) {
         viewModelScope.launch {
 
-            _state.value= LoadingState.LOADING
+            if(_comments.value.isEmpty()) {
+                _state.value = LoadingState.LOADING
+            }
 
             try {
                 val response = repository.getAllComment(postId =id)
@@ -35,10 +41,8 @@ class GetAllCommentViewModel @Inject constructor(private val repository: GetAllC
 
                     is DataorException.Success->{
 
-                        item=response.data!!
-                        _state.value= LoadingState.SUCCESS
-
-
+                        _comments.value=response.data!!
+                            _state.value = LoadingState.SUCCESS
                     }
                     is DataorException.Error->{
                         _state.value= LoadingState.FAILED

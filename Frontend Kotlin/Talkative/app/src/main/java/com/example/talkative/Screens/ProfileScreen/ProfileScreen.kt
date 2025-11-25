@@ -107,10 +107,6 @@ fun ProfileScreen(
     val expanded = remember {
         mutableStateOf(false)
     }
-    LaunchedEffect(Unit) {
-        ownProfilePostViewmodel.OwnprofilePost()
-    }
-
     //making pull to refresh like instagram
     val isRefreshing = remember { mutableStateOf(false) }
 
@@ -122,6 +118,12 @@ fun ProfileScreen(
             ownProfilePostViewmodel.OwnprofilePost()
         }
     )
+
+    LaunchedEffect(Unit) {
+        ownProfilePostViewmodel.OwnprofilePost()
+    }
+
+
     //stopping refreshing when data is loaded
     LaunchedEffect(uiState.value) {
         isRefreshing.value = false

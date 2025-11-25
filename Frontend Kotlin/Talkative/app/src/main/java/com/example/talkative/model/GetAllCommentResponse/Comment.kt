@@ -6,5 +6,6 @@ data class Comment(
     val liked: Boolean,
     val numberOfLikes: Int,
     val commentedBy: String,
-    val avatar: String?
+    val avatar: String?,
+    val ownProfile: Boolean
 )
