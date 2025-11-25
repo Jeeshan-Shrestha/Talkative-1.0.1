@@ -474,8 +474,8 @@ fun OtherUserProflieScreen(
                                         start = 8.dp,
                                         end = 8.dp
                                     ),
-                                    onCommentClick = {
-                                        navController.navigate(TalkativeScreen.CommentScreen.name)
+                                    onCommentClick = {postId->
+                                        navController.navigate(TalkativeScreen.CommentScreen.name+"/${postId}")
                                     },
                                     ownProfile = false
                                 )

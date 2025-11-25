@@ -426,8 +426,9 @@ fun ProfileScreen(
                                 post = post,
                                 LikeunLikeViewModel = LikeUnLikeViewModel,
                                 modifier = Modifier.padding(top = 10.dp, start = 8.dp, end = 8.dp),
-                                onCommentClick = {
-                                    navController.navigate(TalkativeScreen.CommentScreen.name)
+                                onCommentClick = {postId->
+                                    //when userclick comment we will pass post id and change screen
+                                    navController.navigate(TalkativeScreen.CommentScreen.name+"/${postId}")
                                 },
                                 ownProfile = true,
                                 onDeletePost = {

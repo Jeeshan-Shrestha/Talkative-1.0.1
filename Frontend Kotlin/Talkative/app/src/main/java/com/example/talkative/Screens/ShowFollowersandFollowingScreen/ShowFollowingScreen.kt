@@ -20,58 +20,65 @@ import com.example.talkative.components.TopBarWithBack
 import com.example.talkative.components.UserCompactCard
 import com.example.talkative.navigation.TalkativeScreen
 import com.example.talkative.screens.searchScreen.FollowUnFollowViewModel
+import com.example.talkative.utils.LoadingState
 
 @Composable
 fun ShowFollowingScreen(navController: NavController,
                         FollowUnFollowViewModel: FollowUnFollowViewModel,
                         GetFollowingViewModel: GetFollowingViewModel,
-                        username: String?){
+                        username: String?) {
 
-    val data =  GetFollowingViewModel.item.message
+    val data = GetFollowingViewModel.item.message
 
     val uiState = GetFollowingViewModel.state.collectAsState()
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         username?.let {
             GetFollowingViewModel.getFollowing(it)
         }
     }
 
     Scaffold(topBar = {
-        TopBarWithBack(text = "Following"){
+        TopBarWithBack(text = "Following") {
             //onclick take user to previous screen
             navController.popBackStack()
         }
-    }) {it->
-        Surface(modifier = Modifier
-            .padding(it)
-            .fillMaxSize()) {
+    }) { it ->
+        Surface(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+        ) {
 
             //simple Loading animation
-            SimpleLoadingAnimation(uiState = uiState)
+            if (uiState.value == LoadingState.LOADING) {
+                SimpleLoadingAnimation(uiState = uiState)
+            } else {
+                if (data.isEmpty()) {
+                    EmptyText(text = "Not Following anyone")
+                }
 
-            if(data.isEmpty()){
-                EmptyText(text="Not Following anyone")
-            }
-
-            //followers list
-            LazyColumn(modifier = Modifier
-                .fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)){
-                //useUserCompactCard
-                items(data){
-                    UserCompactCard(userInfo = it, followUnFollow = {
-                        //follow or unfollow user
-                        FollowUnFollowViewModel.FollowUnfollowuser(it)
-                    }){username->
-                        //open other user profile
-                        //open other userprofile
-                        navController.navigate(TalkativeScreen.OtherUserProfileScreen.name+"/${username}")
+                //followers list
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    //useUserCompactCard
+                    items(data) {
+                        UserCompactCard(userInfo = it, followUnFollow = {
+                            //follow or unfollow user
+                            FollowUnFollowViewModel.FollowUnfollowuser(it)
+                        }) { username ->
+                            //open other user profile
+                            //open other userprofile
+                            navController.navigate(TalkativeScreen.OtherUserProfileScreen.name + "/${username}")
+                        }
                     }
                 }
-            }
 
+            }
         }
     }
 }
