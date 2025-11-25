@@ -1,5 +1,6 @@
 package com.example.talkative.screens.CommentScreen
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -28,6 +30,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,17 +46,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.talkative.R
 import com.example.talkative.components.CustomTextField
+import com.example.talkative.components.SimpleLoadingAnimation
 import com.example.talkative.components.TopBarWithBack
+import com.example.talkative.model.GetAllCommentResponse.Comment
 
 
 @Composable
-fun CommentScreen() {
+fun CommentScreen(navController: NavController,
+                  postId: String?,
+                  GetAllCommentViewModel: GetAllCommentViewModel) {
 
     val listState = rememberLazyListState()
+
+    val fetchedComments = GetAllCommentViewModel.item
+
+    LaunchedEffect(Unit){
+        postId?.let {
+        GetAllCommentViewModel.getAllComments(id = postId)
+        }
+    }
+
+    val uiStateforComment=  GetAllCommentViewModel.state.collectAsState()
+
 
     //comment state
     val comment = remember {
@@ -70,6 +90,7 @@ fun CommentScreen() {
         topBar = {
             TopBarWithBack(text = "Comments") {
                 //when user press back button navigate to previous screen
+                navController.popBackStack()
             }
         }
     ) { it ->
@@ -81,6 +102,9 @@ fun CommentScreen() {
             Column(modifier = Modifier
                 .imePadding() //using this so text field slides up before the keyboard
                 .padding(5.dp)) {
+
+                SimpleLoadingAnimation(uiState = uiStateforComment)
+
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f),
@@ -89,23 +113,8 @@ fun CommentScreen() {
                     contentPadding = PaddingValues(vertical = 17.dp, horizontal = 1.dp)
                 ) {
                 //use items and show comments
-                    item {
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-                        CommentCard()
-
+                    items(fetchedComments){
+                        CommentCard(fetchedComments=it)
                     }
                 }
 
@@ -134,13 +143,13 @@ fun CommentScreen() {
 
 //used to display comments username avatar etc
 @Composable
-fun CommentCard(){
+fun CommentCard(fetchedComments: Comment){
 
     var isLiked = remember {
-        mutableStateOf(true)
+        mutableStateOf(fetchedComments.liked)
     }
     var likesCount = remember {
-        mutableStateOf(32)
+        mutableStateOf(fetchedComments.numberOfLikes)
     }
 
     val handleLike ={
@@ -161,14 +170,13 @@ fun CommentCard(){
         //navigate user to the profile screen
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data("https://i.imgur.com/veVP6GL.png")
+                .data(fetchedComments.avatar?:"https://i.imgur.com/veVP6GL.png")
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.placeholder),
             contentDescription = "Comment Avatar",
             contentScale = ContentScale.FillBounds,
             modifier = Modifier
-                .padding(top = 10.dp)
                 .size(42.dp)
                 .clip(CircleShape)
         )
@@ -183,7 +191,7 @@ fun CommentCard(){
 
                 //displaying user name
                 Text(
-                    text = "Sanskar",
+                    text = fetchedComments.commentedBy?:"unknown",
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.clickable {
@@ -220,7 +228,7 @@ fun CommentCard(){
 
             }
             //comment content
-            Text(text = "asdfajsdofajda",
+            Text(text = fetchedComments.commentText?:"asdfajsdofajda",
                 style = MaterialTheme.typography.bodyMedium,
                 lineHeight = MaterialTheme.typography.bodyMedium.lineHeight)
 

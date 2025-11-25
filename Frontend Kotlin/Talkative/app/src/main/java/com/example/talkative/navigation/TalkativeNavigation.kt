@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import com.example.talkative.model.OwnProfileResponse.Message
 import com.example.talkative.model.customDataPassing.ProfileArgument
 import com.example.talkative.screens.CommentScreen.CommentScreen
+import com.example.talkative.screens.CommentScreen.GetAllCommentViewModel
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
 import com.example.talkative.screens.EditProfileScreen.EditProfileScreen
 import com.example.talkative.screens.EditProfileScreen.EditProfileViewModel
@@ -127,8 +128,15 @@ fun TalkativeNavigation(){
             }
 
             //comment Screeen
-            composable(TalkativeScreen.CommentScreen.name){
-                CommentScreen()
+            composable(TalkativeScreen.CommentScreen.name+"/{postId}",
+                arguments = listOf(navArgument(name = "postId"){type= NavType.StringType})){backStackEntry->
+
+                val postId = backStackEntry.arguments?.getString("postId")
+                val GetAllCommentViewModel = hiltViewModel<GetAllCommentViewModel>()
+
+                CommentScreen(navController=navController,
+                    postId=postId,
+                    GetAllCommentViewModel=GetAllCommentViewModel)
             }
 
             //show followers screen

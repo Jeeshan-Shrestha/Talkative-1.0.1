@@ -31,4 +31,7 @@ object Constants {
 
     //Delete Post
     const val delete_post = "/post/delete/{postid}"
+
+    //get comments on POst
+    const val GET_COMMENT="/comment"
 }

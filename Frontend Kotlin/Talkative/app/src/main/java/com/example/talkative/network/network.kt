@@ -5,6 +5,7 @@ import com.example.talkative.model.CreatePostResponse.CreatePostResponse
 import com.example.talkative.model.DeletePostResponse.DeletePostResponse
 import com.example.talkative.model.EditProfileResponse.EditProfileResponse
 import com.example.talkative.model.FollowUnfollowResponse.FollowUnFollowResponse
+import com.example.talkative.model.GetAllCommentResponse.Comment
 import com.example.talkative.model.GetFollowersResponse.GetFollowersResponse
 import com.example.talkative.model.LoginRequest.LoginRequest
 import com.example.talkative.model.LoginResponse.LoginResponse
@@ -102,5 +103,9 @@ interface network {
     suspend fun deletePost(
         @Path("postid") postId:String): DeletePostResponse
 
+    //get comments from a post
+    @GET(value= Constants.GET_COMMENT)
+    suspend fun getAllComment(
+        @Query(value="postId") postId:String): List<Comment>
 
 }
