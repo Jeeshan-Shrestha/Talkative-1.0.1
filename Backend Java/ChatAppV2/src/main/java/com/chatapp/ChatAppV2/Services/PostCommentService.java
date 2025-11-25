@@ -101,5 +101,38 @@ public class PostCommentService {
         }
         return "Comment not found";
     }
+
+    public String likeComment(String commentId){
+        Users user = userRepo.findByPostsCommentsCommentId(commentId);
+
+        if (user == null)
+            throw new UsernameNotFoundException("No user found");
+        List<Post> posts = user.getPosts();
+        for (Post post : posts) {
+            List<Comment> comments = post.getComments();
+            for (Comment c : comments) {
+                if (c.getCommentId().equals(commentId)) {
+                    if (c.isLiked()){
+                        c.setNumberOfLikes(c.getNumberOfLikes() - 1);
+                        c.setLiked(false);
+                        comments.set(comments.indexOf(c), c);
+                        posts.set(posts.indexOf(post), post);
+                        user.setPosts(posts);
+                        userRepo.save(user);
+                        return "Unliked comment";
+                    }if (!c.isLiked()){
+                       c.setNumberOfLikes(c.getNumberOfLikes() + 1);
+                       c.setLiked(true);
+                        comments.set(comments.indexOf(c), c);
+                        posts.set(posts.indexOf(post), post);
+                        user.setPosts(posts);
+                        userRepo.save(user); 
+                        return "Liked comment";
+                    }
+                }
+            }
+        }
+        return "something went wrong";
+    }
     
 }

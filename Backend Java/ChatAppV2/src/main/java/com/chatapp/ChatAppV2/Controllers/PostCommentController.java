@@ -52,4 +52,11 @@ public class PostCommentController {
         return ResponseEntity.ok().body(new BackendResponse(true,message));
     }
 
+    @GetMapping("/comment/like")
+    public ResponseEntity<?> likeComment(@RequestParam String commentId) {
+        String message = postCommentService.likeComment(commentId);
+        return ResponseEntity.ok().body(new BackendResponse(true,message));
+    }
+    
+
 }

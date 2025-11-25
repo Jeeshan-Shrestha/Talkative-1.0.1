@@ -32,4 +32,9 @@ public class GlobalException {
         return ResponseEntity.badRequest().body(new BackendResponse(false, "No user of that name exists"));
     }
 
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<BackendResponse> commentNotFoundExceptionHandler(Exception e){
+        return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
+    }
+
 }
