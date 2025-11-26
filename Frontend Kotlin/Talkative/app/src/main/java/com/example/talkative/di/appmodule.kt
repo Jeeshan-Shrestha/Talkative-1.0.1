@@ -1,7 +1,10 @@
 package com.example.talkative.di
 
 import android.content.Context
+import androidx.room.Room
 import coil.ImageLoader
+import com.example.talkative.DataBase.UserDataBaseDao
+import com.example.talkative.DataBase.UserDatabase
 import com.example.talkative.cookieManager.AppCookieJar
 import com.example.talkative.network.network
 import com.example.talkative.utils.Constants
@@ -64,4 +67,19 @@ object appmodule {
             .okHttpClient { okHttpClient } // using  client with cookies
             .build()
     }
+
+    //Creating Room DataBase
+    @Singleton
+    @Provides
+    fun ProvideUserDao(userDataBase: UserDatabase): UserDataBaseDao=userDataBase.userDao()
+
+    @Singleton
+    @Provides
+    fun ProvideAppDataBase(@ApplicationContext context: Context): UserDatabase
+    = Room.databaseBuilder(
+        context,
+        UserDatabase::class.java,
+        "user_db" )//name of database
+        .fallbackToDestructiveMigrationFrom()
+        .build()
 }

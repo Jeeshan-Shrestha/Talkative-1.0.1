@@ -58,11 +58,11 @@ fun PostCard(
 ){
 
     //state for isLiked
-    var isLiked = remember {
+    var isLiked = rememberSaveable {
         mutableStateOf(post.liked)
     }
 
-    var likescount = remember {
+    var likescount = rememberSaveable {
         mutableStateOf(post.likes)
     }
     

@@ -45,4 +45,7 @@ object Constants {
 
     //Get HomeFeed
     const val HOME_FEED="/feed/home"
+
+    //get myself
+    const val GET_MYSELF="/myself"
 }

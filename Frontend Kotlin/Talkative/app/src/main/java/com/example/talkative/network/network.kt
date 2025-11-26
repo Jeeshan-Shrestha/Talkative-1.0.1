@@ -18,6 +18,7 @@ import com.example.talkative.model.OwnProfileResponse.OwnProfileResponse
 import com.example.talkative.model.PostLikeResponse.PostLikeResponse
 import com.example.talkative.model.SearchResponse.SearchResponse
 import com.example.talkative.model.SignupResponse.SignupResponse
+import com.example.talkative.model.mySelf.GetMyselfResponse
 import com.example.talkative.model.signupRequest.SignupRequest
 import com.example.talkative.model.viewOthersProfile.OtherUsreProfileResponse
 import com.example.talkative.utils.Constants
@@ -126,11 +127,13 @@ interface network {
     //Like Comment
     @GET(value = Constants.LIKE_COMMENT)
     suspend fun LikeComment(
-        @Path(value="commentId") commentId:String): LikeCommentResponse
+    @Query(value="commentId") commentId:String): LikeCommentResponse
 
     //Home Feed
     @GET(value = Constants.HOME_FEED)
     suspend fun HomeFeed(): HomeFeedResponse
 
+    @GET(value = Constants.GET_MYSELF)
+    suspend fun GetmySelf(): GetMyselfResponse
 
 }

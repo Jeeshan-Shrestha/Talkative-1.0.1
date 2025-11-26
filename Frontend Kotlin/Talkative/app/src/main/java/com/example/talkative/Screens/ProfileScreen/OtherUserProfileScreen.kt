@@ -91,7 +91,6 @@ fun OtherUserProflieScreen(
 
     val userInfo = OtherUserProfileViewModel.item.message
 
-    Log.d("akriti", "from ui screen screen: ${userInfo} ")
 
     LaunchedEffect(otherUsername) {
         if (!otherUsername.isNullOrEmpty()) {
@@ -206,7 +205,7 @@ fun OtherUserProflieScreen(
                 ) {
                     LoadingDialog()
                 }
-            } else {
+            } 
                 //wrapping inside box so that refresh will work
                 Box(
                     modifier = Modifier
@@ -509,8 +508,6 @@ fun OtherUserProflieScreen(
                     }
 
                 }
-
-            }
         }
     }
 }

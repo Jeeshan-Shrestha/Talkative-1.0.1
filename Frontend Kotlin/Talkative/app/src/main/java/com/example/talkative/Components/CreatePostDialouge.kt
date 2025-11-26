@@ -53,6 +53,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.talkative.DataBase.UserInformation
+import com.example.talkative.DataBase.UserViewModel
 import com.example.talkative.R
 import com.example.talkative.model.MockData
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
@@ -62,12 +64,22 @@ import com.example.talkative.utils.LoadingState
 @Composable
 fun CreatePostDialouge(
     onDismiss: () -> Unit ={},
+    userViewModel: UserViewModel=hiltViewModel(),
     createPostViewmodel: CreatePostViewmodel,
-    onPost:()->Unit={}
+    onPost:()->Unit={} //to close dialouge
     ){
 
     //context for toast
     val context = LocalContext.current
+
+    //data from viewmodel
+    val userInformation=userViewModel.userDetails.collectAsState()
+//    val userInformation = UserInformation(
+//        username = "sanskar",
+//        displayName = "Great",
+//        avatar = ""
+//    )
+
 
     val content = rememberSaveable {
         mutableStateOf("")
@@ -153,9 +165,10 @@ fun CreatePostDialouge(
                     horizontalArrangement = Arrangement.spacedBy(13.dp),
                     verticalAlignment = Alignment.CenterVertically){
 
+                    //Avatar
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data("https://i.imgur.com/WTFTkMh.jpeg")
+                            .data(userInformation.value?.avatar?:"https://i.imgur.com/veVP6GL.png")
                             .crossfade(true)
                             .build(),
                         placeholder = painterResource(R.drawable.placeholder),
@@ -167,13 +180,15 @@ fun CreatePostDialouge(
                     )
 
                     Column{
+                        //displayName
                         Text(
-                            text = MockData.mockUser.name,
+                            text = userInformation.value?.displayName?:"Unknown",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium
                         )
+                        //userName
                         Text(
-                            text = "@${MockData.mockUser.username}",
+                            text = userInformation.value?.username?:"Unknown",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
