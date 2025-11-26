@@ -127,9 +127,9 @@ public class UserProfileService {
         if (posts == null) {
             posts = new ArrayList<>();
         }
-        boolean isFollowing = false;
+        boolean isFollowing;
         List<PostDTO> dto = postService.convertPostsToDTO(posts);
-        if (user.getFollowers().contains(currentUser)){
+        if (user.getFollowers() != null  && user.getFollowers().contains(currentUser)){
             isFollowing = true;
         }else{
             isFollowing = false;

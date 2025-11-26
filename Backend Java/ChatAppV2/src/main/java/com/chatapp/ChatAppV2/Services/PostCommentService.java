@@ -1,7 +1,9 @@
 package com.chatapp.ChatAppV2.Services;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,8 +81,8 @@ public class PostCommentService {
             dto.setCommentText(comment.getCommentText());
             dto.setAvatar(user != null ? user.getAvatar() : null);
             dto.setOwnProfile(comment.getCommentedBy().equals(currentUsername));
-            dto.setLiked(comment.isLiked());
             dto.setNumberOfLikes(comment.getNumberOfLikes());
+            dto.setLiked(comment.getLikedBy() != null && comment.getLikedBy().contains(currentUsername));
             commentDTOs.add(dto);
         }
         return commentDTOs;
@@ -108,25 +110,31 @@ public class PostCommentService {
 
     public String likeComment(String commentId){
         Users user = userRepo.findByPostsCommentsCommentId(commentId);
-
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         if (user == null)
             throw new UsernameNotFoundException("No user found");
         List<Post> posts = user.getPosts();
         for (Post post : posts) {
             List<Comment> comments = post.getComments();
             for (Comment c : comments) {
+                Set<String> likedBy = c.getLikedBy();
+                if (likedBy == null){
+                    likedBy = new HashSet<>();
+                }
                 if (c.getCommentId().equals(commentId)) {
-                    if (c.isLiked()){
+                    if (likedBy.contains(currentUsername)){
                         c.setNumberOfLikes(c.getNumberOfLikes() - 1);
-                        c.setLiked(false);
+                        likedBy.remove(currentUsername);
+                        c.setLikedBy(likedBy);
                         comments.set(comments.indexOf(c), c);
                         posts.set(posts.indexOf(post), post);
                         user.setPosts(posts);
                         userRepo.save(user);
                         return "Unliked comment";
-                    }if (!c.isLiked()){
+                    }else{
                        c.setNumberOfLikes(c.getNumberOfLikes() + 1);
-                       c.setLiked(true);
+                       likedBy.add(currentUsername);
+                        c.setLikedBy(likedBy);
                         comments.set(comments.indexOf(c), c);
                         posts.set(posts.indexOf(post), post);
                         user.setPosts(posts);

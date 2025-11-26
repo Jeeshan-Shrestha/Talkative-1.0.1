@@ -1,5 +1,7 @@
 package com.chatapp.ChatAppV2.Models;
 
+import java.util.Set;
+
 import org.bson.types.ObjectId;
 
 import lombok.AllArgsConstructor;
@@ -24,5 +26,7 @@ public class Comment {
     private String commentedBy;
 
     private ObjectId userId;
+
+    private Set<String> likedBy;
 
 }
