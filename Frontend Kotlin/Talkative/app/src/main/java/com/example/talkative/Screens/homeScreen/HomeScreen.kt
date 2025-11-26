@@ -2,79 +2,158 @@ package com.example.talkative.screens.HomeScreen
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.talkative.components.BottomBar
 import com.example.talkative.components.CreatePostDialouge
 import com.example.talkative.components.OnyourMind
 import com.example.talkative.components.PostCard
+import com.example.talkative.components.SimpleLoadingAnimation
 import com.example.talkative.components.TopBar
 import com.example.talkative.model.MockData
 import com.example.talkative.navigation.TalkativeScreen
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
+import com.example.talkative.screens.ProfileScreen.LikeUnLikeViewModel
+import com.example.talkative.utils.LoadingState
+import kotlin.math.roundToInt
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(navController: NavController= NavController(LocalContext.current),
-               createPostViewmodel: CreatePostViewmodel){
+               createPostViewmodel: CreatePostViewmodel,
+               LikeUnLikeViewModel: LikeUnLikeViewModel,
+               HomeFeedViewModel:HomeFeedViewModel
+               ) {
 
     val showPostDialouge = remember { mutableStateOf(false) }
+
+    val data = HomeFeedViewModel.item.message
+
+    val uiStateForHomeFeed = HomeFeedViewModel.state.collectAsState()
+
+
+    //to make refresh like instagram
+    //making pull to refresh like instagram
+    val isRefreshing = remember { mutableStateOf(false) }
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing.value,
+        onRefresh = {
+            isRefreshing.value = true
+            HomeFeedViewModel.Homefeed()
+        }
+    )
+
+    //Stop Loading when ui is loaded
+    LaunchedEffect(uiStateForHomeFeed.value) {
+        isRefreshing.value = false
+    }
 
     Scaffold(
         topBar = {
             TopBar()
         },
         bottomBar = {
-            BottomBar(navController=navController){
-                showPostDialouge.value=true
+            BottomBar(navController = navController) {
+                showPostDialouge.value = true
             }
         }
-    ) {it->
-        Surface(modifier = Modifier
-            .padding(it)
-            .fillMaxSize()) {
-
-            LazyColumn(modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 17.dp)){
-                item {
-                    OnyourMind()
-
-                }
-                items(MockData.mockPosts){posts->
+    ) { it ->
+        Surface(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+        ) {
+            //wrapping inside box so that refresh will work
+            Box(
+                modifier = Modifier
+                    .pullRefresh(pullRefreshState)
+                    .fillMaxSize()
+            ) {
+                Column {
+                    LazyColumn(
+                        modifier = Modifier
+                            .offset {
+                                IntOffset(
+                                    x = 0,
+                                    y = (pullRefreshState.progress * 80f).roundToInt() // UI pull-down animation
+                                )
+                            }
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(vertical = 17.dp)
+                    ) {
+                        item {
+                            OnyourMind()
+                            SimpleLoadingAnimation(uiState = uiStateForHomeFeed)
+                        }
+                        if(uiStateForHomeFeed.value != LoadingState.LOADING) {
+                            items(data) { it ->
 //                    PostCard(post = posts){
 //                        //when user clicks the username or name or profile navigate to otheruser screen
 //                        navController.navigate(TalkativeScreen.OtherUserProfileScreen.name)
 //                    }
+                                PostCard(
+                                    post = it,
+                                    ownProfile = false,
+                                    LikeunLikeViewModel = LikeUnLikeViewModel,
+                                    onUserclick = { username ->
+                                        navController.navigate(TalkativeScreen.OtherUserProfileScreen.name + "/${username}")
+                                    },
+                                    onCommentClick = { commentId ->
+                                        navController.navigate(TalkativeScreen.CommentScreen.name + "/${commentId}")
+                                    })
+                            }
+                        }
+
+                    }
                 }
 
-            }
+                    PullRefreshIndicator(
+                        refreshing = isRefreshing.value,
+                        state = pullRefreshState,
+                        modifier = Modifier.align(Alignment.TopCenter)
+                    )
 
-            if(showPostDialouge.value){
-                CreatePostDialouge(onDismiss = {
-                    showPostDialouge.value=false
-                },
-                    onPost = {
-                        //we will handle post logic here
-                        showPostDialouge.value=false
-                    },
-                    createPostViewmodel = createPostViewmodel
-                )
-            }
+                    if (showPostDialouge.value) {
+                        CreatePostDialouge(
+                            onDismiss = {
+                                showPostDialouge.value = false
+                            },
+                            onPost = {
+                                //we will handle post logic here
+                                showPostDialouge.value = false
+                            },
+                            createPostViewmodel = createPostViewmodel
+                        )
+                    }
 
+                }
+            }
         }
     }
-}

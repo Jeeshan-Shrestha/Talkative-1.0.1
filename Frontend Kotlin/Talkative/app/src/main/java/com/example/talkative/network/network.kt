@@ -10,6 +10,8 @@ import com.example.talkative.model.EditProfileResponse.EditProfileResponse
 import com.example.talkative.model.FollowUnfollowResponse.FollowUnFollowResponse
 import com.example.talkative.model.GetAllCommentResponse.Comment
 import com.example.talkative.model.GetFollowersResponse.GetFollowersResponse
+import com.example.talkative.model.GetHomeFeedResponse.HomeFeedResponse
+import com.example.talkative.model.LikeCommentResponse.LikeCommentResponse
 import com.example.talkative.model.LoginRequest.LoginRequest
 import com.example.talkative.model.LoginResponse.LoginResponse
 import com.example.talkative.model.OwnProfileResponse.OwnProfileResponse
@@ -120,6 +122,15 @@ interface network {
     @DELETE(value = Constants.DELETE_COMMENT)
     suspend fun DeleteComment(
         @Path(value = "commentId") commentId: String): DeleteCommentResponse
+
+    //Like Comment
+    @GET(value = Constants.LIKE_COMMENT)
+    suspend fun LikeComment(
+        @Path(value="commentId") commentId:String): LikeCommentResponse
+
+    //Home Feed
+    @GET(value = Constants.HOME_FEED)
+    suspend fun HomeFeed(): HomeFeedResponse
 
 
 }

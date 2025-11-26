@@ -71,6 +71,7 @@ fun CommentScreen(navController: NavController,
                   AddCommentViewModel: AddCommentViewModel,
                   DeleteCommentViewModel:DeleteCommentViewModel,
                   postId: String?,
+                  LikeCommentViewModel: LikeCommentViewModel,
                   GetAllCommentViewModel: GetAllCommentViewModel) {
 
     val listState = rememberLazyListState()
@@ -164,7 +165,9 @@ fun CommentScreen(navController: NavController,
 
                 //use items and show comment
                     items(fetchedComments){
-                        CommentCard(fetchedComments=it, openUserProfile = {username->
+                        CommentCard(fetchedComments=it,
+                            LikeCommentViewModel=LikeCommentViewModel,
+                            openUserProfile = {username->
                             //open user profile
                             navController.navigate(TalkativeScreen.OtherUserProfileScreen.name+"/${username}") }){commentId->
                             DeleteCommentViewModel.Deletecomment(id = commentId)
@@ -213,6 +216,7 @@ fun CommentScreen(navController: NavController,
 //used to display comments username avatar etc
 @Composable
 fun CommentCard(fetchedComments: Comment,
+                LikeCommentViewModel: LikeCommentViewModel,
                 openUserProfile:(String)-> Unit,
                 deleteComment:(String)-> Unit){
 
@@ -310,6 +314,7 @@ fun CommentCard(fetchedComments: Comment,
                     modifier = Modifier.clickable{
                         //like un like button
                         handleLike.invoke()
+                        LikeCommentViewModel.LikeComment(fetchedComments.commentId)
                     }
                 ) {
 

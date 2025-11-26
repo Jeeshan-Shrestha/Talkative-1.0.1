@@ -40,4 +40,9 @@ object Constants {
 
     //Delete Comment
     const val DELETE_COMMENT="/comment/delete/{commentId}"
+    //Like comment
+    const val LIKE_COMMENT="/comment/like"
+
+    //Get HomeFeed
+    const val HOME_FEED="/feed/home"
 }
