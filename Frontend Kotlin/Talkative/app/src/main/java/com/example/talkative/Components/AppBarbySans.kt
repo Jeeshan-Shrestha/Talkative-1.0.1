@@ -24,8 +24,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
+//used in EditProfile Screen
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun AppBarbySans(
     title: String="Attendance",

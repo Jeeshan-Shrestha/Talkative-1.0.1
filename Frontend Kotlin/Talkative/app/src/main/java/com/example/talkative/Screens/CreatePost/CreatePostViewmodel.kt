@@ -47,6 +47,7 @@ class CreatePostViewmodel  @Inject constructor(
                     }
                     is DataorException.Error ->{
                         _state.value= LoadingState.FAILED
+                        _state.value.message=response.message
                     }
                     else -> {
                         _state.value= LoadingState.FAILED

@@ -5,12 +5,14 @@ import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.talkative.DataBase.UserViewModel
 import com.example.talkative.model.OwnProfileResponse.Message
 import com.example.talkative.model.customDataPassing.ProfileArgument
 import com.example.talkative.screens.CommentScreen.AddCommentViewModel
@@ -21,6 +23,7 @@ import com.example.talkative.screens.CommentScreen.LikeCommentViewModel
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
 import com.example.talkative.screens.EditProfileScreen.EditProfileScreen
 import com.example.talkative.screens.EditProfileScreen.EditProfileViewModel
+import com.example.talkative.screens.HomeScreen.GetMySelfViewModel
 import com.example.talkative.screens.HomeScreen.HomeFeedViewModel
 import com.example.talkative.screens.HomeScreen.HomeScreen
 import com.example.talkative.screens.LoginScreen.LoginScreen
@@ -89,9 +92,15 @@ fun TalkativeNavigation(){
 
                 val LikeUnLikeViewModel=hiltViewModel<LikeUnLikeViewModel>()
 
+                val GetMySelfViewModel = hiltViewModel<GetMySelfViewModel>()
+
+                val userViewModel = hiltViewModel<UserViewModel>()
+
                 HomeScreen(navController = navController,
                     LikeUnLikeViewModel=LikeUnLikeViewModel,
                     HomeFeedViewModel=HomeFeedViewModel,
+                    UserViewModel = userViewModel,
+                    GetMySelfViewModel=GetMySelfViewModel,
                     createPostViewmodel=createPostViewmodel)
             }
             //Search Screen
@@ -119,6 +128,8 @@ fun TalkativeNavigation(){
 
                 val DeletePostViewModel=hiltViewModel<DeletePostViewModel>()
 
+                val userViewModel = hiltViewModel<UserViewModel>()
+
                 //like unlike viewmodel
                 val LikeUnLikeViewModel = hiltViewModel<LikeUnLikeViewModel>()
 
@@ -127,6 +138,7 @@ fun TalkativeNavigation(){
                     loginViewmodel=loginViewModel,
                     LikeUnLikeViewModel= LikeUnLikeViewModel,
                     DeletePostViewModel=DeletePostViewModel,
+                    userViewModel=userViewModel,
                     ownProfilePostViewmodel = OwnProfilePostViewmodel)
             }
 

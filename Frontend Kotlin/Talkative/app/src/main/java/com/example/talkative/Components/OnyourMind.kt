@@ -35,6 +35,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -48,19 +49,31 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.talkative.DataBase.UserViewModel
 import com.example.talkative.R
+import com.example.talkative.screens.CreatePost.CreatePostViewmodel
+import com.example.talkative.utils.LoadingState
 
 
 @Composable
-fun OnyourMind(){
+fun OnyourMind(createPostViewmodel: CreatePostViewmodel,
+    userViewModel: UserViewModel= hiltViewModel()) {
 
     val newpost = rememberSaveable {
         mutableStateOf("")
     }
 
-    val pathEffect =androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(10f,10f),0f)
+    //for loading animation
+    val uiState=createPostViewmodel.state.collectAsState()
+
+    //getting userinfo from roomdatabase
+    val userInformation = userViewModel.userDetails.collectAsState()
+
+    val pathEffect =
+        androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
 
     //handling images selected From gallery
     val selectedImage = rememberSaveable { mutableStateOf<Uri?>(null) }
@@ -88,7 +101,8 @@ fun OnyourMind(){
 
     // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()) { isGranted ->
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
         if (isGranted) {
             // If granted, launch gallery
             galleryLauncher.launch("image/*")
@@ -99,37 +113,43 @@ fun OnyourMind(){
 
 
 
-    Card(modifier = Modifier
-        .padding(start = 8.dp, end =8.dp)
-        .fillMaxWidth(),
+    Card(
+        modifier = Modifier
+            .padding(start = 8.dp, end = 8.dp)
+            .fillMaxWidth(),
         border = BorderStroke(width = 1.dp, color = Color.LightGray),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-        Column(modifier = Modifier.padding(10.dp)){
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(modifier = Modifier.padding(10.dp)) {
 
-            Row(modifier = Modifier.padding(10.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly) {
+            Row(
+                modifier = Modifier.padding(10.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
 
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data("https://i.imgur.com/WTFTkMh.jpeg")
-                            .crossfade(true)
-                            .build(),
-                        placeholder = painterResource(R.drawable.placeholder),
-                        contentDescription = "userimage",
-                        contentScale = ContentScale.FillBounds,
-                        modifier = Modifier
-                            .size(45.dp)
-                            .clip(CircleShape)
-                    )
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(userInformation.value?.avatar ?: "https://i.imgur.com/veVP6GL.png")
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(R.drawable.placeholder),
+                    contentDescription = "userimage",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .size(45.dp)
+                        .clip(CircleShape)
+                )
                 Spacer(modifier = Modifier.width(10.dp))
 
-                Column(modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
 
                     OutlinedTextField(
                         value = newpost.value,
-                        onValueChange = {newpost.value=it},
-                        placeholder = {Text("What's on Your mind?")},
+                        onValueChange = { newpost.value = it },
+                        placeholder = { Text("What's on Your mind?") },
                         modifier = Modifier
                             .fillMaxWidth(),
                         maxLines = 3,
@@ -137,7 +157,7 @@ fun OnyourMind(){
                     )
 
                     //selected Image to Preview
-                    selectedImage.value?.let { imageUrl->
+                    selectedImage.value?.let { imageUrl ->
                         Card(
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -152,7 +172,7 @@ fun OnyourMind(){
                                     contentDescription = "userimage",
                                     contentScale = ContentScale.FillBounds,
                                     modifier = Modifier
-                                        .heightIn(max=400.dp)
+                                        .heightIn(max = 400.dp)
                                         .fillMaxWidth()
                                 )
 
@@ -161,7 +181,7 @@ fun OnyourMind(){
                                     modifier = Modifier.align(Alignment.TopEnd)
                                 ) {
                                     Icon(
-                                        painter =painterResource(R.drawable.closeicon),
+                                        painter = painterResource(R.drawable.closeicon),
                                         tint = Color.Unspecified,
                                         contentDescription = "Remove image",
                                         modifier = Modifier.size(25.dp)
@@ -175,15 +195,18 @@ fun OnyourMind(){
                     DrawComposable(pathEffect)
 
 
-                    Row(modifier = Modifier.fillMaxWidth(),
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically) {
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier.clickable { /* Handle photo click */
-                            permissionLauncher.launch(requiredPermission)}
+                                permissionLauncher.launch(requiredPermission)
+                            }
                         ) {
                             Icon(
                                 modifier = Modifier.size(30.dp),
@@ -212,12 +235,37 @@ fun OnyourMind(){
 //                            )
 //                        }
 
-                        sansButton(text = "Post",
+                        sansButton(
+                            text = "Post",
                             color = Color.Black,
                             icon = false
-                            ) {
-                                //Handle Post
+                        ) {
+                            //Handle Post
+                            if (newpost.value.isNotBlank() && selectedImage.value != null) {
+
+                                selectedImage.value?.let {
+                                    createPostViewmodel.PostImage(
+                                        caption = newpost.value,
+                                        imageUri = it) {//on Success
+                                        //reset everything
+                                        newpost.value=""
+                                        selectedImage.value=null
+                                        Toast.makeText(context, "Uploded Successfully", Toast.LENGTH_SHORT).show()
+                                    }
+
+                                }
+
+                            }else{
+                                Toast.makeText(context, "Please add Image and caption", Toast.LENGTH_SHORT).show()
                             }
+
+                        }
+                        if(uiState.value== LoadingState.LOADING){
+                            LoadingDialog()
+                        }
+                        if(uiState.value== LoadingState.FAILED){
+                            Toast.makeText(context, uiState.value.message, Toast.LENGTH_SHORT).show()
+                        }
 
                     }
 
@@ -226,10 +274,8 @@ fun OnyourMind(){
             }
 
         }
-
     }
 }
-
 
 
 //dotted line

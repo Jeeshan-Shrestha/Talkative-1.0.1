@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import com.example.talkative.DataBase.UserViewModel
 import com.example.talkative.R
 import com.example.talkative.components.BottomBar
 import com.example.talkative.components.CreatePostDialouge
@@ -90,7 +91,8 @@ fun ProfileScreen(
     ownProfilePostViewmodel: OwnProfilePostViewmodel,
     navController: NavController,
     DeletePostViewModel: DeletePostViewModel,
-    LikeUnLikeViewModel: LikeUnLikeViewModel
+    LikeUnLikeViewModel: LikeUnLikeViewModel,
+    userViewModel: UserViewModel
 ) {
 
 
@@ -203,7 +205,9 @@ fun ProfileScreen(
                                     //Drop down menu and settings button
                                     DropdownMenuWithDetails(expanded = expanded.value, onClick = {
                                         //logout User
-                                        loginViewmodel.logoutTeacher()
+                                        loginViewmodel.logOutUser()
+                                        //deleting info from database
+                                        userViewModel.deleteAll()
                                         navController.navigate("auth") {
                                             popUpTo("main") {
                                                 inclusive =
