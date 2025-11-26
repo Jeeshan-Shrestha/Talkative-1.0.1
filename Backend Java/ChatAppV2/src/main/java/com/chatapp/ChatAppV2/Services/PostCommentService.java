@@ -79,6 +79,8 @@ public class PostCommentService {
             dto.setCommentText(comment.getCommentText());
             dto.setAvatar(user != null ? user.getAvatar() : null);
             dto.setOwnProfile(comment.getCommentedBy().equals(currentUsername));
+            dto.setLiked(comment.isLiked());
+            dto.setNumberOfLikes(comment.getNumberOfLikes());
             commentDTOs.add(dto);
         }
         return commentDTOs;
