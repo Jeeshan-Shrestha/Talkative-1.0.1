@@ -219,9 +219,6 @@ fun OnyourMind(){
                                 //Handle Post
                             }
 
-
-
-
                     }
 
                 }

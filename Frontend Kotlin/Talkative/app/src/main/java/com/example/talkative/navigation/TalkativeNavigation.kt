@@ -17,9 +17,11 @@ import com.example.talkative.screens.CommentScreen.AddCommentViewModel
 import com.example.talkative.screens.CommentScreen.CommentScreen
 import com.example.talkative.screens.CommentScreen.DeleteCommentViewModel
 import com.example.talkative.screens.CommentScreen.GetAllCommentViewModel
+import com.example.talkative.screens.CommentScreen.LikeCommentViewModel
 import com.example.talkative.screens.CreatePost.CreatePostViewmodel
 import com.example.talkative.screens.EditProfileScreen.EditProfileScreen
 import com.example.talkative.screens.EditProfileScreen.EditProfileViewModel
+import com.example.talkative.screens.HomeScreen.HomeFeedViewModel
 import com.example.talkative.screens.HomeScreen.HomeScreen
 import com.example.talkative.screens.LoginScreen.LoginScreen
 import com.example.talkative.screens.LoginScreen.LoginViewModel
@@ -83,7 +85,14 @@ fun TalkativeNavigation(){
 
                 val createPostViewmodel=hiltViewModel<CreatePostViewmodel>()
 
-                HomeScreen(navController = navController,createPostViewmodel=createPostViewmodel)
+                val HomeFeedViewModel=hiltViewModel<HomeFeedViewModel>()
+
+                val LikeUnLikeViewModel=hiltViewModel<LikeUnLikeViewModel>()
+
+                HomeScreen(navController = navController,
+                    LikeUnLikeViewModel=LikeUnLikeViewModel,
+                    HomeFeedViewModel=HomeFeedViewModel,
+                    createPostViewmodel=createPostViewmodel)
             }
             //Search Screen
             composable(TalkativeScreen.SearchScreen.name) {
@@ -141,10 +150,13 @@ fun TalkativeNavigation(){
 
                 val DeleteCommentViewModel = hiltViewModel<DeleteCommentViewModel>()
 
+                val LikeCommentViewModel = hiltViewModel<LikeCommentViewModel>()
+
                 CommentScreen(navController=navController,
                     postId=postId,
                     DeleteCommentViewModel=DeleteCommentViewModel,
                     AddCommentViewModel=AddCommentViewModel,
+                    LikeCommentViewModel=LikeCommentViewModel,
                     GetAllCommentViewModel=GetAllCommentViewModel)
             }
 
