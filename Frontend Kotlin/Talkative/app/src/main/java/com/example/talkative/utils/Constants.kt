@@ -48,4 +48,8 @@ object Constants {
 
     //get myself
     const val GET_MYSELF="/myself"
+
+    //wesocket for chat app
+    const val web_Socket="wss://talkative-1-0-1-2.onrender.com/ws"
+
 }

@@ -6,6 +6,7 @@ import coil.ImageLoader
 import com.example.talkative.DataBase.UserDataBaseDao
 import com.example.talkative.DataBase.UserDatabase
 import com.example.talkative.cookieManager.AppCookieJar
+import com.example.talkative.network.WebSocketManager
 import com.example.talkative.network.network
 import com.example.talkative.utils.Constants
 import dagger.Module
@@ -82,4 +83,12 @@ object appmodule {
         "user_db" )//name of database
         .fallbackToDestructiveMigrationFrom()
         .build()
+
+
+    //WebSocket Connection
+    @Provides
+    @Singleton
+    fun provideWebSocketManager(okHttpClient: OkHttpClient): WebSocketManager{
+        return WebSocketManager(okHttpClient)
+    }
 }

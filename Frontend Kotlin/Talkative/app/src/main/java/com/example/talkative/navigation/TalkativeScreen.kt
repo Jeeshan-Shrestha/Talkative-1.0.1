@@ -8,10 +8,10 @@ enum class TalkativeScreen {
     PostScreen,
     ProfileScreen,
     OtherUserProfileScreen,
-    ChatPeopleScreen,
-    ChatScreen,
     EditProfileScreen,
     CommentScreen,
     ShowFollowersScreen,
-    ShowFollowingScreen
+    ShowFollowingScreen,
+    ChatScreen,
+    SelectPeopleToChatWithScreen
 }
