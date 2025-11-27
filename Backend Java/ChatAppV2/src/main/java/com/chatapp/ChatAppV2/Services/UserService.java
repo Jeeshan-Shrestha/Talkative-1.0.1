@@ -38,6 +38,7 @@ public class UserService {
         user.setDisplayName(user.getUsername());
         user.setJoinDate(LocalDate.now());
         user.setPassword(encoder.encode(user.getPassword()));
+        user.setAvatar("https://i.imgur.com/veVP6GL.png");
         return userRepo.save(user);
     }
 

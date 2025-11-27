@@ -1,5 +1,6 @@
 package com.chatapp.ChatAppV2.Configurations;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -12,6 +13,9 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     final private WebSocketHandler webSocketHandler;
 
+    @Autowired
+    private UserHandshakeInterceptor userHandshakeInterceptor;
+
     public WebSocketConfiguration(WebSocketHandler webSocketHandler) {
         this.webSocketHandler = webSocketHandler;
     }
@@ -19,6 +23,7 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(webSocketHandler, "/ws")
+                .addInterceptors(userHandshakeInterceptor)
                 .setAllowedOriginPatterns("*");
 
     }

@@ -1,167 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>WebSocket Chat Client</title>
+    <meta charset="UTF-8">
+    <title>WebSocket Chat</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-
-        #messages {
-            border: 1px solid #ccc;
-            height: 300px;
-            overflow-y: scroll;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        #messages div {
-            margin-bottom: 8px;
-        }
-
-        #inputArea {
-            display: flex;
-            gap: 10px;
-        }
-
-        #inputArea input,
-        #inputArea button {
-            padding: 8px;
-            font-size: 1rem;
-        }
-
-        #receiver {
-            width: 150px;
-        }
-
-        #content {
-            flex: 1;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #chat { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
+        #chat div { margin-bottom: 8px; }
+        #chat .self { color: blue; }
+        #chat .other { color: green; }
+        #chat .system { color: gray; font-style: italic; }
+        input { margin: 5px; padding: 5px; }
+        button { padding: 5px 10px; }
     </style>
 </head>
-
 <body>
+    <h2>WebSocket Chat</h2>
 
-    <h2>WebSocket Chat Client</h2>
+    <div id="chat"></div>
 
-    <div>
-        <label for="usernameInput">Enter your username:</label>
-        <input type="text" id="usernameInput" placeholder="Your username" />
-        <button id="connectBtn">Connect</button>
-    </div>
-
-    <div id="chatSection" style="display:none;">
-        <div id="messages"></div>
-        <div id="inputArea">
-            <input type="text" id="receiver" placeholder="Send to (username)" />
-            <input type="text" id="content" placeholder="Type your message" />
-            <button id="sendBtn">Send</button>
-        </div>
-    </div>
+    <input type="text" id="receiver" placeholder="Receiver username (leave empty for public)" />
+    <input type="text" id="messageInput" placeholder="Type your message" />
+    <button id="sendBtn">Send</button>
 
     <script>
-        let socket;
-        let username;
-
-        const connectBtn = document.getElementById('connectBtn');
-        const usernameInput = document.getElementById('usernameInput');
-        const chatSection = document.getElementById('chatSection');
-        const messagesDiv = document.getElementById('messages');
-        const receiverInput = document.getElementById('receiver');
-        const contentInput = document.getElementById('content');
+        let ws;
+        const chatDiv = document.getElementById('chat');
         const sendBtn = document.getElementById('sendBtn');
 
-        function appendMessage(text) {
+        function appendMessage(sender, message, type = 'other') {
             const div = document.createElement('div');
-            div.textContent = text;
-            messagesDiv.appendChild(div);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            div.className = type;
+            div.textContent = `${sender}: ${message}`;
+            chatDiv.appendChild(div);
+            chatDiv.scrollTop = chatDiv.scrollHeight;
         }
 
-        connectBtn.onclick = () => {
-            username = usernameInput.value.trim();
-            if (!username) {
-                alert("Please enter your username");
+        // Connect to WebSocket
+        function connectWebSocket() {
+            // ws:// for local dev, wss:// for production HTTPS
+            ws = new WebSocket("ws://localhost:8080/ws");
+
+            ws.onopen = () => {
+                appendMessage("System", "Connected to WebSocket", "system");
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                // chatMessage: { sender/username, content, receiver, ... }
+                const from = data.sender || data.username || 'Unknown';
+                const content = data.content;
+                const type = (from === data.sender) ? "self" : "other";
+                appendMessage(from, content, type);
+            };
+
+            ws.onclose = () => {
+                appendMessage("System", "Disconnected from WebSocket", "system");
+            };
+
+            ws.onerror = (err) => {
+                console.error("WebSocket error:", err);
+            };
+        }
+
+        // Send message
+        sendBtn.addEventListener('click', () => {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                alert("WebSocket is not connected");
                 return;
             }
 
-            // Connect to WebSocket with username as query param
-            const wsUrl = `https://talkative-1-0-1-2.onrender.com/ws?username=${encodeURIComponent(username)}`;
+            const messageInput = document.getElementById('messageInput').value.trim();
+            const receiverInput = document.getElementById('receiver').value.trim();
 
-            socket = new WebSocket(wsUrl);
+            if (!messageInput) return;
 
-            socket.onopen = () => {
-                appendMessage("Connected as " + username);
-                chatSection.style.display = 'block';
-                usernameInput.disabled = true;
-                connectBtn.disabled = true;
+            const messageObj = {
+                content: messageInput,
+                receiver: receiverInput || null
             };
 
-            socket.onmessage = (event) => {
-                try {
-                    const msg = JSON.parse(event.data);
-                    let displayText = `[${msg.type}] ${msg.sender}: ${msg.content}`;
-                    appendMessage(displayText);
-                } catch (e) {
-                    appendMessage("Received: " + event.data);
-                }
-            };
-
-            socket.onclose = () => {
-                appendMessage("Disconnected from server");
-                chatSection.style.display = 'none';
-                usernameInput.disabled = false;
-                connectBtn.disabled = false;
-            };
-
-            socket.onerror = (err) => {
-                console.error("WebSocket error", err);
-                appendMessage("WebSocket error");
-            };
-        };
-
-        sendBtn.onclick = () => {
-            if (!socket || socket.readyState !== WebSocket.OPEN) {
-                alert("WebSocket not connected");
-                return;
-            }
-
-            const content = contentInput.value.trim();
-            if (!content) {
-                alert("Enter a message to send");
-                return;
-            }
-
-            const receiver = receiverInput.value.trim();
-
-            const messageObj = { content };
-            if (receiver) {
-                messageObj.receiver = receiver;
-            }
-
-            // Send the message to the server
-            socket.send(JSON.stringify(messageObj));
-
-            // Append the message locally for the sender so they see it immediately
-            let displayText = `[SENT to ${receiver || "All"}] You: ${content}`;
-            appendMessage(displayText);
-
-            contentInput.value = "";
-        };
-
-        // Allow pressing Enter to send message
-        contentInput.addEventListener("keypress", function (e) {
-            if (e.key === "Enter") {
-                sendBtn.click();
-            }
+            ws.send(JSON.stringify(messageObj));
+            document.getElementById('messageInput').value = "";
         });
 
+        // Auto-connect
+        connectWebSocket();
     </script>
-
 </body>
-
 </html>

@@ -4,14 +4,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import com.chatapp.ChatAppV2.Jwt.JwtUtils;
 import com.chatapp.ChatAppV2.Models.ChatMessage;
 import com.chatapp.ChatAppV2.Models.MessageType;
 import com.chatapp.ChatAppV2.Services.ChatService;
@@ -28,18 +26,15 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap();
 
-    @Autowired
-    private JwtUtils jwt;
-
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = (String)session.getAttributes().get("username");
         sessions.put(username, session);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = (String)session.getAttributes().get("username");
         sessions.remove(username);
     }
 
@@ -49,7 +44,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = (String)session.getAttributes().get("username");
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(message.getPayload());
