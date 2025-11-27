@@ -70,7 +70,7 @@ fun ShowFollowingScreen(navController: NavController,
                         UserCompactCard(userInfo = it, followUnFollow = {
                             //follow or unfollow user
                             FollowUnFollowViewModel.FollowUnfollowuser(it)
-                        }) { username ->
+                        }) { username,displayName,avatar->
                             //open other user profile
                             //open other userprofile
                             navController.navigate(TalkativeScreen.OtherUserProfileScreen.name + "/${username}")

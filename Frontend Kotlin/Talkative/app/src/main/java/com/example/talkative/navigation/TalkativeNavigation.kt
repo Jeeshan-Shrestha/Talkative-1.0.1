@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,8 +12,6 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.talkative.DataBase.UserViewModel
-import com.example.talkative.model.OwnProfileResponse.Message
-import com.example.talkative.model.customDataPassing.ProfileArgument
 import com.example.talkative.screens.CommentScreen.AddCommentViewModel
 import com.example.talkative.screens.CommentScreen.CommentScreen
 import com.example.talkative.screens.CommentScreen.DeleteCommentViewModel
@@ -34,6 +31,9 @@ import com.example.talkative.screens.ProfileScreen.OtherUserProfileViewModel
 import com.example.talkative.screens.ProfileScreen.OtherUserProflieScreen
 import com.example.talkative.screens.ProfileScreen.OwnProfilePostViewmodel
 import com.example.talkative.screens.ProfileScreen.ProfileScreen
+import com.example.talkative.screens.SelectPeopleToChatWithScreen.ChatScreen
+import com.example.talkative.screens.SelectPeopleToChatWithScreen.ChatViewModel
+import com.example.talkative.screens.SelectPeopleToChatWithScreen.SelectPeopleToChatWithScreen
 import com.example.talkative.screens.ShowFollowersandFollowingScreen.GetFollowersViewModel
 import com.example.talkative.screens.ShowFollowersandFollowingScreen.GetFollowingViewModel
 import com.example.talkative.screens.ShowFollowersandFollowingScreen.ShowFollowersScreen
@@ -226,6 +226,44 @@ fun TalkativeNavigation(){
                     otherUsername=userName,
                     likeUnLikeViewModel=likeUnLikeViewModel,
                     OtherUserProfileViewModel= OtherUserProfileViewModel)
+            }
+
+            //Select People to Chat With Screen
+            composable(TalkativeScreen.SelectPeopleToChatWithScreen.name){
+
+                val GetFollowingViewModel = hiltViewModel<GetFollowingViewModel>()
+                val UserViewModel = hiltViewModel<UserViewModel>()
+
+                SelectPeopleToChatWithScreen(navController = navController,
+                    GetFollowingViewModel =GetFollowingViewModel,
+                    UserViewModel = UserViewModel)
+
+            }
+
+            //ChatScreen
+            composable(route= TalkativeScreen.ChatScreen.name+"/{username}/{displayName}/{avatar}",
+                arguments = listOf(navArgument(name="username"){type= NavType.StringType},
+                    navArgument(name = "displayName"){type= NavType.StringType},
+                    navArgument(name = "avatar"){type= NavType.StringType}
+                    )) {backStackEntry->
+
+                val username = Uri.decode(backStackEntry.arguments?.getString("username"))
+                val displayName = Uri.decode(backStackEntry.arguments?.getString("displayName"))
+                val avatar = Uri.decode(backStackEntry.arguments?.getString("avatar"))
+
+
+                val ChatViewModel=hiltViewModel<ChatViewModel>(key = "chat-$username")
+
+                val UserViewModel = hiltViewModel<UserViewModel>()
+
+                ChatScreen(
+                    receiver =username,
+                    displayName=displayName,
+                    avatar=avatar,
+                    UserViewModel = UserViewModel,
+                    navController = navController,
+                    ChatViewModel=ChatViewModel
+                )
             }
         }
     }

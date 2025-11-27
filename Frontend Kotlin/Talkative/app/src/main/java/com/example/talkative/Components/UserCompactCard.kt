@@ -33,8 +33,9 @@ import com.example.talkative.model.GetFollowersResponse.Message
 
 @Composable
 fun UserCompactCard(userInfo: Message,
+                    chatScreen: Boolean=false,
                     followUnFollow:(String)-> Unit={},
-                    openUserProfile:(String)-> Unit={}){
+                    openUserProfile:(String,String,String?)-> Unit={_,_,_ ->}){
 
     val isFollowing= remember{
         mutableStateOf(userInfo.following)
@@ -50,7 +51,9 @@ fun UserCompactCard(userInfo: Message,
         .fillMaxWidth()
         .clickable{
             //open userprofile on click
-            openUserProfile(userInfo.username)
+            if(!isOwnProfile) {
+                openUserProfile(userInfo.username,userInfo.displayName,userInfo.avatar)
+            }
         },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)){
@@ -94,7 +97,7 @@ fun UserCompactCard(userInfo: Message,
                 }
             }
 
-            if(!isOwnProfile) {
+            if(!isOwnProfile && !chatScreen) {
                 sansButton(
                     modifier = Modifier,
                     textcolor = if (isFollowing.value) Color.Black else Color.White,

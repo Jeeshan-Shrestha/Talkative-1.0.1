@@ -93,7 +93,9 @@ fun SearchScreen(navController: NavController= NavController(LocalContext.curren
 
     Scaffold(
         topBar = {
-            TopBar()
+            TopBar(){
+                navController.navigate(TalkativeScreen.SelectPeopleToChatWithScreen.name)
+            }
         },
         bottomBar = {
             BottomBar(navController=navController){

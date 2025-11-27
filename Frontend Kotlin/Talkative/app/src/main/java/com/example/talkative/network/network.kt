@@ -1,6 +1,5 @@
 package com.example.talkative.network
 
-import android.view.Display
 import com.example.talkative.model.AddCommentResponse.AddCommentRequest
 import com.example.talkative.model.AddCommentResponse.AddCommentResponse
 import com.example.talkative.model.CreatePostResponse.CreatePostResponse

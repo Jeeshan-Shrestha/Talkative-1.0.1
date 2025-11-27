@@ -99,7 +99,9 @@ fun HomeScreen(navController: NavController= NavController(LocalContext.current)
 
     Scaffold(
         topBar = {
-            TopBar()
+            TopBar(){
+                navController.navigate(TalkativeScreen.SelectPeopleToChatWithScreen.name)
+            }
         },
         bottomBar = {
             BottomBar(navController = navController) {
