@@ -1,93 +1,79 @@
-# Talkative 💬
+# **Talkative — Social Media Application (Android + Java Backend)**
 
-**Talkative** is a real-time chat application built with modern Android technologies. It allows users to sign up, log in, and chat instantly with others over WebSockets.
+Talkative is a full-stack social media application similar to Instagram, featuring user profiles, posts, an activity feed, and real-time chat.
+The project consists of an **Android application** built using modern Jetpack components and a **Java Spring Boot backend** using JWT authentication with cookies and MongoDB.
 
-## Features
+---
 
-* 🔐 User authentication (Login/Signup)
-* 🧑 Real-time one-to-one messaging
-* 🌐 WebSocket connection with status updates
-* 🎨 Beautiful UI built using Jetpack Compose
-* 💬 Messages are categorized as Sent or Received
-* 📱 Fully responsive and fluid chat experience
+## **Overview**
 
-## Tech Stack
+The system is composed of:
 
-### Frontend (Android)
+### **Android (Frontend)**
 
-* **Kotlin**
-* **Jetpack Compose**
-* **MVVM Architecture**
-* **WebSocket with OkHttp**
-* **Hilt for Dependency Injection**
-* **Coroutines + Flow** for reactive programming
+* Kotlin
+* Jetpack Compose UI
+* MVVM Architecture
+* Hilt Dependency Injection
+* Retrofit + OkHttp
+* OkHttp WebSocket for real-time chat
+* Room Database (local caching)
+* SQL queries for local persistence
+* Cookie-based authentication via cookie Jar(JWT received from backend)
+* Coil for image loading
+* Navigation Component (Two Graphs: Auth + Main)
+* Multipart uploads for profile images and posts
 
-### Backend
+### **Backend (Java)**
 
-* **Java Spring Boot**
-* **MVC Architecture**
-* **WebSocket API**
-* **MongoDb**
+* Spring Boot
+* Spring MVC
+* Spring Security (JWT Authentication)
+* JWT sent as HTTP-only cookie
+* MongoDB as primary database
+* Spring WebSocket for real-time messaging
+* Multipart file handling for images
+* RESTful API structure
 
-### ScreenShots
+---
 
- <a href="https://imgur.com/OUCtetW">
-    <img src="https://imgur.com/OUCtetW.gif" title="source: imgur.com" height="400" width="200" style="margin-right: 20px;" />
-  </a>
-  <a href="https://imgur.com/RnpBVGu">
-    <img src="https://imgur.com/RnpBVGu.gif" title="source: imgur.com" height="400" width="200" style="margin-right: 20px;" />
-  </a>
-   <a href="https://imgur.com/j9zrnCe">
-    <img src="https://imgur.com/j9zrnCe.gif" title="source: imgur.com" height="400" width="200" style="margin-right: 20px;" />
-  </a>
-    <a href="https://imgur.com/MIQRpuY">
-    <img src="https://imgur.com/MIQRpuY.gif" title="source: imgur.com" height="400" width="200" style="margin-right: 20px;" />
-  </a>
-  
+## **Key Features**
 
-## Getting Started
+### **User Authentication**
 
-### Prerequisites
+* Secure login using JWT (stored in HTTP-only cookie)
+* Register new account
+* Automatic session management on the Android side using CookieJar
+* Cookie persistence across app restarts
 
-* Android Studio Hedgehog or later
-* JDK 17+
-* Gradle
-* Backend server running locally or deployed
+### **Profile Management**
 
-### Clone the repository
+* Edit profile: avatar, cover photo, bio, display name
+* Multipart upload with optional fields
+* View other users' profiles
 
-```bash
-git clone https://github.com/Nara476/talkative.git
-cd talkative
-```
+### **Social Feed**
 
-### Run the App
+* Create posts with image and caption
+* View feed
+* Like and comment system
+* Local caching of user details using Room Database
 
-1. Start your backend Spring Boot server.
-2. Open the project in Android Studio.
-3. Run the app on an emulator or physical device.
+### **Real-Time Chat**
 
-Make sure the WebSocket URL is correctly configured in the repository/service layer of your Android app to point to the correct backend server.
+* OkHttp WebSocket client in Android
+* Spring WebSocket backend
+* Real-time messaging between users
 
-## Folder Structure
+---
 
-```
-├── Screens/
-│   ├── homeScreen/       # Chat UI and ViewModel
-│   ├── addUsername/      # Login screen
-│   ├── signupScreen/     # Sign-up screen
-├── Components/           # Reusable UI components
-├── model/                # Data models like Message, MessageResponse
-├── repository/           # Chat and Login Repositories
-├── navigation/           # Navigation setup using Jetpack Compose
-├── loadingState/         # Enum for loading states (IDLE, LOADING, FAILED, SUCCESS)
-```
 
-## Future Improvements
+# 📸 **Screenshots**
 
-* Group chat support
-* Chat history storage in DB
-* Firebase Cloud Messaging for notifications
-* UI polishing and animations
+Below are some UI previews of the **Talkative Android App**.
+
+---
+<table> <tr> <td><img src="https://i.imgur.com/a2EPji1.png" width="250"></td> <td><img src="https://i.imgur.com/XP5Wdsy.png" width="250"></td> <td><img src="https://i.imgur.com/e0OTdOo.png" width="250"></td> </tr> <tr> <td><img src="https://i.imgur.com/FhpW2mt.png" width="250"></td> <td><img src="https://i.imgur.com/mSXOHQP.png" width="250"></td> <td><img src="https://i.imgur.com/NDZMw5F.png" width="250"></td> </tr> <tr> <td><img src="https://i.imgur.com/zwews9W.png" width="250"></td> <td><img src="https://i.imgur.com/cAPg1sN.png" width="250"></td> <td><img src="https://i.imgur.com/9afKItp.png" width="250"></td> </tr> <tr> <td><img src="https://i.imgur.com/UdG9q9g.png" width="250"></td> <td><img src="https://i.imgur.com/oY1c6Rz.png" width="250"></td> <td><img src="https://i.imgur.com/cYNRk7J.png" width="250"></td> </tr> <tr> <td><img src="https://i.imgur.com/CIKpFUO.png" width="250"></td> <td><img src="https://i.imgur.com/zzDmnED.png" width="250"></td> <td><img src="https://i.imgur.com/pJHNEVO.png" width="250"></td> </tr> <tr> <td><img src="https://i.imgur.com/H9MUMu1.png" width="250"></td> <td><img src="https://i.imgur.com/78Vdq6P.png" width="250"></td> <td></td> </tr> </table>
+
 
 
