@@ -34,6 +34,7 @@ The system is composed of:
 * Spring WebSocket for real-time messaging
 * Multipart file handling for images
 * RESTful API structure
+* Docker 
 
 ---
 
