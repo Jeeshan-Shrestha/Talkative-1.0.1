@@ -1,0 +1,33 @@
+services:
+  mongodb:
+    image: mongo:8
+    container_name: talkative-mongodb
+    restart: unless-stopped
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin 
+
+    volumes:
+      - mongodb-data:/data/db
+
+    # Remove this if only your Spring Boot app needs access
+    ports:
+      - "27017:27017"
+
+  talkative:
+    build: .
+    container_name: talkative
+    restart: unless-stopped
+
+    depends_on:
+      - mongodb
+
+    environment:
+      DATABASE_URL: mongodb://admin:admin@mongodb:27017/talkative?authSource=admin
+
+    ports:
+      - "8081:8080"
+
+volumes:
+  mongodb-data:
