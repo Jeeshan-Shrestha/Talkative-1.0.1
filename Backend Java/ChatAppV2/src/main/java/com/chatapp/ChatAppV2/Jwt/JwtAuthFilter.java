@@ -34,7 +34,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         return path.equals("/api/login")
             || path.equals("/api/register");
     }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -42,11 +41,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = null;
 
-        String authHeader = request.getHeader("Authorization");
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-        } 
+        // String path = request.getServletPath();
+        // if (path.equals("/register") || path.equals("/login")){
+        //     filterChain.doFilter(request, response);
+        //     return;
+        // }
+        
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null){
+            for (Cookie cookie : cookies){
+                if (cookie.getName().equals("token")){
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null){
             username = jwtUtils.extractUsername(token);
 
@@ -57,11 +66,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
-            }   
-        
+            }
+
         }
-        
+
 
         filterChain.doFilter(request,response);
     }
 }
+    
