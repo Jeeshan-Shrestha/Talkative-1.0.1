@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,6 +25,9 @@ import com.chatapp.ChatAppV2.Repository.UserRepostory;
 @Service
 @Component
 public class PostService {
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     @Autowired
     UserRepostory userRepo;
@@ -85,7 +89,7 @@ public class PostService {
 
         Post post = new Post();
         post.setCaption(caption);
-        post.setImageUrl("https://talkative-1-0-1-2.onrender.com/post/image/"+store.toHexString());
+        post.setImageUrl(baseUrl+store.toHexString());
         post.setId(UUID.randomUUID().toString());
         post.setPostDate(LocalDate.now());
         post.setUsername(self);

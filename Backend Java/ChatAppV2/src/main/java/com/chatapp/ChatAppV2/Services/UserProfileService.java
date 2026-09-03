@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,7 +26,8 @@ import com.chatapp.ChatAppV2.Repository.UserRepostory;
 @Service
 public class UserProfileService {
 
-    private static final String BASE_URL = "http://[2400:74e0:0:7d5b:2247:47ff:fe18:fbf1]:8081";
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     @Autowired
     private UserRepostory userRepo;
@@ -149,16 +151,16 @@ public class UserProfileService {
         if (avatar != null && coverPhoto != null){
             ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(), avatar.getOriginalFilename(), avatar.getContentType());
             ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(), coverPhoto.getOriginalFilename(), coverPhoto.getContentType());
-            user.setAvatar(BASE_URL + "/post/image/" + avatarId.toHexString());
-            user.setCoverPhoto(BASE_URL + "/post/image/" + coverPhotoId.toHexString());
+            user.setAvatar(baseUrl + "/post/image/" + avatarId.toHexString());
+            user.setCoverPhoto(baseUrl + "/post/image/" + coverPhotoId.toHexString());
         }
         if (avatar == null && coverPhoto != null){
             ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(), coverPhoto.getOriginalFilename(), coverPhoto.getContentType());
-            user.setCoverPhoto(BASE_URL + "/post/image/" + coverPhotoId.toHexString());
+            user.setCoverPhoto(baseUrl + "/post/image/" + coverPhotoId.toHexString());
         }
         if (avatar != null && coverPhoto == null){
             ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(), avatar.getOriginalFilename(), avatar.getContentType());
-            user.setAvatar(BASE_URL + "/post/image/" + avatarId.toHexString());
+            user.setAvatar(baseUrl + "/post/image/" + avatarId.toHexString());
         }
 
         user.setBio(bio);
@@ -169,7 +171,7 @@ public class UserProfileService {
             for (Post p : posts){
                 ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(), avatar.getOriginalFilename(), avatar.getContentType());
                 p.setDisplayName(displayName);
-                p.setAvatar(BASE_URL + "/post/image/" + avatarId.toHexString());
+                p.setAvatar(baseUrl + "/post/image/" + avatarId.toHexString());
             }
         }
 
