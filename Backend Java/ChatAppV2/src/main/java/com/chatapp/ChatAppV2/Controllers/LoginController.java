@@ -32,17 +32,9 @@ public class LoginController {
 
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginDetails entity, HttpServletResponse response) {
-        try {
-            String token = userService.loginUser(entity);
-            response.setHeader("Set-Cookie",
-                    "token=" + token +
-                            "; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=" + (365 * 24 * 60 * 60));
-
-            return ResponseEntity.ok().body(new BackendResponse(true, token));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new BackendResponse(false, e.getMessage()));
-        }
-    }
+   @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginDetails entity) throws Exception {
+        String token = userService.loginUser(entity);
+        return ResponseEntity.ok(new BackendResponse(true, token));
+    } 
 }

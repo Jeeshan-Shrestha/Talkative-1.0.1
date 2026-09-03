@@ -25,15 +25,14 @@ import com.chatapp.ChatAppV2.Repository.UserRepostory;
 @Service
 public class UserProfileService {
 
+    private static final String BASE_URL = "http://[2400:74e0:0:7d5b:2247:47ff:fe18:fbf1]:8081";
+
     @Autowired
     private UserRepostory userRepo;
-
     @Autowired
     private GridFsTemplate gridFsTemplate;
-
     @Autowired
     private PostService postService;
-
 
     public Set<FollowerDTO> getAllFollowers(String username){
         String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -79,19 +78,14 @@ public class UserProfileService {
         String followedBy = SecurityContextHolder.getContext().getAuthentication().getName();
         Users followedByUser = userRepo.findByUsername(followedBy);
         Users followedToUser = userRepo.findByUsername(followedTo);
-
         Set<String> following = followedByUser.getFollowing();
-        if (following == null){
-            following = new HashSet<>();
-        }
+        if (following == null){ following = new HashSet<>(); }
         Set<String> followers = followedToUser.getFollowers();
-        if (followers == null){
-            followers = new HashSet<>();
-        }
+        if (followers == null){ followers = new HashSet<>(); }
+
         if (following.contains(followedToUser.getUsername())){
             following.remove(followedTo);
             followers.remove(followedBy);
-
             followedByUser.setFollowing(following);
             followedByUser.setFollowingCount(followedByUser.getFollowingCount() - 1);
             followedToUser.setFollowers(followers);
@@ -99,12 +93,13 @@ public class UserProfileService {
             followedToUser.setIsFollowing(false);
             userRepo.save(followedByUser);
             userRepo.save(followedToUser);
-
             return followedBy + " unfollowed " + followedTo;
         }
+
         if (followedBy.equals(followedTo)){
             throw new SelfFollowException("You can't follow yourself :3");
         }
+
         following.add(followedTo);
         followers.add(followedBy);
         followedByUser.setFollowing(following);
@@ -119,92 +114,66 @@ public class UserProfileService {
 
     public UserProfile getUserProfile(String username)throws Exception{
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users user = userRepo.findByUsername(username); 
+        Users user = userRepo.findByUsername(username);
         if (user == null){
             throw new UsernameNotFoundException("User doesnt exist");
         }
         List<Post> posts = user.getPosts();
-        if (posts == null) {
-            posts = new ArrayList<>();
-        }
+        if (posts == null) { posts = new ArrayList<>(); }
         boolean isFollowing;
         List<PostDTO> dto = postService.convertPostsToDTO(posts);
-        if (user.getFollowers() != null  && user.getFollowers().contains(currentUser)){
+        if (user.getFollowers() != null && user.getFollowers().contains(currentUser)){
             isFollowing = true;
         }else{
             isFollowing = false;
         }
-        return new UserProfile(user.getUsername(),
-                                user.getDisplayName(),
-                                user.getAvatar(),
-                                user.getBio(),
-                                user.getFollowersCount(),
-                                user.getFollowingCount(),
-                                dto,
-                                user.getCoverPhoto(),
-                                user.getJoinDate(),
-                                user.getNumberOfPosts(),
-                                isFollowing); 
+        return new UserProfile(user.getUsername(), user.getDisplayName(), user.getAvatar(), user.getBio(), user.getFollowersCount(), user.getFollowingCount(), dto, user.getCoverPhoto(), user.getJoinDate(), user.getNumberOfPosts(), isFollowing);
     }
 
     public UserProfile getSelfProfile()throws Exception{
         String self = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users user = userRepo.findByUsername(self); 
+        Users user = userRepo.findByUsername(self);
         if (user == null){
             throw new UsernameNotFoundException("User doesnt exist");
         }
-
         List<Post> posts = user.getPosts();
-        if (posts == null) {
-            posts = new ArrayList<>();
-        }
-
+        if (posts == null) { posts = new ArrayList<>(); }
         List<PostDTO> dto = postService.convertPostsToDTO(posts);
-        return new UserProfile(user.getUsername(),
-                                user.getDisplayName(),
-                                user.getAvatar(),
-                                user.getBio(),
-                                user.getFollowersCount(),
-                                user.getFollowingCount(),
-                                dto,
-                                user.getCoverPhoto(),
-                                user.getJoinDate(),
-                                user.getNumberOfPosts(),
-                                user.getIsFollowing()
-                            ); 
+        return new UserProfile(user.getUsername(), user.getDisplayName(), user.getAvatar(), user.getBio(), user.getFollowersCount(), user.getFollowingCount(), dto, user.getCoverPhoto(), user.getJoinDate(), user.getNumberOfPosts(), user.getIsFollowing());
     }
 
-    public String editProfile(MultipartFile avatar,String bio,String displayName,MultipartFile coverPhoto) throws IOException{
+    public String editProfile(MultipartFile avatar, String bio, String displayName, MultipartFile coverPhoto) throws IOException{
         String self = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users user = userRepo.findByUsername(self); 
+        Users user = userRepo.findByUsername(self);
+
         if (avatar != null && coverPhoto != null){
-            ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(),avatar.getOriginalFilename(),avatar.getContentType());
-            ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(),coverPhoto.getOriginalFilename(),coverPhoto.getContentType());
-            user.setAvatar("https://talkative-1-0-1-2.onrender.com/post/image/"+avatarId.toHexString());
-            user.setCoverPhoto("https://talkative-1-0-1-2.onrender.com/post/image/"+coverPhotoId.toHexString());  
+            ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(), avatar.getOriginalFilename(), avatar.getContentType());
+            ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(), coverPhoto.getOriginalFilename(), coverPhoto.getContentType());
+            user.setAvatar(BASE_URL + "/post/image/" + avatarId.toHexString());
+            user.setCoverPhoto(BASE_URL + "/post/image/" + coverPhotoId.toHexString());
         }
         if (avatar == null && coverPhoto != null){
-            ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(),coverPhoto.getOriginalFilename(),coverPhoto.getContentType());  
-            user.setCoverPhoto("https://talkative-1-0-1-2.onrender.com/post/image/"+coverPhotoId.toHexString());  
+            ObjectId coverPhotoId = gridFsTemplate.store(coverPhoto.getInputStream(), coverPhoto.getOriginalFilename(), coverPhoto.getContentType());
+            user.setCoverPhoto(BASE_URL + "/post/image/" + coverPhotoId.toHexString());
+        }
+        if (avatar != null && coverPhoto == null){
+            ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(), avatar.getOriginalFilename(), avatar.getContentType());
+            user.setAvatar(BASE_URL + "/post/image/" + avatarId.toHexString());
         }
 
-        if (avatar != null && coverPhoto == null){
-            ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(),avatar.getOriginalFilename(),avatar.getContentType());
-            user.setAvatar("https://talkative-1-0-1-2.onrender.com/post/image/"+avatarId.toHexString());
-        }
         user.setBio(bio);
         user.setDisplayName(displayName);
-       List<Post> posts = user.getPosts();
-       if (posts != null && avatar != null){
-       for (Post p : posts){
-            ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(),avatar.getOriginalFilename(),avatar.getContentType());
-            p.setDisplayName(displayName);
-            p.setAvatar("https://talkative-1-0-1-2.onrender.com/post/image/"+avatarId.toHexString());
-       }
-    }
+
+        List<Post> posts = user.getPosts();
+        if (posts != null && avatar != null){
+            for (Post p : posts){
+                ObjectId avatarId = gridFsTemplate.store(avatar.getInputStream(), avatar.getOriginalFilename(), avatar.getContentType());
+                p.setDisplayName(displayName);
+                p.setAvatar(BASE_URL + "/post/image/" + avatarId.toHexString());
+            }
+        }
+
         userRepo.save(user);
         return "Edited Succesfully";
     }
-
-
 }
