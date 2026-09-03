@@ -89,7 +89,7 @@ public class PostService {
 
         Post post = new Post();
         post.setCaption(caption);
-        post.setImageUrl(baseUrl+store.toHexString());
+        post.setImageUrl(baseUrl+"/post/image/" +store.toHexString());
         post.setId(UUID.randomUUID().toString());
         post.setPostDate(LocalDate.now());
         post.setUsername(self);
