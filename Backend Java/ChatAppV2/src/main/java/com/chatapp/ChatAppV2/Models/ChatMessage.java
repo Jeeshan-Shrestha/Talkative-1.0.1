@@ -1,6 +1,6 @@
 package com.chatapp.ChatAppV2.Models;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class ChatMessage {
 
-  private LocalDate date;
+  private LocalDateTime timestamp;
 
   private String sender;
 

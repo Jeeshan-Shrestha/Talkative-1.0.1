@@ -1,6 +1,7 @@
 package com.chatapp.ChatAppV2.Configurations;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,53 +22,52 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @Component
 public class WebSocketHandler extends TextWebSocketHandler {
 
-    @Autowired
-    private ChatService chatService;
+  @Autowired
+  private ChatService chatService;
 
-    final private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+  final private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
-    private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap();
+  private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap();
 
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        String username = (String)session.getAttributes().get("username");
-        sessions.put(username, session);
-    }
+  @Override
+  public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+    String username = (String) session.getAttributes().get("username");
+    sessions.put(username, session);
+  }
 
-    @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        String username = (String)session.getAttributes().get("username");
-        sessions.remove(username);
-    }
+  @Override
+  public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    String username = (String) session.getAttributes().get("username");
+    sessions.remove(username);
+  }
 
-   
-
-   @Override
-protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+  @Override
+  protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
     try {
-        String username = (String) session.getAttributes().get("username");
-        JsonNode node = objectMapper.readTree(message.getPayload());
-        String content = node.get("content").asText();
-        String receiver = node.has("receiver") ? node.get("receiver").asText() : null;
+      String username = (String) session.getAttributes().get("username");
+      JsonNode node = objectMapper.readTree(message.getPayload());
+      String content = node.get("content").asText();
+      String receiver = node.has("receiver") ? node.get("receiver").asText() : null;
 
-        ChatMessage chatMessage = new ChatMessage(LocalDate.now(), username, content, MessageType.CHAT, receiver);
-        chatService.saveMessage(username, chatMessage, receiver);
+      ChatMessage chatMessage = new ChatMessage(LocalDateTime.now(), username, content, MessageType.CHAT, receiver);
+      chatService.saveMessage(username, chatMessage, receiver);
 
-        String json = objectMapper.writeValueAsString(chatMessage);
-        if (receiver != null) {
-            WebSocketSession receiverSession = sessions.get(receiver);
-            if (receiverSession != null && receiverSession.isOpen()) {
-                receiverSession.sendMessage(new TextMessage(json));
-            }
-        } else {
-            for (WebSocketSession wsSession : sessions.values()) {
-                if (wsSession.isOpen()) wsSession.sendMessage(new TextMessage(json));
-            }
+      String json = objectMapper.writeValueAsString(chatMessage);
+      if (receiver != null) {
+        WebSocketSession receiverSession = sessions.get(receiver);
+        if (receiverSession != null && receiverSession.isOpen()) {
+          receiverSession.sendMessage(new TextMessage(json));
         }
+      } else {
+        for (WebSocketSession wsSession : sessions.values()) {
+          if (wsSession.isOpen())
+            wsSession.sendMessage(new TextMessage(json));
+        }
+      }
     } catch (Exception e) {
-        e.printStackTrace(); // or logger.error(...)
-        session.sendMessage(new TextMessage("{\"error\":\"" + e.getMessage() + "\"}"));
+      e.printStackTrace(); // or logger.error(...)
+      session.sendMessage(new TextMessage("{\"error\":\"" + e.getMessage() + "\"}"));
     }
-} 
+  }
 
 }
