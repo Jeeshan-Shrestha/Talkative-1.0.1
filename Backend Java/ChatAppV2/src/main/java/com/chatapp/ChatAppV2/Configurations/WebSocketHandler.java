@@ -16,6 +16,7 @@ import com.chatapp.ChatAppV2.Models.MessageType;
 import com.chatapp.ChatAppV2.Services.ChatService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Component
 public class WebSocketHandler extends TextWebSocketHandler {
@@ -23,7 +24,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Autowired
     private ChatService chatService;
 
-    final private ObjectMapper objectMapper = new ObjectMapper();
+    final private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap();
 
@@ -41,38 +42,32 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
    
 
-    @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-
-
-        String username = (String)session.getAttributes().get("username");
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(message.getPayload());
+   @Override
+protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    try {
+        String username = (String) session.getAttributes().get("username");
+        JsonNode node = objectMapper.readTree(message.getPayload());
         String content = node.get("content").asText();
         String receiver = node.has("receiver") ? node.get("receiver").asText() : null;
-        LocalDate currentDate = LocalDate.now();
-        final ChatMessage chatMessage = new ChatMessage(currentDate,username, content, MessageType.CHAT, receiver);
 
+        ChatMessage chatMessage = new ChatMessage(LocalDate.now(), username, content, MessageType.CHAT, receiver);
         chatService.saveMessage(username, chatMessage, receiver);
 
         String json = objectMapper.writeValueAsString(chatMessage);
-
-        if (receiver != null){
+        if (receiver != null) {
             WebSocketSession receiverSession = sessions.get(receiver);
-            if (receiverSession != null && receiverSession.isOpen()){
+            if (receiverSession != null && receiverSession.isOpen()) {
                 receiverSession.sendMessage(new TextMessage(json));
             }
-        }
-
-        else{
+        } else {
             for (WebSocketSession wsSession : sessions.values()) {
-                if (wsSession.isOpen()) {
-                    wsSession.sendMessage(new TextMessage(json));
-                }
+                if (wsSession.isOpen()) wsSession.sendMessage(new TextMessage(json));
             }
-        
+        }
+    } catch (Exception e) {
+        e.printStackTrace(); // or logger.error(...)
+        session.sendMessage(new TextMessage("{\"error\":\"" + e.getMessage() + "\"}"));
     }
-    }
+} 
 
 }
