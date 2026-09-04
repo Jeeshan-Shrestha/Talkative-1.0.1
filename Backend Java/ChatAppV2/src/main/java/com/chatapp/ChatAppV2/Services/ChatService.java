@@ -1,5 +1,6 @@
 package com.chatapp.ChatAppV2.Services;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,40 +18,40 @@ import com.chatapp.ChatAppV2.Repository.UserRepostory;
 @Service
 public class ChatService {
 
-    @Autowired
-    UserRepostory userRepo;
+  @Autowired
+  UserRepostory userRepo;
 
-    @Autowired
-    private JwtUtils jwt;
+  @Autowired
+  private JwtUtils jwt;
 
-    public List<ChatMessage> getMessageByUsername(String receiver){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users userOnDb = userRepo.findByUsername(username);
-        Map<String,List<ChatMessage>> userChats = userOnDb.getChats();
-        return userChats.get(receiver);
-    }
-
-    public ChatMessage saveMessage(String username, ChatMessage chat, String receiver) {
+  public List<ChatMessage> getMessageByUsername(String receiver) {
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
     Users userOnDb = userRepo.findByUsername(username);
     Map<String, List<ChatMessage>> userChats = userOnDb.getChats();
+    return userChats.get(receiver);
+  }
+
+  public ChatMessage saveMessage(String username, ChatMessage chat, String receiver) {
+    Users userOnDb = userRepo.findByUsername(username);
+    Map<String, List<ChatMessage>> userChats = userOnDb.getChats();
+    chat.setDate(LocalDate.now());
 
     if (userChats == null) {
-        userChats = new HashMap<>(); // create new map if null
+      userChats = new HashMap<>(); // create new map if null
     }
 
     List<ChatMessage> chatWithReceiver = userChats.get(receiver);
 
     if (chatWithReceiver == null) {
-        chatWithReceiver = new ArrayList<>();
+      chatWithReceiver = new ArrayList<>();
     }
 
     chatWithReceiver.add(chat);
     userChats.put(receiver, chatWithReceiver);
-    userOnDb.setChats(userChats); 
+    userOnDb.setChats(userChats);
 
     userRepo.save(userOnDb);
     return chat;
-}
+  }
 
-    
 }
