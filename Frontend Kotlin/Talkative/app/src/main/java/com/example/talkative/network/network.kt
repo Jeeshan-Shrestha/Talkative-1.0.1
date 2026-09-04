@@ -2,6 +2,7 @@ package com.example.talkative.network
 
 import com.example.talkative.model.AddCommentResponse.AddCommentRequest
 import com.example.talkative.model.AddCommentResponse.AddCommentResponse
+import com.example.talkative.model.ChatScreenReqAndRes.MessageHistoryResponse
 import com.example.talkative.model.CreatePostResponse.CreatePostResponse
 import com.example.talkative.model.DeleteComment.DeleteCommentResponse
 import com.example.talkative.model.DeletePostResponse.DeletePostResponse
@@ -134,5 +135,11 @@ interface network {
 
     @GET(value = Constants.GET_MYSELF)
     suspend fun GetmySelf(): GetMyselfResponse
+
+    //Chat message history for the logged in user
+    @GET(value = Constants.MESSAGE_HISTORY)
+    suspend fun getMessageHistory(
+        @Query(value = "receiver") receiver: String
+    ): MessageHistoryResponse
 
 }

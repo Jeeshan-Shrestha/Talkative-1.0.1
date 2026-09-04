@@ -2,6 +2,7 @@ package com.example.talkative.screens.SelectPeopleToChatWithScreen
 
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -43,6 +45,7 @@ import com.example.talkative.components.MessageBox
 import com.example.talkative.components.SimpleLoadingAnimation
 import com.example.talkative.components.TopBarForChatScreen
 import com.example.talkative.model.ChatScreenReqAndRes.Message
+import com.example.talkative.utils.ChatTimeUtils
 import com.example.talkative.utils.LoadingState
 
 @Composable
@@ -57,6 +60,7 @@ fun ChatScreen(
 
     val messagesFromViewModel=ChatViewModel.messages.collectAsState()
     val status=ChatViewModel.status.collectAsState()
+    val historyState=ChatViewModel.historyState.collectAsState()
 
     val listState= rememberLazyListState()
 
@@ -86,10 +90,9 @@ fun ChatScreen(
 //    }
     LaunchedEffect(receiver,ownUserName){
         if(!receiver.isNullOrEmpty()){
-            //connect websocket
+            //connect websocket + load message history
             ownUserName?.let {
                 ChatViewModel.initChat(chatPartner = receiver, ownUsername = it)
-                ChatViewModel.resetMessages()
             }
         }
     }
@@ -115,6 +118,29 @@ fun ChatScreen(
             .fillMaxSize()){
 
             Column(verticalArrangement = Arrangement.Bottom){
+
+                //Loading spinner while the message history is being fetched
+                if(historyState.value.status == LoadingState.Status.LOADING &&
+                    messagesFromViewModel.value.isEmpty()){
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                        contentAlignment = Alignment.Center){
+                        CircularProgressIndicator()
+                    }
+                }
+
+                //Surface the reason when history could not be loaded
+                if(historyState.value.status == LoadingState.Status.FAILED){
+                    Text(
+                        text = "Couldn't load message history: ${historyState.value.message ?: "unknown error"}",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        color = Color.Red.copy(alpha = 0.8f),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
 
                 LazyColumn(
                     modifier = Modifier.weight(1f),
@@ -156,6 +182,16 @@ fun ChatScreen(
                                                 color = Color.Gray)
                                         }
 
+                                        val time = ChatTimeUtils.formatToTime(item.timestamp)
+                                        if(time.isNotEmpty()){
+                                            Text(
+                                                text = time,
+                                                modifier = Modifier.padding(start = 52.dp, top = 2.dp),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = Color.Black.copy(alpha = 0.5f)
+                                            )
+                                        }
+
                                     }
 
                                 }
@@ -176,6 +212,16 @@ fun ChatScreen(
                                         MessageBox(text =item.content,
                                             color = Color.Black,
                                             textColor = MaterialTheme.colorScheme.onPrimary)
+
+                                        val time = ChatTimeUtils.formatToTime(item.timestamp)
+                                        if(time.isNotEmpty()){
+                                            Text(
+                                                text = time,
+                                                modifier = Modifier.padding(end = 4.dp, top = 2.dp),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = Color.Black.copy(alpha = 0.5f)
+                                            )
+                                        }
                                     }
 
                                 }

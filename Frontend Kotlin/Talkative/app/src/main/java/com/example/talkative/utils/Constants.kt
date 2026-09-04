@@ -1,7 +1,7 @@
 package com.example.talkative.utils
 
 object Constants {
-    const val BASE_URL="https://talkative-1-0-1-2.onrender.com/";
+    const val BASE_URL="http://narasucksatvim.duckdns.org:8081/";
     const val LOGIN_ENDPOINT="api/login"
 
     const val SIGNUP_ENDPOINT="api/register"
@@ -50,6 +50,9 @@ object Constants {
     const val GET_MYSELF="/myself"
 
     //wesocket for chat app
-    const val web_Socket="wss://talkative-1-0-1-2.onrender.com/ws"
+    const val web_Socket="ws://narasucksatvim.duckdns.org:8081/ws"
+
+    //chat message history
+    const val MESSAGE_HISTORY="message"
 
 }

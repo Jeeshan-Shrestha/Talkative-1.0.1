@@ -54,11 +54,12 @@ class LoginRepository @Inject constructor(
         cookieJar.clearCookies()
     }
 
-    fun getStoredCookies(domain:String):List<String>{
-        val url = "https://$domain".toHttpUrl() // val url = HttpUrl.get("https://$domain")
-        //val url = "https://sangyog-cc.vercel.app".toHttpUrl()
-
-      //  Log.d("boka", "getStoredCookies: ${cookieJar.loadForRequest(url).map { it.toString() }}")
+    fun getStoredCookies(domain: String): List<String> {
+        val url = if (domain.startsWith("http://") || domain.startsWith("https://")) {
+            domain.toHttpUrl()
+        } else {
+            "http://$domain".toHttpUrl()
+        }
 
         return cookieJar.loadForRequest(url).map { it.toString() }
     }

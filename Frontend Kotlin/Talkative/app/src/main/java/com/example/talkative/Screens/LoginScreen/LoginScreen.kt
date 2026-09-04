@@ -1,5 +1,6 @@
 package com.example.talkative.screens.LoginScreen
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,7 @@ import com.example.talkative.components.PasswordField
 import com.example.talkative.components.sansButton
 import com.example.talkative.navigation.TalkativeScreen
 import com.example.talkative.utils.LoadingState
+import java.io.Console
 
 
 @Composable
@@ -211,6 +213,7 @@ fun LoginScreen(navController: NavController= NavController(LocalContext.current
                     )
 
                     if(uiState.value== LoadingState.FAILED){
+                        Log.d("meow",uiState.value.message.toString())
                         Toast.makeText(context, uiState.value.message, Toast.LENGTH_SHORT).show()
                     }
                     if(uiState.value== LoadingState.LOADING){

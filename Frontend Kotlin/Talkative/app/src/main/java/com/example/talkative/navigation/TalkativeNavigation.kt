@@ -52,7 +52,7 @@ fun TalkativeNavigation(){
     val navController = rememberNavController()
 
     val LoginViewModel = hiltViewModel<LoginViewModel>()
-    val domain = "talkative-1-0-1-2.onrender.com"
+    val domain = "http://narasucksatvim.duckdns.org:8081/"
 
     //Checking Login Status
     LaunchedEffect (Unit) {
