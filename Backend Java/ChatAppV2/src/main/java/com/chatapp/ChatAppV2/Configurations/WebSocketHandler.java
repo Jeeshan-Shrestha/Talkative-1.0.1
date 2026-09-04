@@ -1,6 +1,5 @@
 package com.chatapp.ChatAppV2.Configurations;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +16,7 @@ import com.chatapp.ChatAppV2.Models.MessageType;
 import com.chatapp.ChatAppV2.Services.ChatService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Component
@@ -25,7 +25,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
   @Autowired
   private ChatService chatService;
 
-  final private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+  final private ObjectMapper objectMapper = new ObjectMapper()
+        .registerModule(new JavaTimeModule())
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
   private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap();
 
