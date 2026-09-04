@@ -1,5 +1,6 @@
 package com.chatapp.ChatAppV2.Configurations;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -50,8 +51,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         JsonNode node = mapper.readTree(message.getPayload());
         String content = node.get("content").asText();
         String receiver = node.has("receiver") ? node.get("receiver").asText() : null;
-
-        final ChatMessage chatMessage = new ChatMessage(username, content, MessageType.CHAT, receiver);
+        LocalDate currentDate = LocalDate.now();
+        final ChatMessage chatMessage = new ChatMessage(currentDate,username, content, MessageType.CHAT, receiver);
 
         chatService.saveMessage(username, chatMessage, receiver);
 
