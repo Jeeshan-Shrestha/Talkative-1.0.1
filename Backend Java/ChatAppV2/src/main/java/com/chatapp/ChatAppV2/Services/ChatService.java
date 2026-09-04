@@ -26,8 +26,17 @@ public class ChatService {
   public List<ChatMessage> getMessageByUsername(String receiver) {
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
     Users userOnDb = userRepo.findByUsername(username);
+    Users receiverOnDb = userRepo.findByUsername(receiver);
     Map<String, List<ChatMessage>> userChats = userOnDb.getChats();
-    return userChats.get(receiver);
+    Map<String, List<ChatMessage>> receiverChats = receiverOnDb.getChats();
+    List<ChatMessage> allMessages = new ArrayList<>();
+    if (userChats != null) {
+      allMessages.addAll(userChats.getOrDefault(receiver, new ArrayList<>()));
+    }
+    if (receiverChats != null) {
+      allMessages.addAll(receiverChats.getOrDefault(username, new ArrayList<>()));
+    }
+    return allMessages;
   }
 
   public ChatMessage saveMessage(String username, ChatMessage chat, String receiver) {
