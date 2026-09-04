@@ -24,45 +24,46 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
-    @Override
-    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
-            Map<String, Object> attributes) throws Exception {
+   @Override
+public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
+        Map<String, Object> attributes) throws Exception {
 
-        if (!(request instanceof ServletServerHttpRequest s)) {
-            return false;
-        }
+    if (!(request instanceof ServletServerHttpRequest s)) {
+        response.setStatusCode(org.springframework.http.HttpStatus.BAD_REQUEST);
+        return false;
+    }
 
-        HttpServletRequest servletRequest = s.getServletRequest();
-        String token = null;
+    HttpServletRequest servletRequest = s.getServletRequest();
+    String token = null;
 
-        // 1. Try cookie (web clients)
-        Cookie[] cookies = servletRequest.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("token")) {
-                    token = cookie.getValue();
-                    break;
-                }
+    Cookie[] cookies = servletRequest.getCookies();
+    if (cookies != null) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                token = cookie.getValue();
+                break;
             }
         }
-
-        // 2. Fallback: query param ?token=... (Android/OkHttp, Postman)
-        if (token == null) {
-            token = servletRequest.getParameter("token");
-        }
-
-        if (token == null) {
-            return false; // reject handshake, no token found anywhere
-        }
-
-        String username = jwt.extractUsername(token);
-        if (username == null) {
-            return false; // invalid/expired token
-        }
-
-        attributes.put("username", username);
-        return true;
     }
+
+    if (token == null) {
+        token = servletRequest.getParameter("token");
+    }
+
+    if (token == null) {
+        response.setStatusCode(org.springframework.http.HttpStatus.UNAUTHORIZED);
+        return false;
+    }
+
+    String username = jwt.extractUsername(token);
+    if (username == null) {
+        response.setStatusCode(org.springframework.http.HttpStatus.UNAUTHORIZED);
+        return false;
+    }
+
+    attributes.put("username", username);
+    return true;
+} 
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,

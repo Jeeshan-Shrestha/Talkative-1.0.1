@@ -1,5 +1,7 @@
 package com.chatapp.ChatAppV2.Models;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,12 +11,14 @@ import lombok.Data;
 @AllArgsConstructor
 public class ChatMessage {
 
-    private String sender;
+  private LocalDate date;
 
-    private String content;
+  private String sender;
 
-    private MessageType type;
+  private String content;
 
-    private String receiver;
+  private MessageType type;
+
+  private String receiver;
 
 }
